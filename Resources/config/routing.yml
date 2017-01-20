@@ -1,0 +1,7 @@
+# CORS Support
+oka_api_cors_support:
+    path:     /{path}
+    defaults: { _controller: "OkaApiBundle:CorsSupport:index" }
+    methods:  OPTIONS
+    requirements:
+        path: .+
