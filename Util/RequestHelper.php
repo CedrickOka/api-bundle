@@ -74,14 +74,14 @@ class RequestHelper
 	
 	/**
 	 * Parse request query
-	 * 
+	 *
 	 * @param Request $request
 	 * @param string $key
 	 * @param string $delimiter
 	 * @param mixed $defaultValue
 	 * @return mixed
 	 */
-	public static function parseQueryString(Request $request, $key, $delimiter = null, $defaultValue = null)
+	public function parseQueryStringToArray(Request $request, $key, $delimiter = null, $defaultValue = null)
 	{
 		$value = $request->query->get($key, $defaultValue);
 		
@@ -92,6 +92,21 @@ class RequestHelper
 		}
 		
 		return $value;
+	}
+	
+	/**
+	 * Parse request query
+	 * 
+	 * @param Request $request
+	 * @param string $key
+	 * @param string $delimiter
+	 * @param mixed $defaultValue
+	 * @return mixed
+	 * @deprecated
+	 */
+	public static function parseQueryString(Request $request, $key, $delimiter = null, $defaultValue = null)
+	{
+		return self::parseQueryStringToArray($request, $key, $delimiter, $defaultValue);
 	}
 	
 	/**

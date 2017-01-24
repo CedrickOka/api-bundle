@@ -137,24 +137,17 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 				}
 				
 				if (!version_compare($version, $annotation->getVersionNumber(), $annotation->getVersionOperator())) {
-					$responseContent = ResponseHelper::buildErrorMessage(406, sprintf('The request does not support the API version number "%s".', $version));
+					$responseContent = ResponseHelper::createError(406, sprintf('The request does not support the API version number "%s".', $version));
 				} elseif (strtolower($protocol) !== $annotation->getProtocol()) {
-					$responseContent = ResponseHelper::buildErrorMessage(406, sprintf('The request does not support the protocol "%s".', $protocol));	
+					$responseContent = ResponseHelper::createError(406, sprintf('The request does not support the protocol "%s".', $protocol));	
 				} elseif (!$request->attributes->has('format')) {
-					$responseContent = ResponseHelper::buildErrorMessage(406, sprintf('Unsupported response format with request accept: "%s".', implode(', ', $request->getAcceptableContentTypes())));
+					$responseContent = ResponseHelper::createError(406, sprintf('Unsupported response format with request accept: "%s".', implode(', ', $request->getAcceptableContentTypes())));
 				}
 				
 				if ($responseContent !== null) {
 					$event->stopPropagation();
 					$event->setController(function(Request $request) use ($responseContent) {
-						return $this->responseHelper->getAcceptableResponse(
-								$request, 
-								$responseContent, 
-								406, 
-								[], 
-								null, 
-								true
-						);
+						return $this->responseHelper->getAcceptableResponse($request, $responseContent, 406, [], null, true);
 					});
 				}
 				break;
@@ -172,6 +165,7 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 		}
 		
 		$method = new \ReflectionMethod($controller[0], $controller[1]);
+		
 		if (!$annotations = $this->reader->getMethodAnnotations($method)) {
 			return;
 		}
@@ -189,7 +183,6 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 					if (false === $reflectionMethod->isStatic()) {
 						throw new \InvalidArgumentException(sprintf('Invalid option(s) passed to @%s: Validator method "%s" is not static.', RequestContent::getName(), $annotation->getValidatorStaticMethod()));
 					}
-					
 					if ($reflectionMethod->getNumberOfParameters() > 0) {
 						throw new \InvalidArgumentException(sprintf('Invalid option(s) passed to @%s: Validator method "%s" must not have of arguments.', RequestContent::getName(), $annotation->getValidatorStaticMethod()));
 					}
@@ -202,7 +195,7 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 					$event->setController(function(Request $request) use ($errorsValidation) {
 						return $this->responseHelper->getAcceptableResponse(
 								$request, 
-								ResponseHelper::buildErrorMessage(400, 'The request body is empty or malformed.', $errorsValidation), 
+								ResponseHelper::createError(400, 'The request body is empty or malformed.', $errorsValidation), 
 								400, 
 								null,
 								$request->attributes->get('format', null), true);
