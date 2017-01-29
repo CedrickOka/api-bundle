@@ -5,13 +5,15 @@
 	"keywords" : [
 		"Rest API management"
 	],
-	"homepage" : "http://oka.github.com",
+	"homepage" : "https://github.com/CedrickOka/oka-pagination",
 	"license" : "MIT",
 	"authors" : [{
 			"name" : "Cedrick Oka Baidai",
 			"email" : "cedrickoka@fermentuse.com"
 		}
 	],
+	"version" : "1.0.0-dev",
+	"minimum-stability" : "dev",
 	"require" : {
 		"php" : "^5.3.9 || ^7.0",
 		"symfony/symfony" : "2.8.*",
