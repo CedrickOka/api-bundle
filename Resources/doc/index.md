@@ -1,17 +1,16 @@
-Getting Started With OkaApiBundle
+**Getting Started With OkaApiBundle**
 =========================================
 
 This bundle provides a flexible management of the api.
 
-## Prerequisites
+##Prerequisites
 
 The OkaApiBundle has the following requirements:
-
  - PHP 5.5
  - Symfony 2.5+
  - JMSSerializerBundle @stable
 
-## Installation
+##Installation
 
 Installation is a quick (I promise!) 6 step process:
 
@@ -22,11 +21,11 @@ Installation is a quick (I promise!) 6 step process:
 5. Import OkaApiBundle routing
 6. Update your database schema
 
-### Step 1: Download OkaApiBundle
+###Step 1: Download OkaApiBundle
 
 You must procured one copy of this bundle. Install the bundle to your project's 'vendor/oka/api-bundle' directory.
 
-### Step 2: Enable the Bundle
+###Step 2: Enable the Bundle
 
 After the copy of the files, register the namespace in app/autoload.php:
 
@@ -63,7 +62,7 @@ class AppKernel extends Kernel
 }
 ```
 
-### Step 3: Create your WsseUser class
+###Step 3: Create your WsseUser class
 
 The goal of this bundle is to  persist some `WsseUser` class to a database (MySql). 
 Your first job, then, is to create the `WsseUser` class for you application. 
@@ -100,13 +99,13 @@ look, depending on how you're storing your pictures.
 > to call parent::__construct(), as the base User class depends on
 > this to initialize some fields.
 
-#### Doctrine ORM Picture class
+####Doctrine ORM Picture class
 
 you must persisting your pictures via the Doctrine ORM, then your `WsseUser` class
 should live in the `Entity` namespace of your bundle and look like this to
 start:
 
-##### Annotations
+#####Annotations
 
 ```php
 <?php
@@ -138,7 +137,7 @@ class WsseUser extends BaseWsseUser
 }
 ```
 
-##### YAML
+#####YAML
 
 If you use yml to configure Doctrine you must add two files. The Entity and the orm.yml:
 
@@ -164,7 +163,7 @@ class WsseUser extends BaseWsseUser
 ```
 
 ```yaml
-# src/Acme/ApiBundle/Resources/config/doctrine/WsseUser.orm.yml
+#####src/Acme/ApiBundle/Resources/config/doctrine/WsseUser.orm.yml
 Acme\ApiBundle\Entity\WsseUser:
     type:  entity
     table: oka_api_wsse_user
@@ -175,7 +174,7 @@ Acme\ApiBundle\Entity\WsseUser:
                 strategy: AUTO
 ```
 
-### Step 4: Configure the OkaApiBundle
+###Step 4: Configure the OkaApiBundle
 
 Add the following configuration to your `config.yml`.
 
