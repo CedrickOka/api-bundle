@@ -14,10 +14,11 @@
 	],
 	"require" : {
 		"php" : "^5.3.9 || ^7.0",
-		"symfony/form" : "^2.7 || ^3.0",
+		"symfony/symfony" : "2.8.*",
+		"doctrine/orm" : "^2.4.8",
+		"doctrine/doctrine-bundle" : "~1.4",
 		"symfony/framework-bundle" : "^2.7 || ^3.0",
 		"symfony/security-bundle" : "^2.7 || ^3.0",
-		"symfony/twig-bundle" : "^2.7 || ^3.0",
 		"jms/serializer-bundle" : "@stable"
 	},
 	"require-dev" : {
@@ -28,14 +29,7 @@
 		"symfony/phpunit-bridge" : "^2.7 || ^3.0",
 		"symfony/validator" : "^2.7 || ^3.0",
 		"symfony/yaml" : "^2.7 || ^3.0",
-		"willdurand/propel-typehintable-behavior" : "^1.0",
 		"phpunit/phpunit" : "~4.8|~5.0"
-	},
-	"conflict" : {
-		"symfony/doctrine-bridge" : "<2.7"
-	},
-	"suggest" : {
-		"willdurand/propel-typehintable-behavior" : "Needed when using the propel implementation"
 	},
 	"autoload" : {
 		"psr-4" : {
