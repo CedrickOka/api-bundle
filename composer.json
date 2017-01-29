@@ -1,5 +1,5 @@
 {
-	"name" : "oka/api-bundle",
+	"name" : "coka/api-bundle",
 	"type" : "symfony-bundle",
 	"description" : "Symfony Oka API Bundle",
 	"keywords" : [
