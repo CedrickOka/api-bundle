@@ -1,5 +1,5 @@
 **Getting Started With OkaApiBundle**
-=========================================
+=====================================
 
 This bundle provides a flexible management of the api.
 

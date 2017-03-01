@@ -43,6 +43,8 @@ final class AccessControl
 	
 	public function __construct(array $data)
 	{
+		$this->versionOperator = '==';
+		
 		if (!isset($data['protocol'])) {
 			throw new \InvalidArgumentException('You must define a "protocol" attribute for each @AccessControl annotation.');
 		}
@@ -60,18 +62,16 @@ final class AccessControl
 				throw new \InvalidArgumentException('You must define attribute "name" in "version" parameters for each @AccessApi annotation.');
 			}
 			
-			$this->version = $data['version'];
-			$this->versionNumber = strtolower(trim($this->version['name']));
+			$this->version = strtolower(trim($data['version']['name']));
 			
-			if (isset($this->version['operator'])) {
-				$this->versionOperator = trim($this->version['operator']);
+			if (isset($data['version']['operator'])) {
+				$this->versionOperator = trim($data['version']['operator']);
 			}
 		} else {
 			$this->version = strtolower(trim($data['version']));
-			$this->versionNumber = $this->version;
-			$this->versionOperator = '==';
 		}
 		
+		$this->versionNumber = self::findVersionNumber($this->version);
 		$this->protocol = strtolower(trim($data['protocol']));
 		$this->formats = array_map('trim', array_map('strtolower', explode(',', $data['formats'])));
 	}
@@ -101,7 +101,7 @@ final class AccessControl
 	}
 
 	/**
-	 * @return string
+	 * @return number
 	 */
 	public function getVersionNumber()
 	{
@@ -122,5 +122,13 @@ final class AccessControl
 	public function getFormats()
 	{
 		return $this->formats;
+	}
+	
+	/**
+	 * @param string $versionName
+	 * @return number
+	 */
+	private static function findVersionNumber($versionName) {
+		return (int) preg_replace('#[^0-9]#', '', $versionName);
 	}
 }

@@ -136,7 +136,7 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 					}
 				}
 				
-				if (!version_compare($version, $annotation->getVersionNumber(), $annotation->getVersionOperator())) {
+				if (!version_compare($version, $annotation->getVersion(), $annotation->getVersionOperator())) {
 					$responseContent = ResponseHelper::createError(406, sprintf('The request does not support the API version number "%s".', $version));
 				} elseif (strtolower($protocol) !== $annotation->getProtocol()) {
 					$responseContent = ResponseHelper::createError(406, sprintf('The request does not support the protocol "%s".', $protocol));	
