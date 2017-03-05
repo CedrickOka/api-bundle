@@ -54,17 +54,14 @@ class OkaApiExtension extends Extension
 		$container->setParameter('oka_api.jwt.auth_id.method_name', $config['firewalls']['jwt']['auth_id']['method_name']);
 		
 		// CORS support configuration
-		if (isset($configs['cors'])) {
-			$container->setParameter('oka_api.cors.allowed_origins', $config['cors']['allowed_origins'] ?: []);
-			$container->setParameter('oka_api.cors.expose_headers', $config['cors']['expose_headers'] ?: []);
+		if (isset($config['cors'])) {
+			$container->setParameter('oka_api.cors.parameters', $config['cors'] ?: []);
 			
 			// Enable CORS Listener
 			$definition = $container->getDefinition('oka_api.cors_support.event_listener');
-			$definition->replaceArgument(0, $config['host'])
-						->replaceArgument(1, $config['cors']['allowed_origins'])
-						->replaceArgument(2, $config['cors']['expose_headers'])
-						->addTag('kernel.event_subscriber')
-						->setPublic(true);
+			$definition->replaceArgument(0, $config['cors'])
+					   ->addTag('kernel.event_subscriber')
+					   ->setPublic(true);
 		}
 	}
 }

@@ -5,6 +5,8 @@ namespace Oka\ApiBundle\DependencyInjection;
 use Symfony\Component\Config\Definition\Builder\ScalarNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use Oka\ApiBundle\CorsOptions;
 
 /**
  * This is the class that validates and merges configuration from your app/config files.
@@ -39,20 +41,8 @@ class Configuration implements ConfigurationInterface
 						->cannotBeEmpty()
 						->info('This value represents API base http host.')
 					->end()
-					->append($this->addLogChannelNode())
-					->arrayNode('cors')
-						->canBeUnset()
-						->cannotBeEmpty()
-						->children()
-							->arrayNode('expose_headers')
-								->prototype('scalar')->end()
-							->end()
-							->arrayNode('allowed_origins')
-								->prototype('scalar')->end()
-							->end()
-						->end()
-						->info('This value permit to enable CORS protocole support.')
-					->end()
+					->append($this->getLogChannelNodeDefinition())
+					->append($this->getCorsNodeDefinition())
 					->arrayNode('firewalls')
 						->addDefaultsIfNotSet()
 						->children()
@@ -60,14 +50,14 @@ class Configuration implements ConfigurationInterface
 // 								->canBeDisabled() TODO has use
 								->addDefaultsIfNotSet()
 								->children()
-									->append($this->addLogChannelNode())
+									->append($this->getLogChannelNodeDefinition())
 								->end()
 							->end()
 							->arrayNode('jwt')
-// 								->canBeDisabled() TODO has use
+								->canBeDisabled()
 								->addDefaultsIfNotSet()
 								->children()
-									->append($this->addLogChannelNode())
+									->append($this->getLogChannelNodeDefinition())
 									->arrayNode('auth_id')
 										->addDefaultsIfNotSet()
 										->children()
@@ -89,7 +79,7 @@ class Configuration implements ConfigurationInterface
 // 			host: "%web_host.api%"
 // 			log_channel: "api"
 // 			cors:
-// 				allowed_origins: [ "http://%web_host%" ]
+// 				allow_origin: [ "http://%web_host%" ]
 // 			firewalls:
 // 				wsse:
 // 					log_channel: "wsse"
@@ -102,12 +92,48 @@ class Configuration implements ConfigurationInterface
 		return $treeBuilder;
 	}
 	
-	public function addLogChannelNode()
+	public function getCorsNodeDefinition()
+	{
+		$node = new ArrayNodeDefinition('cors');
+		$node
+			->canBeUnset()
+			->cannotBeEmpty()
+			->requiresAtLeastOneElement()
+			->useAttributeAsKey('name')
+			->info('This value permit to enable CORS protocole support.')
+			->prototype('array')
+				->children()
+					->scalarNode(CorsOptions::HOST)->defaultNull()->end()
+					->scalarNode(CorsOptions::PATTERN)->defaultNull()->end()
+					->arrayNode(CorsOptions::ALLOW_ORIGIN)
+						->performNoDeepMerging()
+						->prototype('scalar')->end()
+					->end()
+					->arrayNode(CorsOptions::ALLOW_METHODS)
+						->performNoDeepMerging()
+						->prototype('scalar')->end()
+					->end()
+					->arrayNode(CorsOptions::ALLOW_HEADERS)
+						->performNoDeepMerging()
+						->prototype('scalar')->end()
+					->end()
+					->booleanNode(CorsOptions::ALLOW_CREDENTIALS)->defaultFalse()->end()
+					->arrayNode(CorsOptions::EXPOSE_HEADERS)
+						->performNoDeepMerging()
+						->prototype('scalar')->end()
+					->end()
+					->integerNode(CorsOptions::MAX_AGE)->defaultValue(3600)->end()
+				->end()
+			->end()
+		->end();
+		
+		return $node;
+	}
+	
+	public function getLogChannelNodeDefinition()
 	{
 		$node = new ScalarNodeDefinition('log_channel');
-		$node
-			->defaultValue('api')
-		->end();
+		$node->defaultValue('api')->end();
 		
 		return $node;
 	}

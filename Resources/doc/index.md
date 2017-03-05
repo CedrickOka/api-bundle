@@ -23,26 +23,18 @@ Installation is a quick (I promise!) 6 step process:
 
 ###Step 1: Download OkaApiBundle
 
-You must procured one copy of this bundle. Install the bundle to your project's 'vendor/oka/api-bundle' directory.
+Add coka/api-bundle to your composer.json file:
+
+```
+php composer.phar require "coka/api-bundle"
+```
 
 ###Step 2: Enable the Bundle
 
-After the copy of the files, register the namespace in app/autoload.php:
-
-``` php
-<?php
-// app/autoload.php
-// ...
-
-$loader->setPsr4('Oka\\ApiBundle\\', __DIR__.'/../vendor/oka/api-bundle');
-```
-
-Then, enable the bundle by adding it to the list of registered bundles
-in the `app/AppKernel.php` file of your project:
+Register the bundle in `app/AppKernel.php`:
 
 ```php
 <?php
-// app/AppKernel.php
 // ...
 
 class AppKernel extends Kernel
@@ -51,11 +43,12 @@ class AppKernel extends Kernel
 	{
 		$bundles = array(
 			// ...
-			
 			new Oka\ApiBundle\OkaApiBundle(),
 		);
 		
 		// ...
+		
+		return $bundles;
 	}
 	
 	// ...
@@ -186,8 +179,14 @@ oka_api:
     host: "%web_host.api%"
     log_channel: "api"
     cors:
-        allowed_origins: [ "http://%web_host%" ]
+        host:
+        pattern: '^.*/cors/test$'
+        allow_origin: ['http://%web_host%']
+        allow_methods: []
+        allow_headers: []
+        allow_credentials: true
         expose_headers: []
+        max_age: 3600
     firewalls:
         wsse:
             log_channel: "wsse"
@@ -199,12 +198,9 @@ oka_api:
 ### Step 5: Import OkaApiBundle routing
 
 Now that you have activated and configured the bundle, all that is left to do is
-import the OkaFileManagerBundle routing files.
+import the OkaApiBundle routing files.
 
-By importing the routing files you will have ready made pages for things such as
-uploading, cropping pictures, etc.
-
-In YAML:
+Add the following configuration to your `routing.yml`
 
 ``` yaml
 # app/config/routing.yml

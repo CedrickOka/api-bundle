@@ -2,7 +2,6 @@
 namespace Oka\ApiBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -13,16 +12,12 @@ use Symfony\Component\HttpFoundation\Response;
 class CorsSupportController extends Controller
 {
 	/**
-	 * Cors Support
+	 * Cors Support Test
 	 * 
-	 * @param Request $request
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function indexAction(Request $request)
+	public function indexAction()
 	{
-		return new Response('', 200, [
-				'Access-Control-Allow-Methods' => $request->headers->get('Access-Control-Request-Method'),
-				'Access-Control-Allow-Headers' => $request->headers->get('Access-Control-Request-Headers')
-		]);
+		return new Response();
 	}
 }

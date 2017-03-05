@@ -1,5 +1,8 @@
 <?php
+namespace Oka\ApiBundle\Tests\Controller;
+
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Routing\Generator\UrlGenerator;
 
 /**
  * 
@@ -8,20 +11,55 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  */
 class CorsSupportControllerTest extends WebTestCase
 {
-	public function testIndex()
+	/**
+	 * CORS pattern configuration for test
+	 * 
+	 * cors:
+	 *     pattern: ^.*\/cors/test$
+	 */
+	public function testIndexCorsSupportPattern()
 	{
 		/** @var \Symfony\Bundle\FrameworkBundle\Client $client */
 		$client = static::createClient();
-		$uri = sprintf('http://%s/app_dev.php/cors/support', $client->getContainer()->getParameter('oka_api.http_host'));
+		$container = $client->getContainer();
+		$uri = $container->get('router')->generate('oka_api_cors_support_test', ['version' => 'v1'], UrlGenerator::ABSOLUTE_URL);
 		
-		$crawler = $client->request('OPTIONS', $uri, [], [], [
+		$client->request('OPTIONS', $uri, [], [], [
+				'HTTP_Origin' => $uri,
 				'HTTP_Access-Control-Request-Method' => 'GET',
 				'HTTP_Access-Control-Request-Headers' => 'X-Test'
 		]);
 		
-		$response = $client->getResponse();		
+		$response = $client->getResponse();
+		
 		$this->assertEquals(200, $response->getStatusCode());
 		$this->assertTrue($response->headers->contains('Access-Control-Allow-Methods', 'GET'));
 		$this->assertTrue($response->headers->contains('Access-Control-Allow-Headers', 'X-Test'));
+	}
+	
+	/**
+	 * CORS pattern configuration for test
+	 *
+	 * cors:
+	 *     pattern: ^.*\/cors/test$
+	 */
+	public function testIndexCorsNotSupportPattern()
+	{
+		/** @var \Symfony\Bundle\FrameworkBundle\Client $client */
+		$client = static::createClient();
+		$container = $client->getContainer();
+		$uri = $container->get('router')->generate('oka_api_cors_support_test_not_support', ['version' => 'v1'], UrlGenerator::ABSOLUTE_URL);
+		
+		$client->request('OPTIONS', $uri, [], [], [
+				'HTTP_Origin' => $uri,
+				'HTTP_Access-Control-Request-Method' => 'GET',
+				'HTTP_Access-Control-Request-Headers' => 'X-Test'
+		]);
+		
+		$response = $client->getResponse();
+		
+		$this->assertEquals(405, $response->getStatusCode());
+		$this->assertFalse($response->headers->contains('Access-Control-Allow-Methods', 'GET'));
+		$this->assertFalse($response->headers->contains('Access-Control-Allow-Headers', 'X-Test'));
 	}
 }

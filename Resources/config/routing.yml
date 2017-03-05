@@ -1,7 +1,10 @@
 # CORS Support
-oka_api_cors_support:
-    path:     /{path}
+oka_api_cors_support_test:
+    path:     /cors/test
     defaults: { _controller: "OkaApiBundle:CorsSupport:index" }
-    methods:  OPTIONS
-    requirements:
-        path: .+
+    methods:  GET
+
+oka_api_cors_support_test_not_support:
+    path:     /cors/test/not/support
+    defaults: { _controller: "OkaApiBundle:CorsSupport:index" }
+    methods:  GET

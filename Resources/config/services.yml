@@ -43,14 +43,21 @@ services:
     oka_api.request.event_listener:
         class:  Oka\ApiBundle\EventListener\RequestListener
         parent: oka_api.util.logger.helper
-        arguments:  [ "@annotation_reader", "@oka_api.util.request.helper", "@oka_api.util.response.helper", "%oka_api.http_host%", "%kernel.environment%" ]
+        arguments:  [ "@oka_api.util.request.helper", "@oka_api.util.response.helper", "%oka_api.http_host%", "%kernel.environment%" ]
+        tags:
+          - { name: kernel.event_subscriber }
+
+    oka_api.annotation.event_listener:
+        class:  Oka\ApiBundle\EventListener\AnnotationListener
+        parent: oka_api.util.logger.helper
+        arguments:  [ "@annotation_reader", "@oka_api.util.request.helper", "@oka_api.util.response.helper" ]
         tags:
           - { name: kernel.event_subscriber }
 
     oka_api.cors_support.event_listener:
         class:  Oka\ApiBundle\EventListener\CorsSupportListener
         parent: oka_api.util.logger.helper
-        arguments:  [ "", "", "" ]
+        arguments:  [ [] ]
         public: false
 
 # ParamConverters
