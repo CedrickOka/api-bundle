@@ -50,8 +50,10 @@ class OkaApiExtension extends Extension
 		
 		// JSON Web Token firewalls configuration
 		$container->setParameter('oka_api.jwt.log_channel', $config['firewalls']['jwt']['log_channel']);
-		$container->setParameter('oka_api.jwt.auth_id.route_key', $config['firewalls']['jwt']['auth_id']['route_key']);
-		$container->setParameter('oka_api.jwt.auth_id.method_name', $config['firewalls']['jwt']['auth_id']['method_name']);
+// 		$container->setParameter('oka_api.jwt.auth_id.route_key', $config['firewalls']['jwt']['auth_id']['route_key']);
+// 		$container->setParameter('oka_api.jwt.auth_id.method_name', $config['firewalls']['jwt']['auth_id']['method_name']);
+		$container->setParameter('oka_api.jwt.auth_id.route_key', 'userId');
+		$container->setParameter('oka_api.jwt.auth_id.method_name', 'getId');
 		
 		// CORS support configuration
 		if (isset($config['cors'])) {

@@ -53,20 +53,21 @@ class Configuration implements ConfigurationInterface
 									->append($this->getLogChannelNodeDefinition())
 								->end()
 							->end()
-							->arrayNode('jwt')
-								->canBeDisabled()
-								->addDefaultsIfNotSet()
-								->children()
-									->append($this->getLogChannelNodeDefinition())
-									->arrayNode('auth_id')
-										->addDefaultsIfNotSet()
-										->children()
-											->scalarNode('route_key')->defaultValue('authId')->end()
-											->scalarNode('method_name')->defaultValue('getId')->end()
-										->end()
-									->end()
-								->end()
-							->end()
+							->append($this->getJWTFirewallNodeDefintion())
+// 							->arrayNode('jwt')
+// 								->canBeDisabled()
+// 								->addDefaultsIfNotSet()
+// 								->children()
+// 									->append($this->getLogChannelNodeDefinition())
+// 									->arrayNode('auth_id')
+// 										->addDefaultsIfNotSet()
+// 										->children()
+// 											->scalarNode('route_key')->defaultValue('authId')->end()
+// 											->scalarNode('method_name')->defaultValue('getId')->end()
+// 										->end()
+// 									->end()
+// 								->end()
+// 							->end()
 						->end()
 						->info('This value configure API firewalls.')
 					->end()
@@ -134,6 +135,41 @@ class Configuration implements ConfigurationInterface
 	{
 		$node = new ScalarNodeDefinition('log_channel');
 		$node->defaultValue('api')->end();
+		
+		return $node;
+	}
+	
+	public function getJWTFirewallNodeDefintion()
+	{
+		$node = new ArrayNodeDefinition('jwt');
+		$node
+			->canBeDisabled()
+			->addDefaultsIfNotSet()
+			->children()
+				->append($this->getLogChannelNodeDefinition())
+				->arrayNode('token')
+					->addDefaultsIfNotSet()
+					->cannotBeEmpty()
+					->children()
+						->arrayNode('user_field_map')
+							->addDefaultsIfNotSet()
+							->children()
+								->arrayNode('private_claims')
+									->addDefaultsIfNotSet()
+									->children()
+										->scalarNode('jti')->isRequired()->treatNullLike('username')->end()
+									->end()
+								->end()
+								->arrayNode('public_claims')
+									->useAttributeAsKey('name')
+									->prototype('scalar')->end()
+								->end()
+							->end()
+						->end()
+					->end()
+				->end()
+			->end()
+		->end();
 		
 		return $node;
 	}
