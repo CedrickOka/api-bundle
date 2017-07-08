@@ -7,6 +7,7 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Oka\ApiBundle\CorsOptions;
+use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 
 /**
  * This is the class that validates and merges configuration from your app/config files.
@@ -30,7 +31,7 @@ class Configuration implements ConfigurationInterface
 						->isRequired()
 						->cannotBeEmpty()
 					->end()
-					->scalarNode('wsse_user_class')
+					->scalarNode('client_class')
 						->isRequired()
 						->cannotBeEmpty()
 					->end()
@@ -47,50 +48,27 @@ class Configuration implements ConfigurationInterface
 						->addDefaultsIfNotSet()
 						->children()
 							->arrayNode('wsse')
-// 								->canBeDisabled() TODO has use
+								->canBeDisabled()
 								->addDefaultsIfNotSet()
 								->children()
 									->append($this->getLogChannelNodeDefinition())
 								->end()
 							->end()
 							->append($this->getJWTFirewallNodeDefintion())
-// 							->arrayNode('jwt')
-// 								->canBeDisabled()
-// 								->addDefaultsIfNotSet()
-// 								->children()
-// 									->append($this->getLogChannelNodeDefinition())
-// 									->arrayNode('auth_id')
-// 										->addDefaultsIfNotSet()
-// 										->children()
-// 											->scalarNode('route_key')->defaultValue('authId')->end()
-// 											->scalarNode('method_name')->defaultValue('getId')->end()
-// 										->end()
-// 									->end()
-// 								->end()
-// 							->end()
 						->end()
 						->info('This value configure API firewalls.')
 					->end()
 				->end();
-
-		// Exemple Configuration
-// 		oka_api:
-// 			user_class: Aynid\UserBundle\Entity\User
-// 			wsse_user_class: Aynid\Api\CoreBundle\Entity\Client
-// 			host: "%web_host.api%"
-// 			log_channel: "api"
-// 			cors:
-// 				allow_origin: [ "http://%web_host%" ]
-// 			firewalls:
-// 				wsse:
-// 					log_channel: "wsse"
-// 				jwt:
-// 					log_channel: "jwt"
-// 					auth_id:
-// 						route_key: "userId"
-// 						method_name: "getId"
-
+		
 		return $treeBuilder;
+	}
+	
+	public function getLogChannelNodeDefinition()
+	{
+		$node = new ScalarNodeDefinition('log_channel');
+		$node->defaultValue('api')->end();
+		
+		return $node;
 	}
 	
 	public function getCorsNodeDefinition()
@@ -98,7 +76,6 @@ class Configuration implements ConfigurationInterface
 		$node = new ArrayNodeDefinition('cors');
 		$node
 			->canBeUnset()
-			->cannotBeEmpty()
 			->requiresAtLeastOneElement()
 			->useAttributeAsKey('name')
 			->info('This value permit to enable CORS protocole support.')
@@ -131,26 +108,39 @@ class Configuration implements ConfigurationInterface
 		return $node;
 	}
 	
-	public function getLogChannelNodeDefinition()
-	{
-		$node = new ScalarNodeDefinition('log_channel');
-		$node->defaultValue('api')->end();
-		
-		return $node;
-	}
-	
 	public function getJWTFirewallNodeDefintion()
 	{
+		$authorizationHeaderPrefixNode = new ScalarNodeDefinition('prefix');
+		$authorizationHeaderPrefixNode->defaultValue('Bearer')->end();
+		
 		$node = new ArrayNodeDefinition('jwt');
 		$node
-			->canBeDisabled()
 			->addDefaultsIfNotSet()
+			->canBeDisabled()
 			->children()
 				->append($this->getLogChannelNodeDefinition())
 				->arrayNode('token')
 					->addDefaultsIfNotSet()
 					->cannotBeEmpty()
 					->children()
+						->integerNode('ttl')->defaultValue(3600)->end()
+						->arrayNode('encoder')
+							->addDefaultsIfNotSet()
+							->children()
+								->scalarNode('service')->defaultValue('oka_api.jwt.authentication.default_encoder')->end()
+								->scalarNode('crypto_engine')->defaultValue('openssl')->end()
+								->scalarNode('signature_algorithm')->defaultValue('Sha256')->end()
+							->end()
+						->end()
+						->arrayNode('extractors')
+							->addDefaultsIfNotSet()
+							->children()
+								->append($this->getJWTExtractorNodeDefinition('authorization_header', 'Authorization', [$authorizationHeaderPrefixNode]))
+								->append($this->getJWTExtractorNodeDefinition('query_parameter', 'bearer'))
+								->append($this->getJWTExtractorNodeDefinition('cookie', 'BEARER'))
+							->end()
+						->end()
+						->scalarNode('user_identity_field')->defaultValue('username')->end()
 						->arrayNode('user_field_map')
 							->addDefaultsIfNotSet()
 							->children()
@@ -169,6 +159,28 @@ class Configuration implements ConfigurationInterface
 					->end()
 				->end()
 			->end()
+		->end();
+		
+		return $node;
+	}
+	
+	public function getJWTExtractorNodeDefinition($name, $defaultValue = null, array $appendNodes = []) {
+		$node = new ArrayNodeDefinition($name);
+		
+		$childrenNode = $node
+			->addDefaultsIfNotSet()
+			->canBeDisabled()
+			->children()
+				->scalarNode('name')->defaultValue($defaultValue)->end();
+		
+		if (!empty($appendNodes)) {
+			/** @var NodeDefinition $appendNode */
+			foreach ($appendNodes as $appendNode) {
+				$childrenNode->append($appendNode);
+			}
+		}
+		
+			$childrenNode->end()
 		->end();
 		
 		return $node;

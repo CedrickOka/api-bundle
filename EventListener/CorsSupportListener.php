@@ -93,7 +93,7 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 		}
 		
 		// Define CORS allow_headers
-		if (!empty($cors[CorsOptions::ALLOW_METHODS])) {
+		if (!empty($cors[CorsOptions::ALLOW_HEADERS])) {
 			$response->headers->set('Access-Control-Allow-Headers', implode(',', $cors[CorsOptions::ALLOW_HEADERS]));
 		} elseif ($request->headers->has('Access-Control-Request-Headers')) {
 			$response->headers->set('Access-Control-Allow-Headers', $request->headers->get('Access-Control-Request-Headers'));
