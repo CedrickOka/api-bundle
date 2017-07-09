@@ -27,10 +27,10 @@ class Configuration implements ConfigurationInterface
 		$rootNode
 				->addDefaultsIfNotSet()
 				->children()
-					->scalarNode('user_class')
-						->isRequired()
-						->cannotBeEmpty()
-					->end()
+// 					->scalarNode('user_class')
+// 						->isRequired()
+// 						->cannotBeEmpty()
+// 					->end()
 					->scalarNode('client_class')
 						->isRequired()
 						->cannotBeEmpty()
@@ -39,7 +39,7 @@ class Configuration implements ConfigurationInterface
 						->defaultNull()
 					->end()
 					->scalarNode('host')
-						->cannotBeEmpty()
+						->defaultNull()
 						->info('This value represents API base http host.')
 					->end()
 					->append($this->getLogChannelNodeDefinition())
@@ -51,10 +51,10 @@ class Configuration implements ConfigurationInterface
 								->canBeDisabled()
 								->addDefaultsIfNotSet()
 								->children()
-									->append($this->getLogChannelNodeDefinition())
+									->append($this->getLogChannelNodeDefinition('wsse'))
 								->end()
 							->end()
-							->append($this->getJWTFirewallNodeDefintion())
+// 							->append($this->getJWTFirewallNodeDefintion('jwt'))
 						->end()
 						->info('This value configure API firewalls.')
 					->end()
@@ -63,10 +63,10 @@ class Configuration implements ConfigurationInterface
 		return $treeBuilder;
 	}
 	
-	public function getLogChannelNodeDefinition()
+	public function getLogChannelNodeDefinition($defaultValue = 'api')
 	{
 		$node = new ScalarNodeDefinition('log_channel');
-		$node->defaultValue('api')->end();
+		$node->defaultValue($defaultValue)->end();
 		
 		return $node;
 	}

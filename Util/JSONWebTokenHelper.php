@@ -75,7 +75,7 @@ class JSONWebTokenHelper extends LoggerHelper
 				return $jwtToken->validate($data);
 			}
 		} catch (\Exception $e) {
-			$this->logger->error(LoggerHelper::formatErrorMessage($e));
+			$this->logErrException($e);
 		}
 		
 		return false;

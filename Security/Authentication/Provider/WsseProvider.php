@@ -43,7 +43,7 @@ class WsseProvider implements AuthenticationProviderInterface
 	public function authenticate(TokenInterface $token)
 	{
 		if (!$client = $this->clientProvider->loadUserByUsername($token->getUsername())) {
-			throw new UsernameNotFoundException(sprintf('API client "%s" could not be found.', $token->getUsername()));
+			throw new UsernameNotFoundException(sprintf('API client account with username "%s" could not be found.', $token->getUsername()));
 		}
 		
 		if ($client->isEnabled() === false) {
@@ -66,31 +66,28 @@ class WsseProvider implements AuthenticationProviderInterface
 	
 	protected function validateDigest($digest, $nonce, $created, $secret)
 	{
-		$serverActualTime = time();
-		// Verifie si le temps n'est pas dans le futur
-		if (strtotime($created) > $serverActualTime) {
-			throw new AuthenticationException('Back to the future...');
-		}
+		$currentTime = time();
 		
-		// Expire le timestamp après le temps defini par le parametre $lifetime
-		if ($serverActualTime - strtotime($created) > $this->lifetime) {
-			throw new AuthenticationException('Too late for this timestamp... Watch your watch.');
+		// Check that the timestamp has not expired
+		if (($currentTime < strtotime($created) - $this->lifetime) || ($currentTime > strtotime($created) + $this->lifetime)) {
+			throw new AuthenticationException('Created timestamp is not valid.');
 		}
 		
 		$nonceDecoded = base64_decode($nonce);
 		$nonceFilePath = $this->cacheDir.'/'.$nonceDecoded;
 		
-		// Valide que le nonce est unique dans le temps defini par le parametre $lifetime
-		if (file_exists($nonceFilePath) && (((int) file_get_contents($nonceFilePath)) + $this->lifetime) > $serverActualTime) {
+		// Check that the digest nonce has not expired
+		if (file_exists($nonceFilePath) && (((int) file_get_contents($nonceFilePath)) + $this->lifetime) > $currentTime) {
 			throw new NonceExpiredException('Digest nonce has expired.');
 		}
 		
 		if (!is_dir($this->cacheDir)) {
 			mkdir($this->cacheDir, 0777, true);
 		}
-		file_put_contents($nonceFilePath, $serverActualTime, LOCK_EX);
 		
-		// Valide le secret
+		file_put_contents($nonceFilePath, $currentTime, LOCK_EX);
+		
+		// Valid the secret
 		$expected = base64_encode(sha1($nonceDecoded.$created.$secret, true));
 		
 		return hash_equals($expected, $digest);

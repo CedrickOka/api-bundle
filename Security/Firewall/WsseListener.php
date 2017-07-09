@@ -62,7 +62,7 @@ class WsseListener extends LoggerHelper implements ListenerInterface
 				return;
 			} catch (\Exception $e) {
 				$failedMessage = $e->getMessage();
-				$this->logger->debug(sprintf('WSSE Login failed: %s', $e->getMessage()), [
+				$this->logDebug(sprintf('WSSE Login failed: %s', $e->getMessage()), [
 						'username'	=> $token->getUsername(),
 						'digest'	=> $token->digest,
 						'nonce'		=> $token->nonce,
@@ -72,7 +72,7 @@ class WsseListener extends LoggerHelper implements ListenerInterface
 		}
 		
 		// Deny authentication with a '403 Forbidden' HTTP response
-		$content =  ResponseHelper::buildErrorMessage(Response::HTTP_FORBIDDEN, $failedMessage);		
+		$content =  ResponseHelper::createError(Response::HTTP_FORBIDDEN, $failedMessage);
 		$event->setResponse($this->responseHelper->getAcceptableResponse($request, $content, Response::HTTP_FORBIDDEN, ['X-Secure-With' => 'WSSE'], 'json'));
 	}
 }

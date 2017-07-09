@@ -1,7 +1,7 @@
-OkaFileManagerBundle
-====================
+OkaApiBundle
+============
 
-Ce bundle permet de mettre en place un système d'API Rest
+Ce bundle permet de mettre en place un système d'API Rest.
 
 Documentation
 -------------

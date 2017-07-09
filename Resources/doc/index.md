@@ -78,7 +78,7 @@ if you work at "Acme" company, then you might create a bundle called `AcmeApiBun
 and place your `WsseUser` class in it.
 
 In the following sections, you'll see examples of how your `WsseUser` class should
-look, depending on how you're storing your pictures.
+look, depending on how you're storing your entities.
 
 **Note:**
 
@@ -88,13 +88,13 @@ look, depending on how you're storing your pictures.
 
 **Warning:**
 
-> If you override the __construct() method in your Picture  class, be sure
-> to call parent::__construct(), as the base User class depends on
+> If you override the __construct() method in your WsseUser class, be sure
+> to call parent::__construct(), as the base WsseUser class depends on
 > this to initialize some fields.
 
-####Doctrine ORM Picture class
+####Doctrine ORM WsseUser class
 
-you must persisting your pictures via the Doctrine ORM, then your `WsseUser` class
+you must persisting your entity via the Doctrine ORM, then your `WsseUser` class
 should live in the `Entity` namespace of your bundle and look like this to
 start:
 
@@ -143,7 +143,7 @@ namespace Acme\ApiBundle\Entity;
 use Oka\ApiBundle\Model\WsseUser as BaseWsseUser;
 
 /**
- * Picture
+ * WsseUser
  */
 class WsseUser extends BaseWsseUser
 {
@@ -174,25 +174,25 @@ Add the following configuration to your `config.yml`.
 ``` yaml
 # app/config/config.yml
 oka_api:
-    user_class: Acme\ApiBundle\Entity\User
-    wsse_user_class: Acme\ApiBundle\Entity\WsseUser
-    host: "%web_host.api%"
-    log_channel: "api"
+    client_class: Acme\ApiBundle\Entity\WsseUser
+    model_manager_name: null
+    host: api.acme.com
+    log_channel: api
     cors:
-        host:
-        pattern: '^.*/cors/test$'
-        allow_origin: ['http://%web_host%']
-        allow_methods: []
-        allow_headers: []
-        allow_credentials: true
-        expose_headers: []
-        max_age: 3600
+        default:
+            host: null
+            pattern: '^.*/cors/test$'
+            allow_origin:
+                - 'http://acme.com'
+            allow_methods: {  }
+            allow_headers: {  }
+            allow_credentials: false
+            expose_headers: {  }
+            max_age: 3600
     firewalls:
         wsse:
-            log_channel: "wsse"
-        jwt:
-            route_user_param: "id"
-            log_channel: "jwt"
+            log_channel: wsse
+            enabled: true
 ```
 
 ### Step 5: Import OkaApiBundle routing

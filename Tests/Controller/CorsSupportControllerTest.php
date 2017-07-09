@@ -22,14 +22,13 @@ class CorsSupportControllerTest extends WebTestCase
 		/** @var \Symfony\Bundle\FrameworkBundle\Client $client */
 		$client = static::createClient();
 		$container = $client->getContainer();
-		$uri = $container->get('router')->generate('oka_api_cors_support_test', ['version' => 'v1'], UrlGenerator::ABSOLUTE_URL);
+		$uri = $container->get('router')->generate('oka_api_cors_support_test', [], UrlGenerator::ABSOLUTE_URL);
 		
 		$client->request('OPTIONS', $uri, [], [], [
 				'HTTP_Origin' => $uri,
 				'HTTP_Access-Control-Request-Method' => 'GET',
 				'HTTP_Access-Control-Request-Headers' => 'X-Test'
 		]);
-		
 		$response = $client->getResponse();
 		
 		$this->assertEquals(200, $response->getStatusCode());
@@ -48,14 +47,13 @@ class CorsSupportControllerTest extends WebTestCase
 		/** @var \Symfony\Bundle\FrameworkBundle\Client $client */
 		$client = static::createClient();
 		$container = $client->getContainer();
-		$uri = $container->get('router')->generate('oka_api_cors_support_test_not_support', ['version' => 'v1'], UrlGenerator::ABSOLUTE_URL);
+		$uri = $container->get('router')->generate('oka_api_cors_support_test_not_support', [], UrlGenerator::ABSOLUTE_URL);
 		
 		$client->request('OPTIONS', $uri, [], [], [
 				'HTTP_Origin' => $uri,
 				'HTTP_Access-Control-Request-Method' => 'GET',
 				'HTTP_Access-Control-Request-Headers' => 'X-Test'
 		]);
-		
 		$response = $client->getResponse();
 		
 		$this->assertEquals(405, $response->getStatusCode());

@@ -17,13 +17,9 @@ class ResponseHelper
 	const UNEXPECTED_ERROR = 'Une erreur inattendu est survenue le traitement de la requête.';
 	const INVALID_CREDENTIALS = 'Le nom d\'utilisateur ou le mot de passe est incorrect.';
 	
-	const ERROR_BODY_ATTRIBUTE_NAME = 'error';
-	const ERROR_CODE_ATTRIBUTE_NAME = 'code';
-	const ERROR_MESSAGE_ATTRIBUTE_NAME = 'message';
-	
-	const EXTRAS = 'extras';
-	const SUB_ERRORS = 'sub_errors';
-	const PROPERTY_ERRORS = 'property_errors';
+	const ERROR_EXTRAS = 'extras';
+	const ERROR_COLLECTION = 'errors';
+	const ERROR_PROPERTIES = 'properties';
 	
 	/**
 	 * @var Serializer $serializer
@@ -50,8 +46,8 @@ class ResponseHelper
 	{
 		switch ($format ?: RequestHelper::getFirstAcceptableFormat($request)) {
 			case 'html':
-				if ($isError === true && isset($content[self::ERROR_BODY_ATTRIBUTE_NAME])) {
-					$content = $content[self::ERROR_BODY_ATTRIBUTE_NAME][self::ERROR_MESSAGE_ATTRIBUTE_NAME];
+				if ($isError === true && isset($content['error'])) {
+					$content = $content['error']['message'];
 				}
 				
 				$headers['Content-Type'] = 'text/html';
@@ -76,83 +72,36 @@ class ResponseHelper
 	 * 
 	 * @param integer $code
 	 * @param string $message
-	 * @param mixed $propertyErrors
-	 * @param array $subErrors
+	 * @param array  $properties
+	 * @param array $errors
 	 * @param array $extras
 	 * @return string[]|string[][]
 	 */
-	public static function createError($code, $message, $propertyErrors = null, array $subErrors = [], array $extras = []) {
-		$error = self::createSubError($code, $message);
+	public static function createError($code, $message, array $properties = [], array $extras = [], array $errors = []) {		
+		$error = ['error' => ['code' => $code, 'message' => $message]];
+		
+		if (!empty($errors)) {
+			$error['errors'] = $errors;
+		}
 		
 		if (!empty($extras)) {
-			$error[self::EXTRAS] = $extras;
+			$error['error']['extras'] = $extras;
 		}
 		
-		$error = [self::ERROR_BODY_ATTRIBUTE_NAME => $error];
-		
-		if ($propertyErrors) {
-			$error[self::PROPERTY_ERRORS] = $propertyErrors;
-		}
-		
-		if (!empty($subErrors)) {
-			$error[self::SUB_ERRORS] = $subErrors;
+		if (!empty($properties)) {
+			$error['error']['properties'] = $properties;
 		}
 		
 		return $error;
-	}
-	
-	/**
-	 * Create sub error message for response
-	 * 
-	 * @param integer $code
-	 * @param string $message
-	 * @return string[]
-	 */
-	public static function createSubError($code, $message) {
-		return [
-				self::ERROR_CODE_ATTRIBUTE_NAME => $code,
-				self::ERROR_MESSAGE_ATTRIBUTE_NAME => $message
-		];
-	}
-	
-	/**
-	 * Format Error message for response
-	 * 
-	 * @param integer $code
-	 * @param string $message
-	 * @param mixed $propertyErrors
-	 * @param array $subErrors
-	 * @param array $extras
-	 * @return string[]|string[][]
-	 * @deprecated
-	 */
-	public static function buildErrorMessage($code, $message, $propertyErrors = null, array $subErrors = [], array $extras = [])
-	{
-		return self::createError($code, $message, $propertyErrors, $subErrors, $extras);
-	}
-	
-	/**
-	 * Format Sub error message for response
-	 * 
-	 * @param integer $code
-	 * @param string $message
-	 * @return string[]
-	 * @deprecated
-	 */
-	public static function buildSubErrorsMessage($code, $message)
-	{
-		return self::createSubError($code, $message);
 	}
 	
 	public static function stringCast($value)
 	{
 		if (is_array($value)) {
 			$cast = '';
-			
 			foreach ($value as $content) {
-				$cast .= is_array($content) ? self::stringCast($value) : $content;
+				$cast .= is_array($content) ? self::stringCast($value) : ' '.$content;
 			}
-			
 			$value = $cast;
 		}
 		

@@ -12,33 +12,37 @@ use Symfony\Component\HttpFoundation\RequestMatcherInterface;
 class JwtRequestMatcher implements RequestMatcherInterface
 {
 	/**
-	 * @var string $host
+	 * @var HostRequestMatcher $hostMatcher
 	 */
-	private $host;
+	private $hostMatcher;
 	
 	/**
 	 * @var array $extractors
 	 */
 	private $extractors;
 	
-	public function __construct($host, array $extractors)
+	public function __construct(HostRequestMatcher $hostMatcher, array $extractors)
 	{
-		$this->host = $host;
+		$this->hostMatcher = $hostMatcher;
 		$this->extractors = $extractors;
 	}
 	
 	public function matches(Request $request)
 	{
+		if (false === $this->hostMatcher->matches($request)) {
+			return false;
+		}
+		
 		if ($this->extractors['authorization_header']['enabled'] && $request->headers->has($this->extractors['authorization_header']['name'])) {
-			return $request->getHost() === $this->host;
+			return true;
 		}
 		
 		if ($this->extractors['query_parameter']['enabled'] && $request->query->has($this->extractors['query_parameter']['name'])) {
-			return $request->getHost() === $this->host;
+			return true;
 		}
 		
 		if ($this->extractors['cookie']['enabled'] && $request->cookies->has($this->extractors['cookie']['name'])) {
-			return $request->getHost() === $this->host;
+			return true;
 		}
 		
 		return false;

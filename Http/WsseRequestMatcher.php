@@ -12,17 +12,21 @@ use Symfony\Component\HttpFoundation\RequestMatcherInterface;
 class WsseRequestMatcher implements RequestMatcherInterface
 {
 	/**
-	 * @var string $host
+	 * @var HostRequestMatcher $hostMatcher
 	 */
-	private $host;
+	private $hostMatcher;
 	
-	public function __construct($host)
+	public function __construct(HostRequestMatcher $hostMatcher)
 	{
-		$this->host = $host;
+		$this->hostMatcher = $hostMatcher;
 	}
 	
 	public function matches(Request $request)
 	{
-		return $request->headers->has('X-WSSE') && $request->getHost() === $this->host;
+		if (false === $this->hostMatcher->matches($request)) {
+			return false;
+		}
+		
+		return $request->headers->has('X-WSSE');
 	}
 }

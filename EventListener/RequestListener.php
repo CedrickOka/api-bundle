@@ -20,6 +20,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
 use Symfony\Component\Stopwatch\Stopwatch;
+use Oka\ApiBundle\Http\HostRequestMatcher;
 
 /**
  * 
@@ -39,9 +40,9 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 	protected $responseHelper;
 	
 	/**
-	 * @var string $host
+	 * @var HostRequestMatcher $hostMatcher
 	 */
-	protected $host;
+	protected $hostMatcher;
 	
 	/**
 	 * @var string $environment
@@ -55,12 +56,11 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 	
 	const STOP_WATCH_API_EVENT_NAME = 'oka_api.request_duration';
 	
-	public function __construct(RequestHelper $requestHelper, ResponseHelper $responseHelper, $host, $environment)
+	public function __construct(RequestHelper $requestHelper, ResponseHelper $responseHelper, HostRequestMatcher $hostMatcher, $environment)
 	{
 		$this->requestHelper = $requestHelper;
 		$this->responseHelper = $responseHelper;
-		
-		$this->host = $host;
+		$this->hostMatcher = $hostMatcher;
 		$this->environment = $environment;
 		$this->stopWatch = new Stopwatch();
 	}
@@ -72,11 +72,11 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 	{
 		$request = $event->getRequest();
 		
-		if ($event->isMasterRequest() && $request->getHost() === $this->host && $request->query->get('debug', false)) {
+		if ($event->isMasterRequest() && $this->hostMatcher->matches($request) && $request->query->get('debug', false)) {
 			$this->stopWatch->start(self::STOP_WATCH_API_EVENT_NAME);
 		}
 	}
-		
+	
 	/**
 	 * @param FilterResponseEvent $event
 	 */
@@ -89,7 +89,7 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 		// Utils Server
 		$responseHeaders->set('X-Server-Time', date('c'));
 		
-		if ($event->isMasterRequest() && $request->getHost() === $this->host && $request->query->get('debug', false)) {
+		if ($event->isMasterRequest() && $this->hostMatcher->matches($request) && $request->query->get('debug', false)) {
 			if ($this->stopWatch->isStarted(self::STOP_WATCH_API_EVENT_NAME)) {
 				$event = $this->stopWatch->stop(self::STOP_WATCH_API_EVENT_NAME);
 				$responseHeaders->set('X-Request-Duration', $event->getDuration() / 1000);
@@ -114,7 +114,7 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 		
 		$request = $event->getRequest();
 		
-		if ($request->getHost() === $this->host) {
+		if ($this->hostMatcher->matches($request)) {
 			$exception = $event->getException();
 			
 			if ($exception instanceof UnauthorizedHttpException) {
@@ -131,7 +131,7 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 				
 			} elseif ($exception instanceof NotFoundHttpException) {
 				$statusCode = $exception->getStatusCode();
-				$content = ResponseHelper::createError($statusCode, sprintf('La ressource "%s" est introuvable ou n\'existe pas', $request->getRequestUri()));
+				$content = ResponseHelper::createError($statusCode, sprintf('La ressource "%s" est introuvable ou n\'existe pas.', $request->getRequestUri()));
 				
 			} elseif ($exception instanceof MethodNotAllowedHttpException) {
 				$statusCode = $exception->getStatusCode();
@@ -150,7 +150,7 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 				$content = ResponseHelper::createError($statusCode, $exception instanceof HttpException ? $exception->getMessage() : ResponseHelper::SERVER_ERROR);
 			}
 			
-			$this->logger->error(LoggerHelper::formatErrorMessage($exception));
+			$this->logErrException($exception);
 			$event->setResponse($this->responseHelper->getAcceptableResponse($request, $content, $statusCode, [], $request->attributes->get('format', null), true));
 		}
 	}

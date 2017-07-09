@@ -36,13 +36,12 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 	{
 		$request = $event->getRequest();
 		$exception = $event->getException();
-				
+		
 		if ($exception instanceof MethodNotAllowedHttpException && $request->isMethod('OPTIONS') && $request->headers->has('Origin')) {
 			$response = new Response();
 			
 			foreach ($this->parameters as $cors) {
 				if (true === $this->match($request, $cors[CorsOptions::HOST], $cors[CorsOptions::PATTERN])) {
-// 					$this->logger->debug('Request Exception catch per CORSupportListener', $this->parameters);
 					$this->apply($request, $response, $cors);
 					$event->setResponse($response);
 					break;
@@ -54,7 +53,7 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 	public static function getSubscribedEvents()
 	{
 		return [
-				KernelEvents::EXCEPTION =>  ['onKernelException', 255],
+				KernelEvents::EXCEPTION => ['onKernelException', 255],
 		];
 	}
 	
@@ -105,7 +104,7 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 		}
 		
 		// Define CORS expose_headers
-		$exposeHeaders = array_merge(['Cache-Control, Content-Encoding, X-Server-Time, X-Request-Duration, X-Secure-With'], $cors[CorsOptions::EXPOSE_HEADERS]);
+		$exposeHeaders = array_merge(['Cache-Control, Content-Type, Content-Length, Content-Encoding, X-Server-Time, X-Request-Duration, X-Secure-With'], $cors[CorsOptions::EXPOSE_HEADERS]);
 		$response->headers->set('Access-Control-Expose-Headers', implode(',', array_unique($exposeHeaders, SORT_REGULAR)));
 		
 		// Define CORS max_age
@@ -115,5 +114,7 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 		
 		// Overwrite exception status code
 		$response->headers->set('X-Status-Code', 200);
+		
+		return $response;
 	}
 }

@@ -113,8 +113,8 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 		
 		foreach ($annotations as $annotation) {
 			if ($annotation instanceof RequestContent) {
-				$errorsValidation = [];
 				$requestContent = RequestHelper::getContentLikeArray($request);
+				$errors = [];
 				
 				if ($methodName = $annotation->getValidatorStaticMethod()) {
 					$reflectionMethod = new \ReflectionMethod($controller[0], $methodName);
@@ -122,22 +122,25 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 					if (false === $reflectionMethod->isStatic()) {
 						throw new \InvalidArgumentException(sprintf('Invalid option(s) passed to @%s: Validator method "%s" is not static.', RequestContent::getName(), $annotation->getValidatorStaticMethod()));
 					}
+					
 					if ($reflectionMethod->getNumberOfParameters() > 0) {
 						throw new \InvalidArgumentException(sprintf('Invalid option(s) passed to @%s: Validator method "%s" must not have of arguments.', RequestContent::getName(), $annotation->getValidatorStaticMethod()));
 					}
 					
 					$reflectionMethod->setAccessible(true);
-					$errorsValidation = $this->requestHelper->isValid($requestContent, $reflectionMethod->invoke(null));
+					$errors = $this->requestHelper->isValid($requestContent, $reflectionMethod->invoke(null));
 				}
 				
-				if ((!$requestContent && false === $annotation->isCanBeEmpty()) || !empty($errorsValidation)) {
-					$event->setController(function(Request $request) use ($errorsValidation) {
+				if ((!$requestContent && false === $annotation->isCanBeEmpty()) || !empty($errors)) {
+					$event->setController(function(Request $request) use ($errors) {
 						return $this->responseHelper->getAcceptableResponse(
 								$request, 
-								ResponseHelper::createError(400, 'The request body is empty or malformed.', $errorsValidation), 
+								ResponseHelper::createError(400, 'The request body is empty or malformed.', $errors), 
 								400, 
-								null,
-								$request->attributes->get('format', null), true);
+								null, 
+								$request->attributes->get('format', null), 
+								true
+						);
 					});
 				} else {
 					$request->attributes->set('requestContent', $requestContent);
@@ -150,7 +153,10 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 	public static function getSubscribedEvents()
 	{
 		return [
-				KernelEvents::CONTROLLER => [['onAccessControlAnnotation', 3], ['onRequestContentAnnotation', 2]]
+				KernelEvents::CONTROLLER => [
+						['onAccessControlAnnotation', 3], 
+						['onRequestContentAnnotation', 2]
+				]
 		];
 	}
 }

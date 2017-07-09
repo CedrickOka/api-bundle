@@ -87,7 +87,7 @@ class JwtGuardAuthenticator extends AbstractGuardAuthenticator
 	{
 		return $this->responseHelper->getAcceptableResponse(
 				$request, 
-				ResponseHelper::buildErrorMessage(Response::HTTP_FORBIDDEN, $exception->getMessage()), 
+				ResponseHelper::createError(Response::HTTP_FORBIDDEN, $exception->getMessage()), 
 				Response::HTTP_FORBIDDEN, 
 				['X-Secure-With' => 'JWT'], 
 				'json'
@@ -98,7 +98,7 @@ class JwtGuardAuthenticator extends AbstractGuardAuthenticator
 	{
 		return $this->responseHelper->getAcceptableResponse(
 				$request, 
-				ResponseHelper::buildErrorMessage(Response::HTTP_UNAUTHORIZED, 'Authentication Required.'), 
+				ResponseHelper::createError(Response::HTTP_UNAUTHORIZED, 'Authentication Required.'), 
 				Response::HTTP_UNAUTHORIZED, 
 				['X-Secure-With' => 'JWT'], 
 				'json'

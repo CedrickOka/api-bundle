@@ -15,15 +15,20 @@ services:
 #        arguments: [ '@oka_api.object_manager', '%oka_api.user_class%' ]
 
 # Firewalls Request Matcher
-    oka_api.wsse.firewall.request_matcher:
-        class: Oka\ApiBundle\Http\WsseRequestMatcher
+    oka_api.request_matcher.host:
+        class: Oka\ApiBundle\Http\HostRequestMatcher
         arguments: [ '%oka_api.http_host%' ]
         public: false
 
-    oka_api.jwt.firewall.request_matcher:
-        class: Oka\ApiBundle\Http\JwtRequestMatcher
-        arguments: [ '%oka_api.http_host%', '' ]
+    oka_api.wsse.firewall.request_matcher:
+        class: Oka\ApiBundle\Http\WsseRequestMatcher
+        arguments: [ '@oka_api.request_matcher.host' ]
         public: false
+
+#    oka_api.jwt.firewall.request_matcher:
+#        class: Oka\ApiBundle\Http\JwtRequestMatcher
+#        arguments: [ '@oka_api.request_matcher.host', '' ]
+#        public: false
 
 # Authentication Systems
     oka_api.wsse.security.authentication.provider:
@@ -39,15 +44,15 @@ services:
 #        tags:
 #          - { name: monolog.logger, channel: '%oka_api.wsse.log_channel%' }
 
-    oka_api.jwt.authentication.guard.token_authenticator:
-      class: Oka\ApiBundle\Security\Guard\JwtGuardAuthenticator
-      arguments: [ '@oka_api.util.json_web_token.helper', '%oka_api.user_class%', '@oka_api.util.response.helper' ]
+#    oka_api.jwt.authentication.guard.token_authenticator:
+#      class: Oka\ApiBundle\Security\Guard\JwtGuardAuthenticator
+#      arguments: [ '@oka_api.util.json_web_token.helper', '%oka_api.user_class%', '@oka_api.util.response.helper' ]
 
 # Listeners
     oka_api.request.event_listener:
         class:  Oka\ApiBundle\EventListener\RequestListener
         parent: oka_api.util.logger.helper
-        arguments:  [ '@oka_api.util.request.helper', '@oka_api.util.response.helper', '%oka_api.http_host%', '%kernel.environment%' ]
+        arguments:  [ '@oka_api.util.request.helper', '@oka_api.util.response.helper', '@oka_api.request_matcher.host', '%kernel.environment%' ]
         tags:
           - { name: kernel.event_subscriber }
 
@@ -79,13 +84,6 @@ services:
         class:  Oka\ApiBundle\Util\ResponseHelper
         arguments: [ '@jms_serializer' ]
 
-    oka_api.util.json_web_token.helper:
-        class:  Oka\ApiBundle\Util\JSONWebTokenHelper
-        parent: oka_api.util.logger.helper
-        arguments: [ '%oka_api.http_host%', '%secret%' ]
-        tags:
-          - { name: monolog.logger, channel: '%oka_api.jwt.log_channel%' }
-
     oka_api.util.logger.helper:
         class:  Oka\ApiBundle\Util\LoggerHelper
         abstract: true
@@ -93,3 +91,10 @@ services:
           - [ setLogger, ['@logger'] ]
         tags:
           - { name: monolog.logger, channel: '%oka_api.log_channel%' }
+
+#    oka_api.util.json_web_token.helper:
+#        class:  Oka\ApiBundle\Util\JSONWebTokenHelper
+#        parent: oka_api.util.logger.helper
+#        arguments: [ '%oka_api.http_host%', '%secret%' ]
+#        tags:
+#          - { name: monolog.logger, channel: '%oka_api.jwt.log_channel%' }

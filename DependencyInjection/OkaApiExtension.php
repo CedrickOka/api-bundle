@@ -28,7 +28,7 @@ class OkaApiExtension extends Extension
 		$loader->load('services.yml');
 		
 		// Doctrine configuration
-		$container->setParameter('oka_api.user_class', $config['user_class']);
+// 		$container->setParameter('oka_api.user_class', $config['user_class']);
 		$container->setParameter('oka_api.client_class', $config['client_class']);
 		$container->setParameter('oka_api.model_manager_name', $config['model_manager_name']);
 		
@@ -43,7 +43,7 @@ class OkaApiExtension extends Extension
 		$container->setParameter('oka_api.log_channel', $config['log_channel']);
 		
 		// CORS support configuration
-		if (empty($config['cors'])) {
+		if (!empty($config['cors'])) {
 			$this->createCorsSupportConfig($config, $container);
 		}
 		
@@ -53,9 +53,9 @@ class OkaApiExtension extends Extension
 		}
 		
 		// JSON Web Token firewalls configuration
-		if ($config['firewalls']['jwt']['enabled']) {
-			$this->createJWTAuthenticationConfig($config, $container);
-		}
+// 		if ($config['firewalls']['jwt']['enabled']) {
+// 			$this->createJWTAuthenticationConfig($config, $container);
+// 		}
 	}
 	
 	private function createCorsSupportConfig(array $config, ContainerBuilder $container)
@@ -71,7 +71,6 @@ class OkaApiExtension extends Extension
 	{
 		$wsseConfig = $config['firewalls']['wsse'];
 		
-// 		$container->setParameter('oka_api.wsse.log_channel', $wsseConfig['log_channel']);		
 		$wsseListenerDefinition = $container->getDefinition('oka_api.wsse.security.authentication.listener');
 		$wsseListenerDefinition->addTag('monolog.logger', ['channel' => $wsseConfig['log_channel']]);
 	}
@@ -81,8 +80,8 @@ class OkaApiExtension extends Extension
 		$jwtConfig = $config['firewalls']['jwt'];
 		
 		$container->setParameter('oka_api.jwt.authentication.token_ttl', $jwtConfig['token']['ttl']);
-		
 		$container->setParameter('oka_api.jwt.log_channel', $jwtConfig['log_channel']);
+		
 		$requestMatcherDefinition = $container->getDefinition('oka_api.jwt.firewall.request_matcher');
 		$requestMatcherDefinition->replaceArgument(1, $jwtConfig['token']['extractors']);
 		
