@@ -39,27 +39,27 @@ services:
     oka_api.wsse.security.authentication.listener:
         class: Oka\ApiBundle\Security\Firewall\WsseListener
         parent: oka_api.util.logger.helper
-        arguments: [ '@security.token_storage', '@security.authentication.manager', '@oka_api.util.response.helper' ]
+        arguments: [ '@security.token_storage', '@security.authentication.manager' ]
         public: false
 #        tags:
 #          - { name: monolog.logger, channel: '%oka_api.wsse.log_channel%' }
 
 #    oka_api.jwt.authentication.guard.token_authenticator:
 #      class: Oka\ApiBundle\Security\Guard\JwtGuardAuthenticator
-#      arguments: [ '@oka_api.util.json_web_token.helper', '%oka_api.user_class%', '@oka_api.util.response.helper' ]
+#      arguments: [ '@oka_api.util.json_web_token.helper', '%oka_api.user_class%' ]
 
 # Listeners
     oka_api.request.event_listener:
         class:  Oka\ApiBundle\EventListener\RequestListener
         parent: oka_api.util.logger.helper
-        arguments:  [ '@oka_api.util.request.helper', '@oka_api.util.response.helper', '@oka_api.request_matcher.host', '%kernel.environment%' ]
+        arguments:  [ '@oka_api.request_matcher.host', '%kernel.environment%' ]
         tags:
           - { name: kernel.event_subscriber }
 
     oka_api.annotation.event_listener:
         class:  Oka\ApiBundle\EventListener\AnnotationListener
         parent: oka_api.util.logger.helper
-        arguments:  [ '@annotation_reader', '@oka_api.util.request.helper', '@oka_api.util.response.helper' ]
+        arguments:  [ '@annotation_reader', '@validator' ]
         tags:
           - { name: kernel.event_subscriber }
 
@@ -69,16 +69,10 @@ services:
         arguments:  [ [] ]
         public: false
 
-# ParamConverters
-#    oka_api.request_content.param_converter:
-#        class: Oka\ApiBundle\Request\ParamConverter\RequestContentParamConverter
-#        tags:
-#          - { name: request.param_converter, priority: 2, converter: oka_api.request_converter }
-
 # Utils
     oka_api.util.request.helper:
         class:  Oka\ApiBundle\Util\RequestHelper
-        arguments: [ '@validator' ] #, '@translator' ]
+        arguments: [ '@validator' ]
 
     oka_api.util.response.helper:
         class:  Oka\ApiBundle\Util\ResponseHelper

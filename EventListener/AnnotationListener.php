@@ -4,13 +4,14 @@ namespace Oka\ApiBundle\EventListener;
 use Doctrine\Common\Annotations\Reader;
 use Oka\ApiBundle\Annotation\AccessControl;
 use Oka\ApiBundle\Annotation\RequestContent;
+use Oka\ApiBundle\Util\ErrorResponseFactory;
 use Oka\ApiBundle\Util\LoggerHelper;
 use Oka\ApiBundle\Util\RequestHelper;
-use Oka\ApiBundle\Util\ResponseHelper;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * 
@@ -25,20 +26,14 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 	protected $reader;
 	
 	/**
-	 * @var RequestHelper $requestHelper
+	 * @var ValidatorInterface $validator
 	 */
-	protected $requestHelper;
+	protected $validator;
 	
-	/**
-	 * @var ResponseHelper $responseHelper
-	 */
-	protected $responseHelper;
-	
-	public function __construct(Reader $reader, RequestHelper $requestHelper, ResponseHelper $responseHelper)
+	public function __construct(Reader $reader, ValidatorInterface $validator)
 	{
 		$this->reader = $reader;
-		$this->requestHelper = $requestHelper;
-		$this->responseHelper = $responseHelper;
+		$this->validator = $validator;
 	}
 	
 	/**
@@ -58,9 +53,6 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 		
 		foreach ($annotations as $annotation) {
 			if ($annotation instanceof AccessControl) {
-				$responseContent = null;
-				$version = $request->attributes->get('version');
-				$protocol = $request->attributes->get('protocol');
 				$acceptablesContentTypes = $request->getAcceptableContentTypes();
 				
 				// Configure acceptable content type of response
@@ -77,18 +69,23 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 					}
 				}
 				
+				$response = null;
+				$version = $request->attributes->get('version');
+				$protocol = $request->attributes->get('protocol');
+				$format = RequestHelper::getFirstAcceptableFormat($request) ?: 'json';
+				
 				if (!version_compare($version, $annotation->getVersion(), $annotation->getVersionOperator())) {
-					$responseContent = ResponseHelper::createError(406, sprintf('The request does not support the API version number "%s".', $version));
+					$response = ErrorResponseFactory::create(sprintf('The request does not support the API version number "%s".', $version), 406, null, [], 406, [], $format);					
 				} elseif (strtolower($protocol) !== $annotation->getProtocol()) {
-					$responseContent = ResponseHelper::createError(406, sprintf('The request does not support the protocol "%s".', $protocol));	
+					$response = ErrorResponseFactory::create(sprintf('The request does not support the protocol "%s".', $protocol), 406, null, [], 406, [], $format);
 				} elseif (!$request->attributes->has('format')) {
-					$responseContent = ResponseHelper::createError(406, sprintf('Unsupported response format with request accept: "%s".', implode(', ', $request->getAcceptableContentTypes())));
+					$response = ErrorResponseFactory::create(sprintf('Unsupported response format with request accept: "%s".', implode(', ', $request->getAcceptableContentTypes())), 406, null, [], 406, [], $format);
 				}
 				
-				if ($responseContent !== null) {
+				if ($response !== null) {
 					$event->stopPropagation();
-					$event->setController(function(Request $request) use ($responseContent) {
-						return $this->responseHelper->getAcceptableResponse($request, $responseContent, 406, [], null, true);
+					$event->setController(function(Request $request) use ($response) {
+						return $response;
 					});
 				}
 				break;
@@ -114,7 +111,6 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 		foreach ($annotations as $annotation) {
 			if ($annotation instanceof RequestContent) {
 				$requestContent = RequestHelper::getContentLikeArray($request);
-				$errors = [];
 				
 				if ($methodName = $annotation->getValidatorStaticMethod()) {
 					$reflectionMethod = new \ReflectionMethod($controller[0], $methodName);
@@ -128,19 +124,13 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 					}
 					
 					$reflectionMethod->setAccessible(true);
-					$errors = $this->requestHelper->isValid($requestContent, $reflectionMethod->invoke(null));
+					$errors = $this->validator->validate($requestContent, $reflectionMethod->invoke(null));
 				}
 				
-				if ((!$requestContent && false === $annotation->isCanBeEmpty()) || !empty($errors)) {
+				if ((!$requestContent && false === $annotation->isCanBeEmpty()) || (isset($errors) && $errors->count() > 0)) {
 					$event->setController(function(Request $request) use ($errors) {
-						return $this->responseHelper->getAcceptableResponse(
-								$request, 
-								ResponseHelper::createError(400, 'The request body is empty or malformed.', $errors), 
-								400, 
-								null, 
-								$request->attributes->get('format', null), 
-								true
-						);
+						$format = $request->attributes->has('format') ? $request->attributes->get('format') : RequestHelper::getFirstAcceptableFormat($request) ?: 'json';
+						return ErrorResponseFactory::createFromConstraintViolationList($errors, 'The request body is not valid or malformed.', 400, null, [], 400, [], $format);
 					});
 				} else {
 					$request->attributes->set('requestContent', $requestContent);

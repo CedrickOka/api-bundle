@@ -85,14 +85,4 @@ abstract class LoggerHelper
 				$exception->getLine()
 		);
 	}
-	
-	/**
-	 * @param \Exception $exception
-	 * @return string
-	 * @deprecated
-	 */
-	public static function formatErrorMessage(\Exception $exception)
-	{
-		return self::convertExceptionToMessage($exception);
-	}
 }

@@ -1,6 +1,8 @@
 <?php
 namespace Oka\ApiBundle\EventListener;
 
+use Oka\ApiBundle\Http\HostRequestMatcher;
+use Oka\ApiBundle\Util\ErrorResponseFactory;
 use Oka\ApiBundle\Util\LoggerHelper;
 use Oka\ApiBundle\Util\RequestHelper;
 use Oka\ApiBundle\Util\ResponseHelper;
@@ -20,7 +22,6 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
 use Symfony\Component\Stopwatch\Stopwatch;
-use Oka\ApiBundle\Http\HostRequestMatcher;
 
 /**
  * 
@@ -29,15 +30,7 @@ use Oka\ApiBundle\Http\HostRequestMatcher;
  */
 class RequestListener extends LoggerHelper implements EventSubscriberInterface
 {
-	/**
-	 * @var RequestHelper $requestHelper
-	 */
-	protected $requestHelper;
-	
-	/**
-	 * @var ResponseHelper $responseHelper
-	 */
-	protected $responseHelper;
+	const STOP_WATCH_API_EVENT_NAME = 'oka_api.request_duration';
 	
 	/**
 	 * @var HostRequestMatcher $hostMatcher
@@ -54,12 +47,8 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 	 */
 	protected $stopWatch;
 	
-	const STOP_WATCH_API_EVENT_NAME = 'oka_api.request_duration';
-	
-	public function __construct(RequestHelper $requestHelper, ResponseHelper $responseHelper, HostRequestMatcher $hostMatcher, $environment)
+	public function __construct(HostRequestMatcher $hostMatcher, $environment)
 	{
-		$this->requestHelper = $requestHelper;
-		$this->responseHelper = $responseHelper;
 		$this->hostMatcher = $hostMatcher;
 		$this->environment = $environment;
 		$this->stopWatch = new Stopwatch();
@@ -116,42 +105,32 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 		
 		if ($this->hostMatcher->matches($request)) {
 			$exception = $event->getException();
+			$format = $request->attributes->has('format') ? $request->attributes->get('format') : RequestHelper::getFirstAcceptableFormat($request) ?: 'json';
 			
 			if ($exception instanceof UnauthorizedHttpException) {
-				$statusCode = $exception->getStatusCode();
-				$content = ResponseHelper::createError($statusCode, $exception->getMessage());
-				
+				$response = ErrorResponseFactory::createFromException($exception, null, [], $exception->getStatusCode(), [], $format);
 			} elseif ($exception instanceof InsufficientAuthenticationException) {
-				$statusCode = 403;
-				$content = ResponseHelper::createError($statusCode, $exception->getMessage());
-				
-			} elseif($exception instanceof BadRequestHttpException) { 
-				$statusCode = $exception->getStatusCode();
-				$content = ResponseHelper::createError($statusCode, $exception->getMessage());
-				
+				$response = ErrorResponseFactory::createFromException($exception, null, [], 403, [], $format);
+			} elseif($exception instanceof BadRequestHttpException) {
+				$response = ErrorResponseFactory::createFromException($exception, null, [], $exception->getStatusCode(), [], $format);
 			} elseif ($exception instanceof NotFoundHttpException) {
-				$statusCode = $exception->getStatusCode();
-				$content = ResponseHelper::createError($statusCode, sprintf('La ressource "%s" est introuvable ou n\'existe pas.', $request->getRequestUri()));
-				
+				$response = ErrorResponseFactory::create(sprintf('La ressource "%s" est introuvable ou n\'existe pas.', $request->getRequestUri()), 404, null, [], 404, [], $format);
 			} elseif ($exception instanceof MethodNotAllowedHttpException) {
-				$statusCode = $exception->getStatusCode();
-				$content = ResponseHelper::createError($statusCode, $exception->getMessage());
-				
+				$response = ErrorResponseFactory::createFromException($exception, null, [], $exception->getStatusCode(), [], $format);
 			} elseif ($exception instanceof NotAcceptableHttpException) {
-				$statusCode = $exception->getStatusCode();
-				$content = ResponseHelper::createError($statusCode, $exception->getMessage());
-				
+				$response = ErrorResponseFactory::createFromException($exception, null, [], $exception->getStatusCode(), [], $format);
 			} elseif($exception instanceof AuthenticationException) {
-				$statusCode = 403;
-				$content = ResponseHelper::createError($statusCode, $exception->getMessage());
-				
+				$response = ErrorResponseFactory::create($exception->getMessage(), 403, null, [], 403, [], $format);
 			} else {
-				$statusCode = 500;
-				$content = ResponseHelper::createError($statusCode, $exception instanceof HttpException ? $exception->getMessage() : ResponseHelper::SERVER_ERROR);
+				if ($exception instanceof HttpException) {
+					$response = ErrorResponseFactory::createFromException($exception, null, [], $exception->getStatusCode(), [], $format);
+				} else {
+					$response = ErrorResponseFactory::create(ResponseHelper::SERVER_ERROR, 500, null, [], 500, [], $format);
+				}
 			}
 			
+			$event->setResponse($response);
 			$this->logErrException($exception);
-			$event->setResponse($this->responseHelper->getAcceptableResponse($request, $content, $statusCode, [], $request->attributes->get('format', null), true));
 		}
 	}
 	
