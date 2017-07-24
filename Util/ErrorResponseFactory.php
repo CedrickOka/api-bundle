@@ -1,6 +1,7 @@
 <?php
 namespace Oka\ApiBundle\Util;
 
+use Symfony\Component\Form\FormErrorIterator;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**
@@ -34,6 +35,35 @@ class ErrorResponseFactory
 	}
 	
 	/**
+	 * Create new instance from FormErrorIterator class
+	 * 
+	 * @param FormErrorIterator $errors
+	 * @param string $message
+	 * @param int $code
+	 * @param string $property
+	 * @param array $extras
+	 * @param int $httpStatusCode
+	 * @param array $httpHeaders
+	 * @param string $format
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+	public static function createFromFormErrorIterator(FormErrorIterator $errors, $message = null, $code = 400, $property = null, array $extras = [], $httpStatusCode = 400, $httpHeaders = [], $format = 'json')
+	{
+		$builder = ErrorResponseBuilder::Builder();
+		$builder->setError($message ?: 'Request not valid!', $code, $property, $extras)
+				->setHttpSatusCode($httpStatusCode)
+				->setHttpHeaders($httpHeaders)
+				->setFormat($format);
+		
+		/** @var \Symfony\Component\Form\FormError $error */
+		foreach ($errors as $error) {
+			$builder->addChildError($error->getMessage(), 0, $error->getOrigin()->getPropertyPath()->__toString(), $error->getCause() ? ['cause' => $error->getCause()] : []);
+		}
+		
+		return $builder->build();
+	}
+	
+	/**
 	 * Create new instance from ConstraintViolationList class
 	 * 
 	 * @param ConstraintViolationListInterface $errors
@@ -54,7 +84,7 @@ class ErrorResponseFactory
 				->setHttpHeaders($httpHeaders)
 				->setFormat($format);
 		
-		/** @var ConstraintViolationInterface $error */
+		/** @var \Symfony\Component\Validator\ConstraintViolationInterface $error */
 		foreach ($errors as $error) {
 			$builder->addChildError($error->getMessage(), $error->getCode(), $error->getPropertyPath(), ['invalidValue' => $error->getInvalidValue()]);
 		}
