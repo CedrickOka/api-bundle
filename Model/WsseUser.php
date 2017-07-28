@@ -7,6 +7,7 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 /**
  * 
  * @author cedrick
+ * 
  * @ORM\MappedSuperclass
  */
 class WsseUser implements AdvancedUserInterface

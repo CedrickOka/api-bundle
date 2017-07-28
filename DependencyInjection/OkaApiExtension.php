@@ -1,5 +1,4 @@
 <?php
-
 namespace Oka\ApiBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
@@ -36,6 +35,9 @@ class OkaApiExtension extends Extension
 		$definition = $container->getDefinition('oka_api.object_manager');
 		$definition->replaceArgument(0, $config['model_manager_name']);
 		$definition->setFactory([new Reference('oka_api.doctrine_registry'), 'getManager']);
+		
+		// Service Configuration
+		$container->setParameter('oka_api.response.error_builder_class', $config['response']['error_builder_class']);
 		
 		// Default HTTP Host configuration
 		$container->setParameter('oka_api.http_host', $config['host']);

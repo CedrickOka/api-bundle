@@ -1,6 +1,22 @@
 Changelog
 =========
 
+#### 1.2.0 (2017-07-28)
+
+* [BC] Renamed `RequestHelper` class in `RequestUtil` class.
+* [BC] Removed `RequestHelper` service.
+* [BC] Removed `ResponseHelper` service.
+* [BC] Removed `RequestParser` class.
+* Added new `response.error_builder_class` configuration values.
+* Added `ErrorResponseBuilderInterface` class.
+* Refactored ErrorResponseFactory like symfony service.
+* Added `StringUtil` class.
+* Added `RequestUtil` class.
+
+#### 1.1.1 (2017-07-24)
+
+* Added `ErrorResponseFactory::createFromFormErrorIterator()` methods.
+
 #### 1.1.0 (2017-07-21)
 
 * Added `ErrorResponseBuilder` class which creates an instance of the Response object.

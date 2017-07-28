@@ -2,59 +2,24 @@
 namespace Oka\ApiBundle\Util;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\ConstraintViolationInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * 
  * @author cedrick
  * 
  */
-class RequestHelper
+final class RequestUtil
 {
 	/**
-	 * @var ValidatorInterface $validator
-	 */
-	protected $validator;
-	
-	public function __construct(ValidatorInterface $validator)
-	{
-		$this->validator = $validator;
-	}
-	
-	/**
-	 * Chekc if request content is valid
-	 * 
-	 * @param mixed $value
-	 * @param Constraint $constraints
-	 * @param array $groups
-	 * @return string[]
-	 * 
-	 * @deprecated
-	 */
-	public function isValid($value, Constraint $constraints, array $groups = null)
-	{
-		$errors = [];
-		
-		/** @var ConstraintViolationInterface $error */
-		foreach ($this->validator->validate($value, $constraints, $groups) as $error) {
-			$errors[preg_replace('#\[(.+)\]#', '$1', $error->getPropertyPath())] = $error->getMessage();
-		}
-		
-		return $errors;
-	}
-	
-	/**
 	 * Parse request query
-	 *
+	 * 
 	 * @param Request $request
 	 * @param string $key
 	 * @param string $delimiter
 	 * @param mixed $defaultValue
 	 * @return mixed
 	 */
-	public function parseQueryStringToArray(Request $request, $key, $delimiter = null, $defaultValue = null)
+	public static function parseQueryStringToArray(Request $request, $key, $delimiter = null, $defaultValue = null)
 	{
 		$value = $request->query->get($key, $defaultValue);
 		

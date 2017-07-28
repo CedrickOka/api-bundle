@@ -1,5 +1,5 @@
 <?php
-namespace Oka\ApiBundle\Util;
+namespace Oka\ApiBundle\Service;
 
 use Psr\Log\LoggerInterface;
 

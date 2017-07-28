@@ -2,9 +2,9 @@
 namespace Oka\ApiBundle\Security\Guard;
 
 use Aynid\UserBundle\Security\UserProvider;
-use Oka\ApiBundle\Util\ErrorResponseFactory;
+use Oka\ApiBundle\Service\ErrorResponseFactory;
 use Oka\ApiBundle\Util\JSONWebTokenHelper;
-use Oka\ApiBundle\Util\RequestHelper;
+use Oka\ApiBundle\Util\RequestUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -27,13 +27,19 @@ class JwtGuardAuthenticator extends AbstractGuardAuthenticator
 	private $jwtHelper;
 	
 	/**
+	 * @var ErrorResponseFactory $errorFactory
+	 */
+	protected $errorFactory;
+	
+	/**
 	 * @var string $userClass
 	 */
 	private $userClass;
 	
-	public function __construct(JSONWebTokenHelper $jwtHelper, $userClass)
+	public function __construct(JSONWebTokenHelper $jwtHelper, ErrorResponseFactory $errorFactory, $userClass)
 	{
 		$this->jwtHelper = $jwtHelper;
+		$this->errorFactory = $errorFactory;
 		$this->userClass = $userClass;
 	}
 	
@@ -80,12 +86,12 @@ class JwtGuardAuthenticator extends AbstractGuardAuthenticator
 	
 	public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
 	{
-		return ErrorResponseFactory::create($exception->getMessage(), Response::HTTP_FORBIDDEN, null, [], Response::HTTP_FORBIDDEN, ['X-Secure-With' => 'JWT'], RequestHelper::getFirstAcceptableFormat($request) ?: 'json');
+		return $this->errorFactory->create($exception->getMessage(), Response::HTTP_FORBIDDEN, null, [], Response::HTTP_FORBIDDEN, ['X-Secure-With' => 'JWT'], RequestUtil::getFirstAcceptableFormat($request) ?: 'json');
 	}
 	
 	public function start(Request $request, AuthenticationException $authException = null)
 	{
-		return ErrorResponseFactory::create('Authentication Required.', Response::HTTP_UNAUTHORIZED, null, [], Response::HTTP_UNAUTHORIZED, ['X-Secure-With' => 'JWT'], RequestHelper::getFirstAcceptableFormat($request) ?: 'json');
+		return $this->errorFactory->create('Authentication Required.', Response::HTTP_UNAUTHORIZED, null, [], Response::HTTP_UNAUTHORIZED, ['X-Secure-With' => 'JWT'], RequestUtil::getFirstAcceptableFormat($request) ?: 'json');
 	}
 	
 	public function supportsRememberMe()

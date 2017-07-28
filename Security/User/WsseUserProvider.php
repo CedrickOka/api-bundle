@@ -9,9 +9,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 /**
- *
+ * 
  * @author cedrick
- *        
+ * 
  */
 class WsseUserProvider implements UserProviderInterface
 {

@@ -2,9 +2,9 @@
 namespace Oka\ApiBundle\Security\Firewall;
 
 use Oka\ApiBundle\Security\Authentication\Token\WsseUserToken;
-use Oka\ApiBundle\Util\ErrorResponseFactory;
-use Oka\ApiBundle\Util\LoggerHelper;
-use Oka\ApiBundle\Util\RequestHelper;
+use Oka\ApiBundle\Service\ErrorResponseFactory;
+use Oka\ApiBundle\Service\LoggerHelper;
+use Oka\ApiBundle\Util\RequestUtil;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
@@ -28,10 +28,16 @@ class WsseListener extends LoggerHelper implements ListenerInterface
 	 */
 	protected $authenticationManager;
 	
-	public function __construct(TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager)
+	/**
+	 * @var ErrorResponseFactory $errorFactory
+	 */
+	protected $errorFactory;
+	
+	public function __construct(TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, ErrorResponseFactory $errorFactory)
 	{
 		$this->tokenStorage = $tokenStorage;
 		$this->authenticationManager = $authenticationManager;
+		$this->errorFactory = $errorFactory;
 	}
 	
 	public function handle(GetResponseEvent $event)
@@ -66,7 +72,7 @@ class WsseListener extends LoggerHelper implements ListenerInterface
 		}
 		
 		// Deny authentication with a '403 Forbidden' HTTP response
-		$format = RequestHelper::getFirstAcceptableFormat($request) ?: 'json';
-		$event->setResponse(ErrorResponseFactory::create($failedMessage, Response::HTTP_FORBIDDEN, null, [], Response::HTTP_FORBIDDEN, ['X-Secure-With' => 'WSSE'], $format));
+		$format = RequestUtil::getFirstAcceptableFormat($request) ?: 'json';
+		$event->setResponse($this->errorFactory->create($failedMessage, Response::HTTP_FORBIDDEN, null, [], Response::HTTP_FORBIDDEN, ['X-Secure-With' => 'WSSE'], $format));
 	}
 }

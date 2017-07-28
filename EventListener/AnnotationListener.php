@@ -4,9 +4,9 @@ namespace Oka\ApiBundle\EventListener;
 use Doctrine\Common\Annotations\Reader;
 use Oka\ApiBundle\Annotation\AccessControl;
 use Oka\ApiBundle\Annotation\RequestContent;
-use Oka\ApiBundle\Util\ErrorResponseFactory;
-use Oka\ApiBundle\Util\LoggerHelper;
-use Oka\ApiBundle\Util\RequestHelper;
+use Oka\ApiBundle\Service\ErrorResponseFactory;
+use Oka\ApiBundle\Service\LoggerHelper;
+use Oka\ApiBundle\Util\RequestUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
@@ -30,10 +30,16 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 	 */
 	protected $validator;
 	
-	public function __construct(Reader $reader, ValidatorInterface $validator)
+	/**
+	 * @var ErrorResponseFactory $errorFactory
+	 */
+	protected $errorFactory;
+	
+	public function __construct(Reader $reader, ValidatorInterface $validator, ErrorResponseFactory $errorFactory)
 	{
 		$this->reader = $reader;
 		$this->validator = $validator;
+		$this->errorFactory = $errorFactory;
 	}
 	
 	/**
@@ -72,14 +78,14 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 				$response = null;
 				$version = $request->attributes->get('version');
 				$protocol = $request->attributes->get('protocol');
-				$format = RequestHelper::getFirstAcceptableFormat($request) ?: 'json';
+				$format = RequestUtil::getFirstAcceptableFormat($request) ?: 'json';
 				
 				if (!version_compare($version, $annotation->getVersion(), $annotation->getVersionOperator())) {
-					$response = ErrorResponseFactory::create(sprintf('The request does not support the API version number "%s".', $version), 406, null, [], 406, [], $format);					
+					$response = $this->errorFactory->create(sprintf('The request does not support the API version number "%s".', $version), 406, null, [], 406, [], $format);					
 				} elseif (strtolower($protocol) !== $annotation->getProtocol()) {
-					$response = ErrorResponseFactory::create(sprintf('The request does not support the protocol "%s".', $protocol), 406, null, [], 406, [], $format);
+					$response = $this->errorFactory->create(sprintf('The request does not support the protocol "%s".', $protocol), 406, null, [], 406, [], $format);
 				} elseif (!$request->attributes->has('format')) {
-					$response = ErrorResponseFactory::create(sprintf('Unsupported response format with request accept: "%s".', implode(', ', $request->getAcceptableContentTypes())), 406, null, [], 406, [], $format);
+					$response = $this->errorFactory->create(sprintf('Unsupported response format with request accept: "%s".', implode(', ', $request->getAcceptableContentTypes())), 406, null, [], 406, [], $format);
 				}
 				
 				if ($response !== null) {
@@ -110,7 +116,7 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 		
 		foreach ($annotations as $annotation) {
 			if ($annotation instanceof RequestContent) {
-				$requestContent = RequestHelper::getContentLikeArray($request);
+				$requestContent = RequestUtil::getContentLikeArray($request);
 				
 				if ($methodName = $annotation->getValidatorStaticMethod()) {
 					$reflectionMethod = new \ReflectionMethod($controller[0], $methodName);
@@ -129,8 +135,8 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 				
 				if ((!$requestContent && false === $annotation->isCanBeEmpty()) || (isset($errors) && $errors->count() > 0)) {
 					$event->setController(function(Request $request) use ($errors) {
-						$format = $request->attributes->has('format') ? $request->attributes->get('format') : RequestHelper::getFirstAcceptableFormat($request) ?: 'json';
-						return ErrorResponseFactory::createFromConstraintViolationList($errors, 'The request body is not valid or malformed.', 400, null, [], 400, [], $format);
+						$format = $request->attributes->has('format') ? $request->attributes->get('format') : RequestUtil::getFirstAcceptableFormat($request) ?: 'json';
+						return $this->errorFactory->createFromConstraintViolationList($errors, 'The request body is not valid or malformed.', 400, null, [], 400, [], $format);
 					});
 				} else {
 					$request->attributes->set('requestContent', $requestContent);

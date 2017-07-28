@@ -2,7 +2,7 @@
 namespace Oka\ApiBundle\EventListener;
 
 use Oka\ApiBundle\CorsOptions;
-use Oka\ApiBundle\Util\LoggerHelper;
+use Oka\ApiBundle\Service\LoggerHelper;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

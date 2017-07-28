@@ -13,10 +13,8 @@ use Symfony\Component\Serializer\Serializer;
  * @author cedrick
  * 
  */
-class ErrorResponseBuilder
+class ErrorResponseBuilder implements ErrorResponseBuilderInterface
 {
-	const DEFAULT_FORMATS = ['html', 'json', 'xml'];
-	
 	/**
 	 * @var array $error
 	 */
