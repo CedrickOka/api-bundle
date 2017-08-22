@@ -6,7 +6,7 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 
 /**
  * 
- * @author cedrick
+ * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  * 
  * @ORM\MappedSuperclass
  */
@@ -118,6 +118,10 @@ class WsseUser implements AdvancedUserInterface
 		return $this;
 	}
 	
+	public function isEnabled() {
+		return $this->enabled;
+	}
+	
 	public function setEnabled($enabled) {
 		$this->enabled = $enabled;
 		return $this;
@@ -140,9 +144,5 @@ class WsseUser implements AdvancedUserInterface
 	
 	public function isCredentialsNonExpired() {
 		return true;
-	}
-	
-	public function isEnabled() {
-		return $this->enabled;
 	}
 }

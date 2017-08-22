@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * 
- * @author cedrick
+ * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  * 
  */
 class AnnotationListener extends LoggerHelper implements EventSubscriberInterface
@@ -129,25 +129,32 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 		
 		foreach ($annotations as $annotation) {
 			if ($annotation instanceof RequestContent) {
-				// Retrieve query paramters in uri or request content
+				$validationHasFailed = false;
+				// Retrieve query paramters in URI or request content
 				$requestContent = $request->isMethod('GET') ? $request->query->all() : RequestUtil::getContentLikeArray($request);
 				
-				if ($methodName = $annotation->getValidatorStaticMethod()) {
-					$reflectionMethod = new \ReflectionMethod($controller[0], $methodName);
-					
-					if (false === $reflectionMethod->isStatic()) {
-						throw new \InvalidArgumentException(sprintf('Invalid option(s) passed to @%s: Validator method "%s" is not static.', RequestContent::getName(), $annotation->getValidatorStaticMethod()));
+				if (true === $annotation->isEnableValidation()) {
+					if (!empty($requestContent)) {
+						$constraints = $annotation->getConstraints();
+						$reflectionMethod = new \ReflectionMethod($controller[0], $constraints);
+						
+						if (false === $reflectionMethod->isStatic()) {
+							throw new \InvalidArgumentException(sprintf('Invalid option(s) passed to @%s: Constraints method "%s" is not static.', RequestContent::getName(), $constraints));
+						}
+						
+						if ($reflectionMethod->getNumberOfParameters() > 0) {
+							throw new \InvalidArgumentException(sprintf('Invalid option(s) passed to @%s: Constraints method "%s" must not have of arguments.', RequestContent::getName(), $constraints));
+						}
+						
+						$reflectionMethod->setAccessible(true);
+						$errors = $this->validator->validate($requestContent, $reflectionMethod->invoke(null));
+						$validationHasFailed = $errors->count() > 0;
+					} else {
+						$validationHasFailed = !$annotation->isCanBeEmpty();
 					}
-					
-					if ($reflectionMethod->getNumberOfParameters() > 0) {
-						throw new \InvalidArgumentException(sprintf('Invalid option(s) passed to @%s: Validator method "%s" must not have of arguments.', RequestContent::getName(), $annotation->getValidatorStaticMethod()));
-					}
-					
-					$reflectionMethod->setAccessible(true);
-					$errors = $this->validator->validate($requestContent, $reflectionMethod->invoke(null));
 				}
 				
-				if ((!$requestContent && false === $annotation->isCanBeEmpty()) || (isset($errors) && $errors->count() > 0)) {
+				if ($validationHasFailed === true) {
 					$event->setController(function(Request $request) use ($errors) {
 						$format = $request->attributes->has('format') ? $request->attributes->get('format') : RequestUtil::getFirstAcceptableFormat($request) ?: 'json';
 						return $this->errorFactory->createFromConstraintViolationList($errors, $this->translator->trans('response.bad_request', [], 'OkaApiBundle'), 400, null, [], 400, [], $format);
@@ -155,7 +162,7 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 				} else {
 					$request->attributes->set('requestContent', $requestContent);
 				}
-				break;
+				return;
 			}
 		}
 	}

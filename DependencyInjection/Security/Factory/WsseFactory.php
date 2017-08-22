@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * 
- * @author cedrick
+ * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  * 
  */
 class WsseFactory implements SecurityFactoryInterface

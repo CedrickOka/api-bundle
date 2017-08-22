@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\RequestMatcherInterface;
 
 /**
  * 
- * @author cedrick
+ * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  * 
  */
 class WsseRequestMatcher implements RequestMatcherInterface

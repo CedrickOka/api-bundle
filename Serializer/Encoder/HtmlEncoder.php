@@ -6,7 +6,7 @@ use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 
 /**
  * 
- * @author cedrick
+ * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  * 
  */
 class HtmlEncoder implements EncoderInterface

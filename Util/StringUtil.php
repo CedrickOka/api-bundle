@@ -3,7 +3,7 @@ namespace Oka\ApiBundle\Util;
 
 /**
  * 
- * @author cedrick
+ * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  * 
  */
 final class StringUtil

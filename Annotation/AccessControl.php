@@ -6,10 +6,11 @@ use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
+ * 
+ * @author Cedrick Oka Baidai <okacedrick@gmail.com>
+ * 
  * @Annotation
  * @Target("METHOD")
- * 
- * @author Cedrick O. Baidai <cedrickoka@fermentuse.com>
  */
 final class AccessControl
 {

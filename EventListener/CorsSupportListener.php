@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * 
- * @author cedrick
+ * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  * 
  */
 class CorsSupportListener extends LoggerHelper implements EventSubscriberInterface

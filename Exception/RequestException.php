@@ -3,7 +3,7 @@ namespace Oka\ApiBundle\Exception;
 
 /**
  * 
- * @author cedrick
+ * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  * 
  */
 class RequestException extends \Exception

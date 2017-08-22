@@ -1,6 +1,12 @@
 Changelog
 =========
 
+#### 1.2.2 (2017-08-22)
+
+* Improve `@RequestContent` annotation handling.
+* Improve PHPDocs.
+* [BC] Removed `Oka\ApiBundle\Util\ErrorResponseFactory` class, use instead `oka_api.error_response.factory` service.
+
 #### 1.2.1 (2017-08-22)
 
 * Added translations file for french and english.

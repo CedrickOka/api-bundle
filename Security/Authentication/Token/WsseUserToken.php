@@ -5,7 +5,7 @@ use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 
 /**
  * 
- * @author cedrick
+ * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  * 
  */
 class WsseUserToken extends AbstractToken

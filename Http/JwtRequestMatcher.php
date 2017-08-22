@@ -6,8 +6,9 @@ use Symfony\Component\HttpFoundation\RequestMatcherInterface;
 
 /**
  * 
- * @author cedrick
+ * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  * 
+ * @deprecated 1.2.0 Not using
  */
 class JwtRequestMatcher implements RequestMatcherInterface
 {

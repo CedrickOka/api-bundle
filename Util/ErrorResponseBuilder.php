@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\Serializer;
 
 /**
  * 
- * @author cedrick
+ * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  * 
  */
 class ErrorResponseBuilder implements ErrorResponseBuilderInterface

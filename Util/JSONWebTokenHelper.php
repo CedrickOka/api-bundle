@@ -1,11 +1,14 @@
 <?php
 namespace Oka\ApiBundle\Util;
 
+use Oka\ApiBundle\Service\LoggerHelper;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * 
- * @author cedrick
+ * @author Cedrick Oka Baidai <okacedrick@gmail.com>
+ * 
+ * @deprecated 1.2.0 Not using
  * 
  */
 class JSONWebTokenHelper extends LoggerHelper

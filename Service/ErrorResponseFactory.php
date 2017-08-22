@@ -8,7 +8,7 @@ use Oka\ApiBundle\Util\ErrorResponseBuilderInterface;
 
 /**
  * 
- * @author cedrick
+ * @author Cedrick Oka <okacedrick@gmail.com>
  *
  */
 class ErrorResponseFactory

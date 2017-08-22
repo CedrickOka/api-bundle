@@ -6,18 +6,19 @@ use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
+ * 
+ * @author Cedrick Oka Baidai <okacedrick@gmail.com>
+ * 
  * @Annotation
  * @Target("METHOD")
- * 
- * @author Cedrick O. Baidai <cedrickoka@fermentuse.com>
  */
 final class RequestContent
 {
 	/**
-	 * @Attribute(name="validator_static_method", required=true, type="string")
-	 * @var string $validatorStaticMethod
+	 * @Attribute(name="constraints", required=false, type="string")
+	 * @var string $constraints
 	 */
-	protected $validatorStaticMethod;
+	protected $constraints;
 	
 	/**
 	 * @Attribute(name="can_be_empty", required=false, type="boolean")
@@ -25,28 +26,71 @@ final class RequestContent
 	 */
 	protected $canBeEmpty;
 	
+	/**
+	 * @Attribute(name="enable_validation", required=false, type="boolean")
+	 * @var boolean $enableValidation
+	 */
+	protected $enableValidation;
+	
+	/**
+	 * @Attribute(name="validator_static_method", required=false, type="string")
+	 * @var string $validatorStaticMethod
+	 * @deprecated Use instead "constraints" property
+	 */
+	protected $validatorStaticMethod;
+	
+	/**
+	 * @param array $data
+	 * @throws \InvalidArgumentException
+	 */
 	public function __construct(array $data)
 	{
-		if (!isset($data['validator_static_method'])) {
-			throw new \InvalidArgumentException('You must define a "validator_static_method" attribute for each @RequestContent annotation.');
-		}
-		
-		$this->validatorStaticMethod = trim($data['validator_static_method']);
 		$this->canBeEmpty = isset($data['can_be_empty']) ? (boolean) $data['can_be_empty'] : false;
+		$this->enableValidation = isset($data['enable_validation']) ? (boolean) $data['enable_validation'] : true;
+		$this->constraints = isset($data['constraints']) ? $data['constraints'] : (isset($data['validator_static_method']) ? $data['validator_static_method'] : null);		
+		
+		if ($this->constraints === null && $this->enableValidation === true) {
+			throw new \InvalidArgumentException('You must define a "constraints" attribute for each @RequestContent annotation while request validation is enabled.');
+		}
 	}
 	
-	public function getValidatorStaticMethod()
+	/**
+	 * @return string
+	 */
+	public function getConstraints()
 	{
-		return $this->validatorStaticMethod;
+		return $this->constraints;
 	}
 	
+	/**
+	 * @return boolean
+	 */
 	public function isCanBeEmpty()
 	{
 		return $this->canBeEmpty;
 	}
 	
+	/**
+	 * @return boolean
+	 */
+	public function isEnableValidation()
+	{
+		return $this->enableValidation;
+	}
+	
+	/**	 * @return string
+	 */
 	public static function getName()
 	{
 		return self::class;
+	}
+	
+	/**
+	 * @deprecated Use instead RequestContent::getConstraints()
+	 * @return string
+	 */
+	public function getValidatorStaticMethod()
+	{
+		return $this->validatorStaticMethod;
 	}
 }

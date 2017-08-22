@@ -25,7 +25,7 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * 
- * @author cedrick
+ * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  * 
  */
 class RequestListener extends LoggerHelper implements EventSubscriberInterface
