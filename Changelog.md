@@ -1,6 +1,11 @@
 Changelog
 =========
 
+#### 1.2.1 (2017-08-22)
+
+* Added translations file for french and english.
+* Allows to retrieve the parameters of the request in the uri to serve as requestContent.
+
 #### 1.2.0 (2017-07-28)
 
 * [BC] Renamed `RequestHelper` class in `RequestUtil` class.

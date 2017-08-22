@@ -21,6 +21,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
 use Symfony\Component\Stopwatch\Stopwatch;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * 
@@ -30,15 +31,16 @@ use Symfony\Component\Stopwatch\Stopwatch;
 class RequestListener extends LoggerHelper implements EventSubscriberInterface
 {
 	const STOP_WATCH_API_EVENT_NAME = 'oka_api.request_duration';
-	const BAD_REQUEST = 'Le format de la requête n\'est pas valide.';
-	const SERVER_ERROR = 'Une erreur est survenue pendant le traitement de la requête.';
-	const UNEXPECTED_ERROR = 'Une erreur inattendu est survenue le traitement de la requête.';
-	const INVALID_CREDENTIALS = 'Le nom d\'utilisateur ou le mot de passe est incorrect.';
 	
 	/**
 	 * @var HostRequestMatcher $hostMatcher
 	 */
 	protected $hostMatcher;
+	
+	/**
+	 * @var TranslatorInterface $translator
+	 */
+	protected $translator;
 	
 	/**
 	 * @var ErrorResponseFactory $errorFactory
@@ -55,9 +57,10 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 	 */
 	protected $stopWatch;
 	
-	public function __construct(HostRequestMatcher $hostMatcher, ErrorResponseFactory $errorFactory, $environment)
+	public function __construct(HostRequestMatcher $hostMatcher, TranslatorInterface $translator, ErrorResponseFactory $errorFactory, $environment)
 	{
 		$this->hostMatcher = $hostMatcher;
+		$this->translator = $translator;
 		$this->errorFactory = $errorFactory;
 		$this->environment = $environment;
 		$this->stopWatch = new Stopwatch();
@@ -123,7 +126,7 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 			} elseif($exception instanceof BadRequestHttpException) {
 				$response = $this->errorFactory->createFromException($exception, null, [], $exception->getStatusCode(), [], $format);
 			} elseif ($exception instanceof NotFoundHttpException) {
-				$response = $this->errorFactory->create(sprintf('La ressource "%s" est introuvable ou n\'existe pas.', $request->getRequestUri()), 404, null, [], 404, [], $format);
+				$response = $this->errorFactory->create($this->translator->trans('response.not_found', ['%ressource%' => $request->getRequestUri()], 'OkaApiBundle'), 404, null, [], 404, [], $format);
 			} elseif ($exception instanceof MethodNotAllowedHttpException) {
 				$response = $this->errorFactory->createFromException($exception, null, [], $exception->getStatusCode(), [], $format);
 			} elseif ($exception instanceof NotAcceptableHttpException) {
@@ -134,7 +137,7 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 				if ($exception instanceof HttpException) {
 					$response = $this->errorFactory->createFromException($exception, null, [], $exception->getStatusCode(), [], $format);
 				} else {
-					$response = $this->errorFactory->create(self::SERVER_ERROR, 500, null, [], 500, [], $format);
+					$response = $this->errorFactory->create($this->translator->trans('response.server_error', [], 'OkaApiBundle'), 500, null, [], 500, [], $format);
 				}
 			}
 			

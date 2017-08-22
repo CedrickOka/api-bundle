@@ -11,6 +11,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -31,14 +32,26 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 	protected $validator;
 	
 	/**
+	 * @var TranslatorInterface $translator
+	 */
+	protected $translator;
+	
+	/**
 	 * @var ErrorResponseFactory $errorFactory
 	 */
 	protected $errorFactory;
 	
-	public function __construct(Reader $reader, ValidatorInterface $validator, ErrorResponseFactory $errorFactory)
+	/**
+	 * @param Reader $reader
+	 * @param ValidatorInterface $validator
+	 * @param TranslatorInterface $translator
+	 * @param ErrorResponseFactory $errorFactory
+	 */
+	public function __construct(Reader $reader, ValidatorInterface $validator, TranslatorInterface $translator, ErrorResponseFactory $errorFactory)
 	{
 		$this->reader = $reader;
 		$this->validator = $validator;
+		$this->translator = $translator;
 		$this->errorFactory = $errorFactory;
 	}
 	
@@ -81,11 +94,11 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 				$format = RequestUtil::getFirstAcceptableFormat($request) ?: 'json';
 				
 				if (!version_compare($version, $annotation->getVersion(), $annotation->getVersionOperator())) {
-					$response = $this->errorFactory->create(sprintf('The request does not support the API version number "%s".', $version), 406, null, [], 406, [], $format);					
+					$response = $this->errorFactory->create($this->translator->trans('response.not_acceptable_api_version', ['%version%' => $version], 'OkaApiBundle'), 406, null, [], 406, [], $format);					
 				} elseif (strtolower($protocol) !== $annotation->getProtocol()) {
-					$response = $this->errorFactory->create(sprintf('The request does not support the protocol "%s".', $protocol), 406, null, [], 406, [], $format);
+					$response = $this->errorFactory->create($this->translator->trans('response.not_acceptable_protocol', ['%version%' => $protocol], 'OkaApiBundle'), 406, null, [], 406, [], $format);
 				} elseif (!$request->attributes->has('format')) {
-					$response = $this->errorFactory->create(sprintf('Unsupported response format with request accept: "%s".', implode(', ', $request->getAcceptableContentTypes())), 406, null, [], 406, [], $format);
+					$response = $this->errorFactory->create($this->translator->trans('response.not_acceptable_format', ['%formats%' => implode(', ', $request->getAcceptableContentTypes())], 'OkaApiBundle'), 406, null, [], 406, [], $format);
 				}
 				
 				if ($response !== null) {
@@ -116,7 +129,8 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 		
 		foreach ($annotations as $annotation) {
 			if ($annotation instanceof RequestContent) {
-				$requestContent = RequestUtil::getContentLikeArray($request);
+				// Retrieve query paramters in uri or request content
+				$requestContent = $request->isMethod('GET') ? $request->query->all() : RequestUtil::getContentLikeArray($request);
 				
 				if ($methodName = $annotation->getValidatorStaticMethod()) {
 					$reflectionMethod = new \ReflectionMethod($controller[0], $methodName);
@@ -136,7 +150,7 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 				if ((!$requestContent && false === $annotation->isCanBeEmpty()) || (isset($errors) && $errors->count() > 0)) {
 					$event->setController(function(Request $request) use ($errors) {
 						$format = $request->attributes->has('format') ? $request->attributes->get('format') : RequestUtil::getFirstAcceptableFormat($request) ?: 'json';
-						return $this->errorFactory->createFromConstraintViolationList($errors, 'The request body is not valid or malformed.', 400, null, [], 400, [], $format);
+						return $this->errorFactory->createFromConstraintViolationList($errors, $this->translator->trans('response.bad_request', [], 'OkaApiBundle'), 400, null, [], 400, [], $format);
 					});
 				} else {
 					$request->attributes->set('requestContent', $requestContent);

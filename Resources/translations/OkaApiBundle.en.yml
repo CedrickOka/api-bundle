@@ -1,0 +1,9 @@
+response:
+    not_found: 'The resource "%ressource%" can not be found or does not exist.'
+    bad_request: 'The format of the query is not valid or malformed.'
+    server_error: 'An error occurred while processing the request.'
+    unexpected_error: 'An unexpected error occurred processing the request.'
+    invalid_credentials: 'Username or Password is incorrect.'
+    not_acceptable_api_version: 'The request does not support the API version number "%version%".'
+    not_acceptable_protocol: 'The request does not support the protocol "%protocol%".'
+    not_acceptable_format: 'Unsupported response format with request accept: "%formats%".'

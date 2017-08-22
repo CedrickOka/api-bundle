@@ -56,14 +56,14 @@ services:
     oka_api.request.event_listener:
         class:  Oka\ApiBundle\EventListener\RequestListener
         parent: oka_api.util.logger.helper
-        arguments:  [ '@oka_api.request_matcher.host', '@oka_api.error_response.factory', '%kernel.environment%' ]
+        arguments:  [ '@oka_api.request_matcher.host', '@translator', '@oka_api.error_response.factory', '%kernel.environment%' ]
         tags:
           - { name: kernel.event_subscriber }
 
     oka_api.annotation.event_listener:
         class:  Oka\ApiBundle\EventListener\AnnotationListener
         parent: oka_api.util.logger.helper
-        arguments:  [ '@annotation_reader', '@validator', '@oka_api.error_response.factory' ]
+        arguments:  [ '@annotation_reader', '@validator', '@translator', '@oka_api.error_response.factory' ]
         tags:
           - { name: kernel.event_subscriber }
 

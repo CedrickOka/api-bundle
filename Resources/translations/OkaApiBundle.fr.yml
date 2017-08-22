@@ -1,0 +1,9 @@
+response:
+    not_found: 'La ressource "%ressource%" est introuvable ou n''existe pas.'
+    bad_request: 'Le format de la requête n''est pas valide ou malformée.'
+    server_error: 'Une erreur est survenue pendant le traitement de la requête.'
+    unexpected_error: 'Une erreur inattendu est survenue le traitement de la requête.'
+    invalid_credentials: 'Le nom d''utilisateur ou le mot de passe est incorrect.'
+    not_acceptable_api_version: 'La requête ne prend pas en charge le numero de version "%version%" pour cette méthode de l''API.'
+    not_acceptable_protocol: 'La requête ne prend pas en charge le protocole "%protocol%" pour cette méthode de l''API.'
+    not_acceptable_format: 'Le format de la réponse est non pris en charge avec la requete qui accepte: "%formats%".'
