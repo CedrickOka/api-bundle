@@ -102,7 +102,7 @@ class ErrorResponseFactory
 		
 		/** @var \Symfony\Component\Validator\ConstraintViolationInterface $error */
 		foreach ($errors as $error) {
-			$builder->addChildError($error->getMessage(), $error->getCode(), $error->getPropertyPath(), ['invalidValue' => $error->getInvalidValue()]);
+			$builder->addChildError($error->getMessage(), (int) $error->getCode(), $error->getPropertyPath(), ['invalidValue' => $error->getInvalidValue()]);
 		}
 		
 		return $builder->build();
