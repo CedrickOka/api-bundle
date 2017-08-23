@@ -200,15 +200,16 @@ Add the following configuration to your `security.yml`.
 ``` yaml
 # app/config/security.yml
 security:
-# Add `wsse\_user\_provider` in providers configuration section
+	# Add `wsse_user_provider` in providers configuration section
     providers:
-        wsse\_user\_provider:
-            id: oka\_api.wsse\_user\_provider
-# Add `wsse` in firewalls configuration section
+        wsse_user_provider:
+            id: oka_api.wsse_user_provider
+
+	# Add `wsse` in firewalls configuration section
     firewalls:
         wsse:
-            request\_matcher:  oka\_api.wsse.firewall.request\_matcher
-            provider:         wsse\_user\_provider
+            request_matcher:  oka_api.wsse.firewall.request_matcher
+            provider:         wsse_user_provider
             stateless:        true
             wsse:             { lifetime: 300 }
             anonymous:        true
