@@ -1,6 +1,14 @@
 Changelog
 =========
 
+#### 1.2.4 (2017-08-23)
+
+* Improve bundle documentation.
+
+#### 1.2.3 (2017-08-22)
+
+* Fixed bug in method `ErrorResponseFactory::createFromConstraintViolationList()`.
+
 #### 1.2.2 (2017-08-22)
 
 * Improve `@RequestContent` annotation handling.

@@ -99,7 +99,7 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 		}
 		
 		// Define CORS allow_credentials
-		if ($cors[CorsOptions::ALLOW_CREDENTIALS]) {
+		if (true === $cors[CorsOptions::ALLOW_CREDENTIALS]) {
 			$response->headers->set('Access-Control-Allow-Credentials', 'true');
 		}
 		
@@ -108,7 +108,7 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 		$response->headers->set('Access-Control-Expose-Headers', implode(',', array_unique($exposeHeaders, SORT_REGULAR)));
 		
 		// Define CORS max_age
-		if ($cors[CorsOptions::MAX_AGE]) {
+		if ($cors[CorsOptions::MAX_AGE] > 0) {
 			$response->headers->set('Access-Control-Max-Age', $cors[CorsOptions::MAX_AGE]);
 		}
 		

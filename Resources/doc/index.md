@@ -195,6 +195,25 @@ oka_api:
             enabled: true
 ```
 
+Add the following configuration to your `security.yml`.
+
+``` yaml
+# app/config/security.yml
+security:
+# Add `wsse\_user\_provider` in providers configuration section
+    providers:
+        wsse\_user\_provider:
+            id: oka\_api.wsse\_user\_provider
+# Add `wsse` in firewalls configuration section
+    firewalls:
+        wsse:
+            request\_matcher:  oka\_api.wsse.firewall.request\_matcher
+            provider:         wsse\_user\_provider
+            stateless:        true
+            wsse:             { lifetime: 300 }
+            anonymous:        true
+```
+
 ### Step 5: Import OkaApiBundle routing
 
 Now that you have activated and configured the bundle, all that is left to do is

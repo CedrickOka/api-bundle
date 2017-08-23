@@ -72,7 +72,6 @@ class OkaApiExtension extends Extension
 	private function createWsseAuthenticationConfig(array $config, ContainerBuilder $container)
 	{
 		$wsseConfig = $config['firewalls']['wsse'];
-		
 		$wsseListenerDefinition = $container->getDefinition('oka_api.wsse.security.authentication.listener');
 		$wsseListenerDefinition->addTag('monolog.logger', ['channel' => $wsseConfig['log_channel']]);
 	}
@@ -80,7 +79,6 @@ class OkaApiExtension extends Extension
 	private function createJWTAuthenticationConfig(array $config, ContainerBuilder $container)
 	{
 		$jwtConfig = $config['firewalls']['jwt'];
-		
 		$container->setParameter('oka_api.jwt.authentication.token_ttl', $jwtConfig['token']['ttl']);
 		$container->setParameter('oka_api.jwt.log_channel', $jwtConfig['log_channel']);
 		
