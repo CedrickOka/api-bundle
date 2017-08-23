@@ -200,12 +200,12 @@ Add the following configuration to your `security.yml`.
 ``` yaml
 # app/config/security.yml
 security:
-	# Add `wsse_user_provider` in providers configuration section
+# Add `wsse_user_provider` in providers configuration section
     providers:
         wsse_user_provider:
             id: oka_api.wsse_user_provider
 
-	# Add `wsse` in firewalls configuration section
+# Add `wsse` in firewalls configuration section
     firewalls:
         wsse:
             request_matcher:  oka_api.wsse.firewall.request_matcher
@@ -225,7 +225,7 @@ Add the following configuration to your `routing.yml`
 ``` yaml
 # app/config/routing.yml
 oka_api:
-    resource: "@OkaApiBundle/Resources/config/routing.yml"
+    resource: '@OkaApiBundle/Resources/config/routing.yml'
 ```
 
 ### Step 6: Update your database schema
