@@ -5,7 +5,7 @@ use Doctrine\Common\Annotations\Reader;
 use Oka\ApiBundle\Annotation\AccessControl;
 use Oka\ApiBundle\Annotation\RequestContent;
 use Oka\ApiBundle\Service\ErrorResponseFactory;
-use Oka\ApiBundle\Service\LoggerHelper;
+use Oka\ApiBundle\Util\LoggerHelper;
 use Oka\ApiBundle\Util\RequestUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;

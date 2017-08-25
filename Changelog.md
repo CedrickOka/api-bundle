@@ -1,6 +1,19 @@
 Changelog
 =========
 
+#### 1.4.0 (2017-08-25)
+
+* Added `oka_api.firewalls.wsse.user_class` configuration values.
+* Deprecated `oka_api.client_class` configuration values use instead `oka_api.firewalls.wsse.user_class`.
+* Improve wsse security authentication.
+* Added `WsseUserAllowedIpsVoter` class for user authorization.
+* Ability to disable the wsse allowed ips voter with `oka_api.firewalls.wsse.enabled_allowed_ips_voter` configuration values.
+* Improved service dependency injection by defining the services of enabled firewalls during the construction process of container.
+* Added `WsseUtil` for ws-security genearte username token.
+* Fixed changed package name from `Oka\ApiBundle\Service\LoggerHelper` to `Oka\ApiBundle\Util\LoggerHelper` in class use statement.
+* Improves class test.
+* Improved documentation.
+
 #### 1.3.0 (2017-08-25)
 
 * Added a fluent interface for the entities.

@@ -9,11 +9,9 @@ use Symfony\Component\HttpFoundation\Response;
  * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  * 
  */
-class CorsSupportController extends Controller
+class AuthorizationController extends Controller
 {
 	/**
-	 * Cors Support Test
-	 * 
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	public function indexAction()

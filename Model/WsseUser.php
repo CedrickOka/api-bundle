@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * 
  * @ORM\MappedSuperclass
  */
-class WsseUser implements WsseUserInterface
+abstract class WsseUser implements WsseUserInterface
 {
 	/**
 	 * @var mixed $id
@@ -176,7 +176,6 @@ class WsseUser implements WsseUserInterface
 		foreach ($allowedIps as $ip) {
 			$this->addAllowedIp($ip);
 		}
-		
 		return $this;
 	}
 	

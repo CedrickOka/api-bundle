@@ -3,7 +3,7 @@ namespace Oka\ApiBundle\Security\Firewall;
 
 use Oka\ApiBundle\Security\Authentication\Token\WsseUserToken;
 use Oka\ApiBundle\Service\ErrorResponseFactory;
-use Oka\ApiBundle\Service\LoggerHelper;
+use Oka\ApiBundle\Util\LoggerHelper;
 use Oka\ApiBundle\Util\RequestUtil;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -51,7 +51,6 @@ class WsseListener extends LoggerHelper implements ListenerInterface
 		if ($headers->has('x-wsse') && preg_match('#UsernameToken Username="([^"]+)", PasswordDigest="([^"]+)", Nonce="([^"]+)", Created="([^"]+)"#', $headers->get('x-wsse'), $matches)) {
 			$token = new WsseUserToken();
 			$token->setUser($matches[1]);
-			
 			$token->digest 	= $matches[2];
 			$token->nonce 	= $matches[3];
 			$token->created = $matches[4];
@@ -59,10 +58,11 @@ class WsseListener extends LoggerHelper implements ListenerInterface
 			try {
 				$authToken = $this->authenticationManager->authenticate($token);
 				$this->tokenStorage->setToken($authToken);
+				
 				return;
 			} catch (\Exception $e) {
 				$failedMessage = $e->getMessage();
-				$this->logDebug(sprintf('WSSE Login failed: %s', $e->getMessage()), [
+				$this->logDebug(sprintf('Login with WS-Security failed, caused by : %s', $e->getMessage()), [
 						'username'	=> $token->getUsername(),
 						'digest'	=> $token->digest,
 						'nonce'		=> $token->nonce,

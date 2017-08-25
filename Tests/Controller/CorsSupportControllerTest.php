@@ -6,7 +6,7 @@ use Symfony\Component\Routing\Generator\UrlGenerator;
 
 /**
  * 
- * @author cedrick
+ * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  * 
  */
 class CorsSupportControllerTest extends WebTestCase
@@ -15,7 +15,7 @@ class CorsSupportControllerTest extends WebTestCase
 	 * CORS pattern configuration for test
 	 * 
 	 * cors:
-	 *     pattern: ^.*\/cors/test$
+	 *     pattern: ^.*\/test/cors$
 	 */
 	public function testIndexCorsSupportPattern()
 	{
@@ -40,7 +40,7 @@ class CorsSupportControllerTest extends WebTestCase
 	 * CORS pattern configuration for test
 	 *
 	 * cors:
-	 *     pattern: ^.*\/cors/test$
+	 *     pattern: ^.*\/test/cors$
 	 */
 	public function testIndexCorsNotSupportPattern()
 	{

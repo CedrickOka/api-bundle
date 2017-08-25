@@ -1,6 +1,7 @@
 <?php
 namespace Oka\ApiBundle\Security\Authentication\Provider;
 
+use Oka\ApiBundle\Model\WsseUserInterface;
 use Oka\ApiBundle\Security\Authentication\Token\WsseUserToken;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -10,6 +11,7 @@ use Symfony\Component\Security\Core\Exception\DisabledException;
 use Symfony\Component\Security\Core\Exception\LockedException;
 use Symfony\Component\Security\Core\Exception\NonceExpiredException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
+use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 /**
@@ -34,24 +36,32 @@ class WsseProvider implements AuthenticationProviderInterface
 	 */
 	private $lifetime;
 	
-	public function __construct(UserProviderInterface $clientProvider, $cacheDir, $lifetime) {
+	public function __construct(UserProviderInterface $clientProvider, $cacheDir, $lifetime)
+	{
 		$this->clientProvider = $clientProvider;
 		$this->cacheDir = $cacheDir;
 		$this->lifetime = $lifetime;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see \Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface::authenticate()
+	 */
 	public function authenticate(TokenInterface $token)
 	{
+		/** @var \Symfony\Component\Security\Core\User\AdvancedUserInterface $client */
 		if (!$client = $this->clientProvider->loadUserByUsername($token->getUsername())) {
 			throw new UsernameNotFoundException(sprintf('API client account with username "%s" could not be found.', $token->getUsername()));
 		}
 		
-		if ($client->isEnabled() === false) {
-			throw new DisabledException('API client account is disabled.');
-		}
-		
-		if ($client->isAccountNonLocked() === false) {
-			throw new LockedException('API client account is locked.');
+		if ($client instanceof AdvancedUserInterface) {
+			if ($client->isEnabled() === false) {
+				throw new DisabledException('API client account is disabled.');
+			}
+			
+			if ($client->isAccountNonLocked() === false) {
+				throw new LockedException('API client account is locked.');
+			}
 		}
 		
 		if ($this->validateDigest($token->digest, $token->nonce, $token->created, $client->getPassword())) {
@@ -64,6 +74,17 @@ class WsseProvider implements AuthenticationProviderInterface
 		throw new BadCredentialsException('Invalid credentials.');
 	}
 	
+	/**
+	 * Valid digest password
+	 * 
+	 * @param string $digest
+	 * @param string $nonce
+	 * @param string $created
+	 * @param string $secret
+	 * @throws AuthenticationException
+	 * @throws NonceExpiredException
+	 * @return boolean
+	 */
 	protected function validateDigest($digest, $nonce, $created, $secret)
 	{
 		$currentTime = time();

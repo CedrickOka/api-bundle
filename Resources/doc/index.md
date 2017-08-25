@@ -3,14 +3,13 @@
 
 This bundle provides a flexible management of the api.
 
-##Prerequisites
+## Prerequisites
 
 The OkaApiBundle has the following requirements:
  - PHP 5.5
- - Symfony 2.5+
- - JMSSerializerBundle @stable
+ - Symfony 2.8+
 
-##Installation
+## Installation
 
 Installation is a quick (I promise!) 6 step process:
 
@@ -21,7 +20,7 @@ Installation is a quick (I promise!) 6 step process:
 5. Import OkaApiBundle routing
 6. Update your database schema
 
-###Step 1: Download OkaApiBundle
+### Step 1: Download OkaApiBundle
 
 Add coka/api-bundle to your composer.json file:
 
@@ -29,7 +28,7 @@ Add coka/api-bundle to your composer.json file:
 php composer.phar require "coka/api-bundle"
 ```
 
-###Step 2: Enable the Bundle
+### Step 2: Enable the Bundle
 
 Register the bundle in `app/AppKernel.php`:
 
@@ -55,7 +54,7 @@ class AppKernel extends Kernel
 }
 ```
 
-###Step 3: Create your WsseUser class
+### Step 3: Create your WsseUser class
 
 The goal of this bundle is to  persist some `WsseUser` class to a database (MySql). 
 Your first job, then, is to create the `WsseUser` class for you application. 
@@ -92,13 +91,13 @@ look, depending on how you're storing your entities.
 > to call parent::__construct(), as the base WsseUser class depends on
 > this to initialize some fields.
 
-####Doctrine ORM WsseUser class
+#### Doctrine ORM WsseUser class
 
 you must persisting your entity via the Doctrine ORM, then your `WsseUser` class
 should live in the `Entity` namespace of your bundle and look like this to
 start:
 
-#####Annotations
+##### Annotations
 
 ```php
 <?php
@@ -130,7 +129,7 @@ class WsseUser extends BaseWsseUser
 }
 ```
 
-#####YAML
+##### YAML
 
 If you use yml to configure Doctrine you must add two files. The Entity and the orm.yml:
 
@@ -167,14 +166,13 @@ Acme\ApiBundle\Entity\WsseUser:
                 strategy: AUTO
 ```
 
-###Step 4: Configure the OkaApiBundle
+### Step 4: Configure the OkaApiBundle
 
 Add the following configuration to your `config.yml`.
 
 ``` yaml
 # app/config/config.yml
 oka_api:
-    client_class: Acme\ApiBundle\Entity\WsseUser
     model_manager_name: null
     host: api.acme.com
     log_channel: api
@@ -191,8 +189,10 @@ oka_api:
             max_age: 3600
     firewalls:
         wsse:
-            log_channel: wsse
             enabled: true
+            user_class: Acme\ApiBundle\Entity\WsseUser
+            enabled_allowed_ips_voter: true # Enables the voter that allows access to requests at only certain ips allocated for the current authenticated client
+            log_channel: wsse
 ```
 
 Add the following configuration to your `security.yml`.
@@ -213,6 +213,22 @@ security:
             stateless:        true
             wsse:             { lifetime: 300 }
             anonymous:        true
+
+# To activate the wsse voter which control user access by ip 
+# you must define at least one entry in your `access_control`
+    access_control:
+      - { path: '^/v1/rest', host: 'api.exemple.com', roles: ROLE_API_USER }
+
+# Define strategy decision like `unanimous` for allows wsse voter has denied access or abstain
+    access_decision_manager:
+        strategy: unanimous
+```
+
+``` yaml
+# app/config/security.yml
+security:
+    access_control:
+      - { path: '^/v1/rest', host: 'api.exemple.com', roles: ROLE_API_USER }
 ```
 
 ### Step 5: Import OkaApiBundle routing

@@ -10,27 +10,23 @@ use Symfony\Component\HttpFoundation\RequestMatcherInterface;
  * 
  * @deprecated 1.2.0 Not using
  */
-class JwtRequestMatcher implements RequestMatcherInterface
+class JwtRequestMatcher extends HostRequestMatcher
 {
-	/**
-	 * @var HostRequestMatcher $hostMatcher
-	 */
-	private $hostMatcher;
-	
 	/**
 	 * @var array $extractors
 	 */
 	private $extractors;
 	
-	public function __construct(HostRequestMatcher $hostMatcher, array $extractors)
+	public function __construct($host, array $extractors)
 	{
-		$this->hostMatcher = $hostMatcher;
+		parent::__construct($host);
+		
 		$this->extractors = $extractors;
 	}
 	
 	public function matches(Request $request)
 	{
-		if (false === $this->hostMatcher->matches($request)) {
+		if (false === parent::matches($request)) {
 			return false;
 		}
 		

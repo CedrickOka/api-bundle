@@ -3,7 +3,7 @@ namespace Oka\ApiBundle\EventListener;
 
 use Oka\ApiBundle\Http\HostRequestMatcher;
 use Oka\ApiBundle\Service\ErrorResponseFactory;
-use Oka\ApiBundle\Service\LoggerHelper;
+use Oka\ApiBundle\Util\LoggerHelper;
 use Oka\ApiBundle\Util\RequestUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -99,9 +99,9 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 		
 		if ($requestHeaders->has('x-wsse')) {
 			$responseHeaders->set('X-Secure-With', 'WSSE');
-		} elseif ($requestHeaders->has('Authorization')) {
-			$responseHeaders->set('X-Secure-With', 'JWT');
-		}
+		}// elseif ($requestHeaders->has('Authorization')) {
+// 			$responseHeaders->set('X-Secure-With', 'JWT');
+// 		}
 	}
 	
 	/**

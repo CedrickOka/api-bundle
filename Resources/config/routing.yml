@@ -1,10 +1,21 @@
+# Authorization
+oka_api_allowed_ips_test:
+    path:     /test/allowed-ips
+    defaults: { _controller: "OkaApiBundle:Authorization:index" }
+    methods:  GET
+
+oka_api_not_allowed_ips_test:
+    path:     /test/not-allowed-ips
+    defaults: { _controller: "OkaApiBundle:Authorization:index" }
+    methods:  GET
+
 # CORS Support
 oka_api_cors_support_test:
-    path:     /cors/test
+    path:     /test/cors
     defaults: { _controller: "OkaApiBundle:CorsSupport:index" }
     methods:  GET
 
 oka_api_cors_support_test_not_support:
-    path:     /cors/test/not/support
+    path:     /test/cors/not/support
     defaults: { _controller: "OkaApiBundle:CorsSupport:index" }
     methods:  GET

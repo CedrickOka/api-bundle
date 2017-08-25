@@ -30,6 +30,12 @@ class WsseUserProvider implements UserProviderInterface
 	 */
 	protected $class;
 	
+	/**
+	 * Wsse user provider Constructor
+	 * 
+	 * @param ObjectManager $om
+	 * @param string $class
+	 */
 	public function __construct(ObjectManager $om, $class) {		
 		$this->objectManager = $om;
 		$this->repository = $om->getRepository($class);

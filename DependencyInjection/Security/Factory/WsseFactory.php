@@ -28,8 +28,8 @@ class WsseFactory implements SecurityFactoryInterface
 	{
 		$providerId = 'security.authentication.provider.wsse.'.$id;
 		$container->setDefinition($providerId, new DefinitionDecorator('oka_api.wsse.security.authentication.provider'))
-					->replaceArgument(0, new Reference($clientProvider))
-					->replaceArgument(2, $config['lifetime']);
+				  ->replaceArgument(0, new Reference($clientProvider))
+				  ->replaceArgument(2, $config['lifetime']);
 		
 		$listenerId = 'security.authentication.listener.wsse.'.$id;
 		$container->setDefinition($listenerId, new DefinitionDecorator('oka_api.wsse.security.authentication.listener'));
