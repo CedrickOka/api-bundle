@@ -1,6 +1,16 @@
 Changelog
 =========
 
+#### 1.3 (2017-08-25)
+
+* Added a fluent interface for the entities.
+* Moved the role constants to the WsseUserInterface instead of the abstract WsseUser class
+* Added `Oka\ApiBundle\Model\WsseUser` properties `$allowedIps` and associated setter and getter.
+* Added user manipulator events.
+* Added user manipulator service with ID `oka_api.util.wsse_user_manipulator`.
+* Added user manipulator commands.
+* Moved `LoggerHelper` from package `Oka\ApiBundle\Service\LoggerHelper` to `Oka\ApiBundle\Util\LoggerHelper`.
+
 #### 1.2.4 (2017-08-23)
 
 * Improve bundle documentation.
