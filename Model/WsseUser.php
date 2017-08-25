@@ -2,7 +2,6 @@
 namespace Oka\ApiBundle\Model;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 
 /**
  * 
@@ -10,10 +9,11 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
  * 
  * @ORM\MappedSuperclass
  */
-class WsseUser implements AdvancedUserInterface
+class WsseUser implements WsseUserInterface
 {
-	const ROLE_DEFAULT = 'ROLE_API_USER';
-	
+	/**
+	 * @var mixed $id
+	 */
 	protected $id;
 	
 	/**
@@ -27,12 +27,6 @@ class WsseUser implements AdvancedUserInterface
 	 * @var string $password
 	 */
 	protected $password;
-	
-	/**
-	 * @ORM\Column(type="string", nullable=true)
-	 * @var string $salt
-	 */
-	protected $salt;
 	
 	/**
 	 * @ORM\Column(type="array", nullable=true)
@@ -52,11 +46,17 @@ class WsseUser implements AdvancedUserInterface
 	 */
 	protected $locked;
 	
+	/**
+	 * @ORM\Column(name="allowed_ips", type="array", nullable=true)
+	 * @var array $locked
+	 */
+	protected $allowedIps;
+	
 	public function __construct() {
 		$this->roles = [];
 		$this->enabled = true;
 		$this->locked = false;
-		$this->salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
+		$this->allowedIps = [];
 	}
 	
 	public function getId() {
@@ -81,12 +81,11 @@ class WsseUser implements AdvancedUserInterface
 	}
 	
 	public function getSalt() {
-		return $this->salt;
+		return null;
 	}
 	
-	public function setSalt($salt) {
-		$this->salt = $salt;
-		return $this;
+	public function hasRole($role) {
+		return in_array(strtoupper($role), $this->roles, true);
 	}
 	
 	public function getRoles() {
@@ -101,7 +100,7 @@ class WsseUser implements AdvancedUserInterface
 	public function addRole($role) {
 		$role = strtoupper($role);
 		
-		if ($role !== static::ROLE_DEFAULT && !in_array($role, $this->roles, true)) {
+		if ($role !== static::ROLE_DEFAULT && false === in_array($role, $this->roles, true)) {
 			$this->roles[] = $role;
 		}
 		
@@ -113,6 +112,17 @@ class WsseUser implements AdvancedUserInterface
 		
 		foreach ($roles as $role) {
 			$this->addRole($role);
+		}
+		
+		return $this;
+	}
+	
+	public function removeRole($role) {
+		$role = strtoupper($role);
+		
+		if (false !== ($key = array_search($role, $this->roles, true))) {
+			unset($this->roles[$key]);
+			$this->roles = array_values($this->roles);
 		}
 		
 		return $this;
@@ -144,5 +154,37 @@ class WsseUser implements AdvancedUserInterface
 	
 	public function isCredentialsNonExpired() {
 		return true;
+	}
+	
+	public function hasAllowedIp($ip) {
+		return in_array($ip, $this->allowedIps, true);
+	}
+	
+	public function getAllowedIps() {
+		return $this->allowedIps;
+	}
+	
+	public function addAllowedIp($ip) {
+		if (false === in_array($ip, $this->allowedIps, true)) {
+			$this->allowedIps[] = $ip;
+		}
+		return $this;
+	}
+	
+	public function setAllowedIps(array $allowedIps) {
+		$this->allowedIps = [];
+		foreach ($allowedIps as $ip) {
+			$this->addAllowedIp($ip);
+		}
+		
+		return $this;
+	}
+	
+	public function removeAllowedIp($ip) {
+		if (false !== ($key = array_search($ip, $this->allowedIps, true))) {
+			unset($this->allowedIps[$key]);
+			$this->allowedIps = array_values($this->allowedIps);
+		}
+		return $this;
 	}
 }

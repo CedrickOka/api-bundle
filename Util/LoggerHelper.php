@@ -1,5 +1,5 @@
 <?php
-namespace Oka\ApiBundle\Service;
+namespace Oka\ApiBundle\Util;
 
 use Psr\Log\LoggerInterface;
 
@@ -15,6 +15,9 @@ abstract class LoggerHelper
 	 */
 	protected $logger;
 	
+	/**
+	 * @param LoggerInterface $logger
+	 */
 	public function setLogger(LoggerInterface $logger)
 	{
 		$this->logger = $logger;

@@ -9,6 +9,15 @@ services:
         class: Oka\ApiBundle\Service\ErrorResponseFactory
         arguments: [ '%oka_api.response.error_builder_class%' ]
 
+#    oka_api.service.logger.helper:
+#        deprecated: 'The "oka_api.service.logger.helper" service is deprecated since 1.3 and will be removed in 2.0.0'
+#        class:  Oka\ApiBundle\Service\LoggerHelper
+#        abstract: true
+#        calls:
+#          - [ setLogger, ['@logger'] ]
+#        tags:
+#          - { name: monolog.logger, channel: '%oka_api.log_channel%' }
+
 # User Provider
     oka_api.wsse_user_provider:
         class: Oka\ApiBundle\Security\User\WsseUserProvider
@@ -26,13 +35,12 @@ services:
 
     oka_api.wsse.firewall.request_matcher:
         class: Oka\ApiBundle\Http\WsseRequestMatcher
-        arguments: [ '@oka_api.request_matcher.host' ]
-        public: false
+        parent: oka_api.request_matcher.host
 
 #    oka_api.jwt.firewall.request_matcher:
 #        class: Oka\ApiBundle\Http\JwtRequestMatcher
-#        arguments: [ '@oka_api.request_matcher.host', '' ]
-#        public: false
+#        parent: oka_api.request_matcher.host
+#        arguments: [ '%oka_api.http_host%', '' ]
 
 # Authentication Provider
     oka_api.wsse.security.authentication.provider:
@@ -45,8 +53,6 @@ services:
         parent: oka_api.util.logger.helper
         arguments: [ '@security.token_storage', '@security.authentication.manager', '@oka_api.error_response.factory' ]
         public: false
-#        tags:
-#          - { name: monolog.logger, channel: '%oka_api.wsse.log_channel%' }
 
 #    oka_api.jwt.authentication.guard.token_authenticator:
 #      class: Oka\ApiBundle\Security\Guard\JwtGuardAuthenticator
@@ -74,8 +80,12 @@ services:
         public: false
 
 # Utils
+    oka_api.util.wsse_user_manipulator:
+        class:  Oka\ApiBundle\Util\WsseUserManipulator
+        arguments: [ '@oka_api.object_manager', '@event_dispatcher', '%oka_api.client_class%' ]
+    
     oka_api.util.logger.helper:
-        class:  Oka\ApiBundle\Service\LoggerHelper
+        class:  Oka\ApiBundle\Util\LoggerHelper
         abstract: true
         calls:
           - [ setLogger, ['@logger'] ]

@@ -1,7 +1,7 @@
 <?php
 namespace Oka\ApiBundle\Util;
 
-use Oka\ApiBundle\Service\LoggerHelper;
+use Oka\ApiBundle\Util\LoggerHelper;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
