@@ -1,7 +1,7 @@
 Changelog
 =========
 
-#### 1.3 (2017-08-25)
+#### 1.3.0 (2017-08-25)
 
 * Added a fluent interface for the entities.
 * Moved the role constants to the WsseUserInterface instead of the abstract WsseUser class
