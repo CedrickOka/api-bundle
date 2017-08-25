@@ -77,6 +77,8 @@ class OkaApiExtension extends Extension
 		if (!$userClass = $wsseConfig['user_class']) {
 			if (!$userClass = $config['client_class']) {
 				throw new InvalidConfigurationException('The child node "user_class" at path "oka_api.firewalls.wsse" must be configured if wsse firewall is enabled.');
+			} else {
+				@trigger_error('The configuration value `oka_api.client_class` is deprecated since version 1.4.0. Use `oka_api.firewalls.wsse.user_class` instead', E_USER_DEPRECATED);				
 			}
 		}
 		

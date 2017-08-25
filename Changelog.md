@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 1.4.1 (2017-08-25)
+
+* Triggered deprecated message when the configuration value `oka_api.client_class` is used.
+
 #### 1.4.0 (2017-08-25)
 
 * Added `oka_api.firewalls.wsse.user_class` configuration values.
