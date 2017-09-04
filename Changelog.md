@@ -1,6 +1,11 @@
 Changelog
 =========
 
+#### 1.4.2 (2017-09-04)
+
+* Added `UserInterface` class.
+* Added `oka_api.util.password_updater` service.
+
 #### 1.4.1 (2017-08-25)
 
 * Triggered deprecated message when the configuration value `oka_api.client_class` is used.
@@ -40,7 +45,7 @@ Changelog
 
 * Improve `@RequestContent` annotation handling.
 * Improve PHPDocs.
-* [BC] Removed `Oka\ApiBundle\Util\ErrorResponseFactory` class, use instead `oka_api.error_response.factory` service.
+* [BC break] Removed `Oka\ApiBundle\Util\ErrorResponseFactory` class, use instead `oka_api.error_response.factory` service.
 
 #### 1.2.1 (2017-08-22)
 
@@ -49,10 +54,10 @@ Changelog
 
 #### 1.2.0 (2017-07-28)
 
-* [BC] Renamed `RequestHelper` class in `RequestUtil` class.
-* [BC] Removed `RequestHelper` service.
-* [BC] Removed `ResponseHelper` service.
-* [BC] Removed `RequestParser` class.
+* [BC break] Renamed `RequestHelper` class in `RequestUtil` class.
+* [BC break] Removed `RequestHelper` service.
+* [BC break] Removed `ResponseHelper` service.
+* [BC break] Removed `RequestParser` class.
 * Added new `response.error_builder_class` configuration values.
 * Added `ErrorResponseBuilderInterface` class.
 * Refactored ErrorResponseFactory like symfony service.
@@ -68,8 +73,8 @@ Changelog
 * Added `ErrorResponseBuilder` class which creates an instance of the Response object.
 * Added `ErrorResponseFactory` class which creates an instance of the Response object.
 * Used `ErrorResponseBuilder` and `ErrorResponseFactory` in internal methods.
-* [BC] Removed RequestHelper::parseQueryString() deprecated method.
-* [BC] Removed LoggerHelper::formatErrorMessage() deprecated method.
+* [BC break] Removed RequestHelper::parseQueryString() deprecated method.
+* [BC break] Removed LoggerHelper::formatErrorMessage() deprecated method.
 
 #### 1.0.0 (2017-07-09)
 

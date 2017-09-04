@@ -70,6 +70,10 @@ services:
         tags:
           - { name: monolog.logger, channel: '%oka_api.log_channel%' }
 
+    oka_api.util.password_updater:
+        class: Oka\ApiBundle\Util\PasswordUpdater
+        arguments: [ '@security.encoder_factory' ]
+
 #    oka_api.util.json_web_token.helper:
 #        class:  Oka\ApiBundle\Util\JSONWebTokenHelper
 #        parent: oka_api.util.logger.helper

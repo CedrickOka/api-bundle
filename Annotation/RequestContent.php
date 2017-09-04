@@ -47,7 +47,7 @@ final class RequestContent
 	{
 		$this->canBeEmpty = isset($data['can_be_empty']) ? (boolean) $data['can_be_empty'] : false;
 		$this->enableValidation = isset($data['enable_validation']) ? (boolean) $data['enable_validation'] : true;
-		$this->constraints = isset($data['constraints']) ? $data['constraints'] : (isset($data['validator_static_method']) ? $data['validator_static_method'] : null);		
+		$this->constraints = isset($data['constraints']) ? $data['constraints'] : (isset($data['validator_static_method']) ? $data['validator_static_method'] : null);
 		
 		if ($this->constraints === null && $this->enableValidation === true) {
 			throw new \InvalidArgumentException('You must define a "constraints" attribute for each @RequestContent annotation while request validation is enabled.');
@@ -76,13 +76,6 @@ final class RequestContent
 	public function isEnableValidation()
 	{
 		return $this->enableValidation;
-	}
-	
-	/**	 * @return string
-	 */
-	public static function getName()
-	{
-		return self::class;
 	}
 	
 	/**

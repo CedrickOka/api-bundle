@@ -8,7 +8,6 @@ use Oka\ApiBundle\Util\RequestUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -99,9 +98,7 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 		
 		if ($requestHeaders->has('x-wsse')) {
 			$responseHeaders->set('X-Secure-With', 'WSSE');
-		}// elseif ($requestHeaders->has('Authorization')) {
-// 			$responseHeaders->set('X-Secure-With', 'JWT');
-// 		}
+		}
 	}
 	
 	/**
@@ -146,18 +143,12 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 		}
 	}
 	
-	/**
-	 * @param FinishRequestEvent $event
-	 */
-	public function onKernelFinishRequest(FinishRequestEvent $event) {}
-	
 	public static function getSubscribedEvents()
 	{
 		return [
 				KernelEvents::REQUEST => 'onKernelRequest',
 				KernelEvents::RESPONSE => 'onKernelResponse',
-				KernelEvents::EXCEPTION => 'onKernelException',
-// 				KernelEvents::FINISH_REQUEST => 'onKernelFinishRequest',
+				KernelEvents::EXCEPTION => 'onKernelException'
 		];
 	}
 }
