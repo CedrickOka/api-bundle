@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 1.4.4 (2017-09-05)
+
+* Fixed bad definition method `UserInterface::getPlainPassword($password)`.
+
 #### 1.4.3 (2017-09-05)
 
 * Fixed call undefined method `RequestContent::getName()` in `AnnotationListerner` class.

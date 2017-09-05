@@ -10,9 +10,18 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
  */
 interface UserInterface extends AdvancedUserInterface
 {
-	public function getPlainPassword($password);
+	/**
+	 * @return string
+	 */
+	public function getPlainPassword();
 	
-	public function setPassword($role);
+	/**
+	 * @param string $password
+	 */
+	public function setPassword($password);
 	
+	/**
+	 * @param string $salt
+	 */
 	public function setSalt($salt);
 }
