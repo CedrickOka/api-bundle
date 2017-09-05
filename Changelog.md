@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 1.4.3 (2017-09-05)
+
+* Fixed call undefined method `RequestContent::getName()` in `AnnotationListerner` class.
+
 #### 1.4.2 (2017-09-04)
 
 * Added `UserInterface` class.

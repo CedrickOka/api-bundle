@@ -139,11 +139,11 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 						$reflectionMethod = new \ReflectionMethod($controller[0], $constraints);
 						
 						if (false === $reflectionMethod->isStatic()) {
-							throw new \InvalidArgumentException(sprintf('Invalid option(s) passed to @%s: Constraints method "%s" is not static.', RequestContent::getName(), $constraints));
+							throw new \InvalidArgumentException(sprintf('Invalid option(s) passed to @%s: Constraints method "%s" is not static.', RequestContent::class, $constraints));
 						}
 						
 						if ($reflectionMethod->getNumberOfParameters() > 0) {
-							throw new \InvalidArgumentException(sprintf('Invalid option(s) passed to @%s: Constraints method "%s" must not have of arguments.', RequestContent::getName(), $constraints));
+							throw new \InvalidArgumentException(sprintf('Invalid option(s) passed to @%s: Constraints method "%s" must not have of arguments.', RequestContent::class, $constraints));
 						}
 						
 						$reflectionMethod->setAccessible(true);
