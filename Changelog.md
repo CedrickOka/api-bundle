@@ -1,6 +1,12 @@
 Changelog
 =========
 
+#### 1.4.5 (2017-09-06)
+
+* Fixed undefined variable `$error` in `AnnotationListerner` class
+* Added `validation_error_message` attribute in `@RequestContent` annotation.
+* Added `translation` attribute in `@RequestContent` annotation.
+
 #### 1.4.4 (2017-09-05)
 
 * Fixed bad definition method `UserInterface::getPlainPassword($password)`.

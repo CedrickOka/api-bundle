@@ -129,6 +129,7 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 		
 		foreach ($annotations as $annotation) {
 			if ($annotation instanceof RequestContent) {
+				$errors = null;
 				$validationHasFailed = false;
 				// Retrieve query paramters in URI or request content
 				$requestContent = $request->isMethod('GET') ? $request->query->all() : RequestUtil::getContentLikeArray($request);
@@ -155,9 +156,17 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 				}
 				
 				if ($validationHasFailed === true) {
-					$event->setController(function(Request $request) use ($errors) {
+					$event->setController(function(Request $request) use ($annotation, $errors) {
+						$message = $this->translator->trans($annotation->getValidationErrorMessage(), $annotation->getTranslationParameters(), $annotation->getTranslationDomain());
 						$format = $request->attributes->has('format') ? $request->attributes->get('format') : RequestUtil::getFirstAcceptableFormat($request) ?: 'json';
-						return $this->errorFactory->createFromConstraintViolationList($errors, $this->translator->trans('response.bad_request', [], 'OkaApiBundle'), 400, null, [], 400, [], $format);
+						
+						if ($errors === null) {
+							$response = $this->errorFactory->create($message, 400, null, [], 400, [], $format);
+						} else {
+							$response = $this->errorFactory->createFromConstraintViolationList($errors, $message, 400, null, [], 400, [], $format);
+						}
+						
+						return $response;						
 					});
 				} else {
 					$request->attributes->set('requestContent', $requestContent);

@@ -71,9 +71,9 @@ final class AccessControl
 		} else {
 			$this->version = strtolower(trim($data['version']));
 		}
-		
-		$this->versionNumber = self::findVersionNumber($this->version);
+
 		$this->protocol = strtolower(trim($data['protocol']));
+		$this->versionNumber = self::findVersionNumber($this->version);
 		$this->formats = array_map('trim', array_map('strtolower', explode(',', $data['formats'])));
 	}
 	
