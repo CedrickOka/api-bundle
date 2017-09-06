@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 1.4.6 (2017-09-06)
+
+* Used `annotations.cached_reader` service like dependency of `AnnotationListerner` class instead `annotations_reader`.
+
 #### 1.4.5 (2017-09-06)
 
 * Fixed undefined variable `$error` in `AnnotationListerner` class
