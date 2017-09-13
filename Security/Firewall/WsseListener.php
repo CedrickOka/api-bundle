@@ -71,8 +71,15 @@ class WsseListener extends LoggerHelper implements ListenerInterface
 			}
 		}
 		
-		// Deny authentication with a '403 Forbidden' HTTP response
-		$format = RequestUtil::getFirstAcceptableFormat($request) ?: 'json';
-		$event->setResponse($this->errorFactory->create($failedMessage, Response::HTTP_FORBIDDEN, null, [], Response::HTTP_FORBIDDEN, ['X-Secure-With' => 'WSSE'], $format));
+		// Deny authentication with a '401 Unauthorized' HTTP response
+		$event->setResponse($this->errorFactory->create(
+				$failedMessage, 
+				Response::HTTP_UNAUTHORIZED, 
+				null, 
+				[], 
+				Response::HTTP_UNAUTHORIZED, 
+				['WWW-Authenticate' => 'WSSE realm="Secure Area", profile="UsernameToken"'], 
+				RequestUtil::getFirstAcceptableFormat($request) ?: 'json'
+		));
 	}
 }

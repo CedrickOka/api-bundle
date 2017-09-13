@@ -1,6 +1,11 @@
 Changelog
 =========
 
+#### 1.4.7 (2017-09-13)
+
+* [BC break] Send http error code `401` instead of `403` when WSSE authentication fails.
+* Added http response header `WWW-Authenticate:` when WSSE authentication fails.
+
 #### 1.4.6 (2017-09-06)
 
 * Used `annotations.cached_reader` service like dependency of `AnnotationListerner` class instead `annotations_reader`.

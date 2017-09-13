@@ -1,7 +1,6 @@
 <?php
 namespace Oka\ApiBundle\Security\Authentication\Provider;
 
-use Oka\ApiBundle\Model\WsseUserInterface;
 use Oka\ApiBundle\Security\Authentication\Token\WsseUserToken;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
