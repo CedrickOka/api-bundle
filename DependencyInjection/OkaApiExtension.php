@@ -3,6 +3,7 @@ namespace Oka\ApiBundle\DependencyInjection;
 
 use Oka\ApiBundle\Security\Authorization\Voter\WsseUserAllowedIpsVoter;
 use Oka\ApiBundle\Security\User\WsseUserProvider;
+use Oka\ApiBundle\Util\WsseUserManipulator;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
@@ -11,9 +12,6 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Oka\ApiBundle\Util\WsseUserManipulator;
-use Oka\ApiBundle\Http\WsseRequestMatcher;
-use Oka\ApiBundle\Security\Authentication\Provider\WsseProvider;
 
 /**
  * This is the class that loads and manages your bundle configuration.

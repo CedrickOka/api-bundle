@@ -13,7 +13,7 @@ use Symfony\Component\Security\Http\Firewall\ListenerInterface;
 
 /**
  * 
- * @author cedrick
+ * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  * 
  */
 class WsseListener extends LoggerHelper implements ListenerInterface
