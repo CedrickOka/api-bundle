@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 1.4.8 (2017-09-14)
+
+* Improved `ErrorResponseFactory::createFromException()`, enabling it to better handle `HttpExceptionInterface` type exceptions.
+
 #### 1.4.7 (2017-09-13)
 
 * [BC break] Send http error code `401` instead of `403` when WSSE authentication fails.

@@ -5,6 +5,7 @@ use Symfony\Component\Form\FormErrorIterator;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Oka\ApiBundle\Util\ErrorResponseBuilder;
 use Oka\ApiBundle\Util\ErrorResponseBuilderInterface;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 /**
  * 
@@ -119,8 +120,15 @@ class ErrorResponseFactory
 	 * @param string $format
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function createFromException(\Exception $exception, $property = null, array $extras = [], $httpStatusCode = 500, $httpHeaders = [], $format = 'json')
+	public function createFromException(\Exception $exception, $property = null, array $extras = [], $httpStatusCode = null, $httpHeaders = [], $format = 'json')
 	{
+		if ($exception instanceof HttpExceptionInterface) {
+			$httpStatusCode = $httpStatusCode ?: $exception->getStatusCode();
+			$httpHeaders = $httpHeaders ?: $exception->getHeaders();
+		} else {
+			$httpStatusCode = $httpStatusCode ?: 500;
+		}
+		
 		return $this->getBuilderInstance()
 					->setError($exception->getMessage(), $exception->getCode() ?: 500, $property, $extras)
 					->setHttpSatusCode($httpStatusCode)
