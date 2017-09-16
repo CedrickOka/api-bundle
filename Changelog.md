@@ -1,6 +1,16 @@
 Changelog
 =========
 
+#### 1.5.0 (2017-09-16)
+
+* [BC break] The signature of the `WsseUserToken` constructor has changed.
+* [BC break] The signature of the `WsseListener` constructor has changed.
+* Added `Security\Authentication\Token\WsseUserToken` properties `$credentials` and associated getter.
+* Used `WsseUserToken::setAttribute()` method in `WsseListener` security listener for save the usernameToken properties `digest`, `nonce` and `created`.
+* Translated responses sended by `WsseListener` security listener.
+* Improve `WsseUserProvider::supportsClass()` method.
+* Updated French translation.
+
 #### 1.4.8 (2017-09-14)
 
 * Improved `ErrorResponseFactory::createFromException()`, enabling it to better handle `HttpExceptionInterface` type exceptions.

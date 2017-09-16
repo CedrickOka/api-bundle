@@ -33,7 +33,7 @@ services:
     oka_api.wsse.security.authentication.listener:
         class: Oka\ApiBundle\Security\Firewall\WsseListener
         parent: oka_api.util.logger.helper
-        arguments: [ '@security.token_storage', '@security.authentication.manager', '@oka_api.error_response.factory' ]
+        arguments: [ '@security.token_storage', '@security.authentication.manager', '@oka_api.error_response.factory', '@translator' ]
         public: false
 
 #    oka_api.jwt.authentication.guard.token_authenticator:

@@ -3,6 +3,7 @@ namespace Oka\ApiBundle\Security\User;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityRepository;
+use Oka\ApiBundle\Model\WsseUserInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -36,12 +37,13 @@ class WsseUserProvider implements UserProviderInterface
 	 * @param ObjectManager $om
 	 * @param string $class
 	 */
-	public function __construct(ObjectManager $om, $class) {		
-		$this->objectManager = $om;
-		$this->repository = $om->getRepository($class);
-		
+	public function __construct(ObjectManager $om, $class)
+	{
 		$metadata = $om->getClassMetadata($class);
+		
+		$this->objectManager = $om;
 		$this->class = $metadata->getName();
+		$this->repository = $om->getRepository($class);
 	}
 	
 	/**
@@ -58,12 +60,13 @@ class WsseUserProvider implements UserProviderInterface
 	 * 
 	 * @throws UsernameNotFoundException if the user is not found
 	 */
-	public function loadUserByUsername($username) {
-		if ($client = $this->repository->findOneBy(['username' => $username])) {
-			return $client;
+	public function loadUserByUsername($username)
+	{
+		if (!$client = $this->repository->findOneBy(['username' => $username])) {
+			throw new UsernameNotFoundException(sprintf('Client Username "%s" does not exist.', $username));
 		}
 		
-		throw new UsernameNotFoundException(sprintf('Client Username "%s" does not exist.', $username));
+		return $client;
 	}
 	
 	/**
@@ -79,7 +82,8 @@ class WsseUserProvider implements UserProviderInterface
 	 *
 	 * @throws UnsupportedUserException if the account is not supported
 	 */
-	public function refreshUser(UserInterface $user) {
+	public function refreshUser(UserInterface $user)
+	{
 		$class = get_class($user);
 		
 		if (!$this->supportsClass($class)) {
@@ -91,12 +95,13 @@ class WsseUserProvider implements UserProviderInterface
 	
 	/**
 	 * Whether this provider supports the given user class
-	 *
+	 * 
 	 * @param string $class
-	 *
+	 * 
 	 * @return Boolean
 	 */
-	public function supportsClass($class) {	
-		return $this->class === $class || is_subclass_of($class, $this->class);
+	public function supportsClass($class)
+	{
+		return is_subclass_of($class, WsseUserInterface::class);
 	}
 }

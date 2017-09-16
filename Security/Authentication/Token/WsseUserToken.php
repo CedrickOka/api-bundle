@@ -11,23 +11,21 @@ use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 class WsseUserToken extends AbstractToken
 {
 	/**
-	 * @var string $created
+	 * @var string $credentials
 	 */
-	public $created;
+	private $credentials;
 	
 	/**
-	 * @var string $created
+	 * @param mixed $user
+	 * @param string $credentials
+	 * @param array $roles
 	 */
-	public $digest;
-	
-	/**
-	 * @var string $created
-	 */
-	public $nonce;
-	
-	public function __construct(array $roles = array())
+	public function __construct($user, $credentials = '', array $roles = [])
 	{
 		parent::__construct($roles);
+		
+		$this->setUser($user);
+		$this->credentials = $credentials;
 		
 		// If the user has roles, consider it authenticated
 		$this->setAuthenticated(count($roles) > 0);
@@ -35,6 +33,13 @@ class WsseUserToken extends AbstractToken
 	
 	public function getCredentials()
 	{
-		return '';
+		return $this->credentials;
+	}
+	
+	public function eraseCredentials()
+	{
+		parent::eraseCredentials();
+		
+		$this->credentials = null;
 	}
 }

@@ -9,9 +9,9 @@ use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Exception\DisabledException;
 use Symfony\Component\Security\Core\Exception\LockedException;
 use Symfony\Component\Security\Core\Exception\NonceExpiredException;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Oka\ApiBundle\Security\Nonce\Storage\Nonce;
 
 /**
  * 
@@ -35,6 +35,11 @@ class WsseProvider implements AuthenticationProviderInterface
 	 */
 	private $lifetime;
 	
+	/**
+	 * @param UserProviderInterface $clientProvider
+	 * @param string $cacheDir
+	 * @param int $lifetime
+	 */
 	public function __construct(UserProviderInterface $clientProvider, $cacheDir, $lifetime)
 	{
 		$this->clientProvider = $clientProvider;
@@ -48,29 +53,28 @@ class WsseProvider implements AuthenticationProviderInterface
 	 */
 	public function authenticate(TokenInterface $token)
 	{
-		/** @var \Symfony\Component\Security\Core\User\AdvancedUserInterface $client */
-		if (!$client = $this->clientProvider->loadUserByUsername($token->getUsername())) {
-			throw new UsernameNotFoundException(sprintf('API client account with username "%s" could not be found.', $token->getUsername()));
+		try {
+			/** @var \Symfony\Component\Security\Core\User\AdvancedUserInterface $client */
+			$client = $this->clientProvider->loadUserByUsername($token->getUsername());
+		} catch (AuthenticationException $e) {
+			throw new BadCredentialsException('Bad credentials.');
 		}
 		
 		if ($client instanceof AdvancedUserInterface) {
 			if ($client->isEnabled() === false) {
-				throw new DisabledException('API client account is disabled.');
+				throw new DisabledException('Account is disabled.');
 			}
 			
 			if ($client->isAccountNonLocked() === false) {
-				throw new LockedException('API client account is locked.');
+				throw new LockedException('Account is locked.');
 			}
 		}
 		
-		if ($this->validateDigest($token->digest, $token->nonce, $token->created, $client->getPassword())) {
-			$authenticatedToken = new WsseUserToken($client->getRoles());
-			$authenticatedToken->setUser($client);
-			
-			return $authenticatedToken;
+		if (!$this->validateDigest($token->getAttribute('digest'), $token->getAttribute('nonce'), $token->getAttribute('created'), $client->getPassword())) {
+			throw new BadCredentialsException('Bad credentials.');
 		}
 		
-		throw new BadCredentialsException('Invalid credentials.');
+		return new WsseUserToken($client, $token->getCredentials(), $client->getRoles());
 	}
 	
 	/**
@@ -88,7 +92,7 @@ class WsseProvider implements AuthenticationProviderInterface
 	{
 		$currentTime = time();
 		
-		// Check that the timestamp has not expired
+		// Check that the created has not expired
 		if (($currentTime < strtotime($created) - $this->lifetime) || ($currentTime > strtotime($created) + $this->lifetime)) {
 			throw new AuthenticationException('Created timestamp is not valid.');
 		}
@@ -96,7 +100,8 @@ class WsseProvider implements AuthenticationProviderInterface
 		$nonceDecoded = base64_decode($nonce);
 		$nonceFilePath = $this->cacheDir.'/'.$nonceDecoded;
 		
-		// Check that the digest nonce has not expired
+		// Validate that the nonce is *not* used in the last 5 minutes
+		// if it has, this could be a replay attack
 		if (file_exists($nonceFilePath) && (((int) file_get_contents($nonceFilePath)) + $this->lifetime) > $currentTime) {
 			throw new NonceExpiredException('Digest nonce has expired.');
 		}
@@ -107,9 +112,9 @@ class WsseProvider implements AuthenticationProviderInterface
 		
 		file_put_contents($nonceFilePath, $currentTime, LOCK_EX);
 		
-		// Valid the secret
 		$expected = base64_encode(sha1($nonceDecoded.$created.$secret, true));
 		
+		// Valid the secret
 		return hash_equals($expected, $digest);
 	}
 	

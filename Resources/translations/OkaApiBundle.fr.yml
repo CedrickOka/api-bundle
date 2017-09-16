@@ -1,3 +1,9 @@
+'Bad credentials.': 'Invalide credentials.'
+'Account is disabled.': 'Le compte est desactivé.'
+'Account is locked.': 'Le compte est bloqué.'
+'Digest nonce has expired.': 'Le nonce a expiré'
+'Created timestamp is not valid.': 'Le temps n''est pas valide'
+
 response:
     not_found: 'La ressource "%ressource%" est introuvable ou n''existe pas.'
     bad_request: 'Le format de la requête n''est pas valide ou malformée.'
