@@ -2,6 +2,8 @@
 namespace Oka\ApiBundle\DependencyInjection;
 
 use Oka\ApiBundle\Security\Authorization\Voter\WsseUserAllowedIpsVoter;
+use Oka\ApiBundle\Security\Nonce\Storage\Handler\FileNonceHandler;
+use Oka\ApiBundle\Security\Nonce\Storage\NativeNonceStorage;
 use Oka\ApiBundle\Security\User\WsseUserProvider;
 use Oka\ApiBundle\Util\WsseUserManipulator;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -79,21 +81,42 @@ class OkaApiExtension extends Extension
 				@trigger_error('The configuration value `oka_api.client_class` is deprecated since version 1.4.0. Use `oka_api.firewalls.wsse.user_class` instead', E_USER_DEPRECATED);				
 			}
 		}
-		
 		$container->setParameter('oka_api.wsse_user_class', $userClass);
 		
-		// Configure wsse user provider
+		// Configure Nonce
+		$nonceSavePath = $wsseConfig['nonce']['save_path'] ?: $container->getParameter('kernel.cache_dir') . '/oka_security/nonces';
+		$nonceHandlerId = $wsseConfig['nonce']['handler_id'];
+		
+		if (null === $nonceHandlerId) {
+			$nonceHandlerId = 'oka_api.wsse.nonce.handler.file';
+			$nonceHandlerDefintion = new Definition(FileNonceHandler::class);
+			$nonceHandlerDefintion->addArgument($nonceSavePath);
+			$nonceHandlerDefintion->setPublic(false);
+			$container->setDefinition($nonceHandlerId, $nonceHandlerDefintion);
+		}
+		
+		$nonceStorageDefinition = new Definition(NativeNonceStorage::class);
+		$nonceStorageDefinition->addArgument(new Reference($nonceHandlerId));
+		$nonceStorageDefinition->addArgument($nonceSavePath);
+		$nonceStorageDefinition->setPublic(false);
+		$container->setDefinition('oka_api.wsse.nonce.native_storage', $nonceStorageDefinition);
+		
+		// Configure wsse User provider
 		$wsseUserProviderDefinition = new Definition(WsseUserProvider::class);
 		$wsseUserProviderDefinition->addArgument(new Reference('oka_api.object_manager'));
 		$wsseUserProviderDefinition->addArgument($userClass);
 		$container->setDefinition('oka_api.wsse_user_provider', $wsseUserProviderDefinition);
 		
-		// Configure wsse user manipulator
+		// Configure wsse User manipulator
 		$wsseUserManipulatorDefinition = new Definition(WsseUserManipulator::class);
 		$wsseUserManipulatorDefinition->addArgument(new Reference('oka_api.object_manager'));
 		$wsseUserManipulatorDefinition->addArgument(new Reference('event_dispatcher'));
 		$wsseUserManipulatorDefinition->addArgument($userClass);
 		$container->setDefinition('oka_api.util.wsse_user_manipulator', $wsseUserManipulatorDefinition);
+		
+		// Configure wsse authentication provider
+		$wsseAuthenticationProviderDefinition = $container->getDefinition('oka_api.wsse.security.authentication.provider');
+		$wsseAuthenticationProviderDefinition->replaceArgument(1, new Reference('oka_api.wsse.nonce.native_storage'));
 		
 		// Configure wsse security firewall
 		$wsseListenerDefinition = $container->getDefinition('oka_api.wsse.security.authentication.listener');
@@ -110,11 +133,6 @@ class OkaApiExtension extends Extension
 	
 	private function createJWTAuthenticationConfig(array $config, ContainerBuilder $container)
 	{
-// User Provider
-//    oka_api.jwt_user_provider:
-//        class: Oka\ApiBundle\Security\User\JwtUserProvider
-//        arguments: [ '@oka_api.object_manager', '%oka_api.user_class%' ]
-		
 		$jwtConfig = $config['firewalls']['jwt'];
 		$container->setParameter('oka_api.jwt.authentication.token_ttl', $jwtConfig['token']['ttl']);
 		$container->setParameter('oka_api.jwt.log_channel', $jwtConfig['log_channel']);
@@ -126,10 +144,7 @@ class OkaApiExtension extends Extension
 		$this->createJWTTokenExtractors($jwtConfig['token']['extractors'], $container);
 	}
 	
-	private function createJWTTokenEncoder(array $config, ContainerBuilder $container)
-	{
-		
-	}
+	private function createJWTTokenEncoder(array $config, ContainerBuilder $container) {}
 	
 	private function createJWTTokenExtractors(array $config, ContainerBuilder $container)
 	{
@@ -139,12 +154,8 @@ class OkaApiExtension extends Extension
 // 			$headerExtractorDefinition->replaceArgument(1, $config['authorization_header']['name']);
 		}
 		
-		if ($config['query_parameter']['enabled']) {
-			
-		}
+		if ($config['query_parameter']['enabled']) {}
 		
-		if ($config['cookie']['enabled']) {
-			
-		}
+		if ($config['cookie']['enabled']) {}
 	}
 }

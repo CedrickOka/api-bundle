@@ -25,7 +25,8 @@ class MemcachedNonceHandler implements NonceHandlerInterface
 	 */
 	private $prefix;
 	
-	public function __construct(\Memcached $memcached, array $options = []) {
+	public function __construct(\Memcached $memcached, array $options = [])
+	{
 		if ($diff = array_diff(array_keys($options), ['prefix', 'expiretime'])) {
 			throw new \InvalidArgumentException(sprintf(
 					'The following options are not supported "%s"', implode(', ', $diff)
@@ -33,7 +34,7 @@ class MemcachedNonceHandler implements NonceHandlerInterface
 		}
 		
 		$this->memcached = $memcached;
-		$this->ttl = isset($options['expiretime']) ? (int) $options['expiretime'] : 86400;
+		$this->ttl = isset($options['expiretime']) ? (int) $options['expiretime'] : 300;
 		$this->prefix = isset($options['prefix']) ? $options['prefix'] : 'oka';
 	}
 	
@@ -68,7 +69,8 @@ class MemcachedNonceHandler implements NonceHandlerInterface
 	 * {@inheritdoc}
 	 * @see \Oka\ApiBundle\Security\Nonce\Storage\Handler\NonceHandlerInterface::write()
 	 */
-	public function write($nonceId, $nonceTime) {
+	public function write($nonceId, $nonceTime)
+	{
 		return $this->memcached->set($this->prefix.$nonceId, $nonceTime, 0, time() + $this->ttl);
 	}
 	
@@ -76,7 +78,8 @@ class MemcachedNonceHandler implements NonceHandlerInterface
 	 * {@inheritdoc}
 	 * @see \Oka\ApiBundle\Security\Nonce\Storage\Handler\NonceHandlerInterface::destroy()
 	 */
-	public function destroy($nonceId) {
+	public function destroy($nonceId)
+	{
 		$this->memcached->delete($this->prefix.$nonceId);
 		
 		return true;
@@ -86,7 +89,7 @@ class MemcachedNonceHandler implements NonceHandlerInterface
 	 * {@inheritdoc}
 	 * @see \Oka\ApiBundle\Security\Nonce\Storage\Handler\NonceHandlerInterface::gc()
 	 */
-	public function gc(int $maxlifetime)
+	public function gc($maxlifetime)
 	{
 		return true;
 	}

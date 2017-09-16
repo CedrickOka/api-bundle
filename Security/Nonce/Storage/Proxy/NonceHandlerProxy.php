@@ -1,5 +1,5 @@
 <?php
-namespace Oka\ApiBundle\Security\Nonce\Storage\Handler;
+namespace Oka\ApiBundle\Security\Nonce\Storage\Proxy;
 
 use Oka\ApiBundle\Security\Nonce\Storage\Handler\NonceHandlerInterface;
 
@@ -8,13 +8,29 @@ use Oka\ApiBundle\Security\Nonce\Storage\Handler\NonceHandlerInterface;
  * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  * 
  */
-class FileNonceHandler implements NonceHandlerInterface
+class NonceHandlerProxy implements NonceHandlerInterface
 {
-	private $savePath;
+	/**
+	 * @var NonceHandlerInterface $handler
+	 */
+	private $handler;
 	
-	public function __construct($savePath)
+	/**
+     * @var bool $active
+     */
+    private $active = false;
+	
+	public function __construct(NonceHandlerInterface $handler)
 	{
-		$this->savePath = $savePath;
+		$this->handler = $handler;
+	}
+	
+	/**
+	 * @return bool
+	 */
+	public function isActive()
+	{
+		return $this->active;
 	}
 	
 	/**
@@ -23,11 +39,13 @@ class FileNonceHandler implements NonceHandlerInterface
 	 */
 	public function open($savePath, $nonceId)
 	{
-		if ($this->savePath !== null) {
-			$this->savePath = $savePath;
+		$return = (bool) $this->handler->open($savePath, $nonceId);
+		
+		if (true === $return) {
+			$this->active = true;
 		}
 		
-		return true;
+		return $return;
 	}
 	
 	/**
@@ -36,7 +54,9 @@ class FileNonceHandler implements NonceHandlerInterface
 	 */
 	public function close()
 	{
-		return true;
+		$this->active = false;
+		
+		return (bool) $this->handler->close();
 	}
 	
 	/**
@@ -45,9 +65,7 @@ class FileNonceHandler implements NonceHandlerInterface
 	 */
 	public function read($nonceId)
 	{
-		$filePath = $this->getFilePath($nonceId);
-		
-		return file_exists($filePath) ? (int) file_get_contents($filePath) : 0;
+		return (int) $this->handler->read($nonceId);
 	}
 	
 	/**
@@ -56,13 +74,7 @@ class FileNonceHandler implements NonceHandlerInterface
 	 */
 	public function write($nonceId, $nonceTime)
 	{
-		$filePath = $this->getFilePath($nonceId);
-		
-		if (!is_dir($this->savePath)) {
-			mkdir($this->savePath, 0777, true);
-		}
-		
-		return (boolean) file_put_contents($filePath, $nonceTime, LOCK_EX);
+		return (bool) $this->handler->write($nonceId, $nonceTime);
 	}
 	
 	/**
@@ -71,24 +83,15 @@ class FileNonceHandler implements NonceHandlerInterface
 	 */
 	public function destroy($nonceId)
 	{
-		return unlink($this->getFilePath($nonceId));
+		return (bool) $this->handler->destroy($nonceId);
 	}
 	
 	/**
 	 * {@inheritdoc}
 	 * @see \Oka\ApiBundle\Security\Nonce\Storage\Handler\NonceHandlerInterface::gc()
 	 */
-	public function gc(int $maxlifetime)
+	public function gc($maxlifetime)
 	{
-		return true;
-	}
-	
-	/**
-	 * @param int $nonceId
-	 * @return string
-	 */
-	protected function getFilePath($nonceId)
-	{
-		return $this->savePath . '/' . $nonceId;
+		return (bool) $this->handler->gc($maxlifetime);
 	}
 }

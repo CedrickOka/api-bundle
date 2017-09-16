@@ -27,7 +27,7 @@ services:
 # Authentication Provider
     oka_api.wsse.security.authentication.provider:
         class: Oka\ApiBundle\Security\Authentication\Provider\WsseProvider
-        arguments: [ '', '%kernel.cache_dir%/security/nonces', '' ]
+        arguments: [ '', '', '' ]
         public: false
 
     oka_api.wsse.security.authentication.listener:

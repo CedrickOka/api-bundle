@@ -1,6 +1,17 @@
 Changelog
 =========
 
+#### 1.6.0 (2017-09-16)
+
+* Added Nonce Storage Strategy for save WS-Security usernameToken propertie `nonce`.
+* Added `oka_api.firewalls.wsse.nonce.save_path` configuration values.
+* Added `oka_api.firewalls.wsse.nonce.handler_id` configuration values.
+* Allows the extension of the Nonce Storage Strategy by the definition of customs nonce handler.
+* Added `FileNonceHandler` class.
+* Added `MemcacheNonceHandler` class.
+* Added `MemcachedNonceHandler` class.
+* Used by default `FileNonceHandler` class for handle nonce.
+
 #### 1.5.0 (2017-09-16)
 
 * [BC break] The signature of the `WsseUserToken` constructor has changed.

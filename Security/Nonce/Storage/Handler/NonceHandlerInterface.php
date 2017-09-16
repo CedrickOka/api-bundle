@@ -19,14 +19,14 @@ interface NonceHandlerInterface
 	 * </p>
 	 * @return bool The return value (usually true on success, false on failure).
 	 */
-	abstract public function open($savePath, $nonceId){}
+	public function open($savePath, $nonceId);
 	
 	/**
-	 * Close the session
+	 * Close the nonce
 	 * 
 	 * @return bool The return value (usually true on success, false on failure).
 	 */
-	abstract public function close(){}
+	public function close();
 	
 	/**
 	 * Read nonce
@@ -36,8 +36,8 @@ interface NonceHandlerInterface
 	 * </p>
 	 * @return int The timestamp at which the nonce was created. If nothing was read, it must return 0.
 	 */
-	abstract public function read($nonceId){}
-
+	public function read($nonceId);
+	
 	/**
 	 * Write nonce
 	 * 
@@ -49,8 +49,8 @@ interface NonceHandlerInterface
 	 * </p>
 	 * @return bool The return value (usually true on success, false on failure).
 	 */
-	abstract public function write($nonceId, $nonceTime){}
-
+	public function write($nonceId, $nonceTime);
+	
 	/**
 	 * Destroy a session
 	 * 
@@ -59,8 +59,8 @@ interface NonceHandlerInterface
 	 * </p>
 	 * @return bool The return value (usually true on success, false on failure).
 	 */
-	abstract public function destroy($nonceId){}
-
+	public function destroy($nonceId);
+	
 	/**
 	 * Cleanup old nonces
 	 * 
@@ -69,5 +69,5 @@ interface NonceHandlerInterface
 	 * </p>
 	 * @return bool The return value (usually true on success, false on failure).
 	 */
-	abstract public function gc($maxlifetime){}
+	public function gc($maxlifetime);
 }

@@ -8,33 +8,16 @@ use Oka\ApiBundle\Security\Nonce\Storage\Handler\NonceHandlerInterface;
  * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  * 
  */
-class MemcacheNonceHandler implements NonceHandlerInterface
+class FileNonceHandler implements NonceHandlerInterface
 {
 	/**
-	 * @var \Memcache Memcache driver
+	 * @var string $savePath
 	 */
-	private $memcache;
+	private $savePath;
 	
-	/**
-	 * @var int Time to live in seconds
-	 */
-	private $ttl;
-	
-	/**
-	 * @var string Key prefix for shared environments
-	 */
-	private $prefix;
-	
-	public function __construct(\Memcache $memcache, array $options = []) {
-		if ($diff = array_diff(array_keys($options), ['prefix', 'expiretime'])) {
-			throw new \InvalidArgumentException(sprintf(
-					'The following options are not supported "%s"', implode(', ', $diff)
-			));
-		}
-		
-		$this->memcache = $memcache;
-		$this->ttl = isset($options['expiretime']) ? (int) $options['expiretime'] : 86400;
-		$this->prefix = isset($options['prefix']) ? $options['prefix'] : 'oka';
+	public function __construct($savePath)
+	{
+		$this->savePath = $savePath;
 	}
 	
 	/**
@@ -43,6 +26,10 @@ class MemcacheNonceHandler implements NonceHandlerInterface
 	 */
 	public function open($savePath, $nonceId)
 	{
+		if (null === $this->savePath) {
+			$this->savePath = $savePath;
+		}
+		
 		return true;
 	}
 	
@@ -61,33 +48,48 @@ class MemcacheNonceHandler implements NonceHandlerInterface
 	 */
 	public function read($nonceId)
 	{
-		return (int) ($this->memcache->get($this->prefix.$nonceId) ?: 0);
+		$filePath = $this->getFilePath($nonceId);
+		
+		return file_exists($filePath) ? (int) file_get_contents($filePath) : 0;
 	}
 	
 	/**
 	 * {@inheritdoc}
 	 * @see \Oka\ApiBundle\Security\Nonce\Storage\Handler\NonceHandlerInterface::write()
 	 */
-	public function write($nonceId, $nonceTime) {
-		return $this->memcache->set($this->prefix.$nonceId, $nonceTime, 0, time() + $this->ttl);
+	public function write($nonceId, $nonceTime)
+	{
+		if (!is_dir($this->savePath)) {
+			mkdir($this->savePath, 0777, true);
+		}
+		
+		return (bool) file_put_contents($this->getFilePath($nonceId), $nonceTime, LOCK_EX);
 	}
 	
 	/**
 	 * {@inheritdoc}
 	 * @see \Oka\ApiBundle\Security\Nonce\Storage\Handler\NonceHandlerInterface::destroy()
 	 */
-	public function destroy($nonceId) {
-		$this->memcache->delete($this->prefix.$nonceId);
-		
-		return true;
+	public function destroy($nonceId)
+	{
+		return unlink($this->getFilePath($nonceId));
 	}
 	
 	/**
 	 * {@inheritdoc}
 	 * @see \Oka\ApiBundle\Security\Nonce\Storage\Handler\NonceHandlerInterface::gc()
 	 */
-	public function gc(int $maxlifetime)
+	public function gc($maxlifetime)
 	{
 		return true;
+	}
+	
+	/**
+	 * @param int $nonceId
+	 * @return string
+	 */
+	protected function getFilePath($nonceId)
+	{
+		return $this->savePath . '/' . $nonceId;
 	}
 }

@@ -2,6 +2,7 @@
 namespace Oka\ApiBundle\Security\Authentication\Provider;
 
 use Oka\ApiBundle\Security\Authentication\Token\WsseUserToken;
+use Oka\ApiBundle\Security\Nonce\Storage\NonceStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -11,7 +12,7 @@ use Symfony\Component\Security\Core\Exception\LockedException;
 use Symfony\Component\Security\Core\Exception\NonceExpiredException;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Oka\ApiBundle\Security\Nonce\Storage\Nonce;
+use Oka\ApiBundle\Security\Nonce\Nonce;
 
 /**
  * 
@@ -26,9 +27,9 @@ class WsseProvider implements AuthenticationProviderInterface
 	private $clientProvider;
 	
 	/**
-	 * @var string $cacheDir
+	 * @var NonceStorageInterface $nonceStorage
 	 */
-	private $cacheDir;
+	private $nonceStorage;
 	
 	/**
 	 * @var integer $lifetime
@@ -37,13 +38,13 @@ class WsseProvider implements AuthenticationProviderInterface
 	
 	/**
 	 * @param UserProviderInterface $clientProvider
-	 * @param string $cacheDir
+	 * @param NonceStorageInterface $nonceStorage
 	 * @param int $lifetime
 	 */
-	public function __construct(UserProviderInterface $clientProvider, $cacheDir, $lifetime)
+	public function __construct(UserProviderInterface $clientProvider, NonceStorageInterface $nonceStorage, $lifetime)
 	{
 		$this->clientProvider = $clientProvider;
-		$this->cacheDir = $cacheDir;
+		$this->nonceStorage = $nonceStorage;
 		$this->lifetime = $lifetime;
 	}
 	
@@ -97,22 +98,33 @@ class WsseProvider implements AuthenticationProviderInterface
 			throw new AuthenticationException('Created timestamp is not valid.');
 		}
 		
-		$nonceDecoded = base64_decode($nonce);
-		$nonceFilePath = $this->cacheDir.'/'.$nonceDecoded;
+		$nonce = new Nonce(base64_decode($nonce), $this->nonceStorage);
 		
 		// Validate that the nonce is *not* used in the last 5 minutes
 		// if it has, this could be a replay attack
-		if (file_exists($nonceFilePath) && (((int) file_get_contents($nonceFilePath)) + $this->lifetime) > $currentTime) {
+		if ($nonce->isAlreadyUsed($currentTime, $this->lifetime)) {
 			throw new NonceExpiredException('Digest nonce has expired.');
 		}
 		
-		if (!is_dir($this->cacheDir)) {
-			mkdir($this->cacheDir, 0777, true);
-		}
+		$nonce->save($currentTime);
 		
-		file_put_contents($nonceFilePath, $currentTime, LOCK_EX);
+		$expected = base64_encode(sha1($nonce->getId().$created.$secret, true));
 		
-		$expected = base64_encode(sha1($nonceDecoded.$created.$secret, true));
+// 		$nonceDecoded = base64_decode($nonce);
+// 		$nonceFilePath = $this->cacheDir.'/'.$nonceDecoded;
+		
+// 		// Validate that the nonce is *not* used in the last 5 minutes
+// 		// if it has, this could be a replay attack
+// 		if (file_exists($nonceFilePath) && (((int) file_get_contents($nonceFilePath)) + $this->lifetime) > $currentTime) {
+// 			throw new NonceExpiredException('Digest nonce has expired.');
+// 		}
+		
+// 		if (!is_dir($this->cacheDir)) {
+// 			mkdir($this->cacheDir, 0777, true);
+// 		}
+// 		file_put_contents($nonceFilePath, $currentTime, LOCK_EX);
+		
+// 		$expected = base64_encode(sha1($nonceDecoded.$created.$secret, true));
 		
 		// Valid the secret
 		return hash_equals($expected, $digest);
