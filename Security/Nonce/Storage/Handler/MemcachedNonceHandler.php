@@ -1,8 +1,6 @@
 <?php
 namespace Oka\ApiBundle\Security\Nonce\Storage\Handler;
 
-use Oka\ApiBundle\Security\Nonce\Storage\Handler\NonceHandlerInterface;
-
 /**
  * 
  * @author Cedrick Oka Baidai <okacedrick@gmail.com>
@@ -71,7 +69,7 @@ class MemcachedNonceHandler implements NonceHandlerInterface
 	 */
 	public function write($nonceId, $nonceTime)
 	{
-		return $this->memcached->set($this->prefix.$nonceId, $nonceTime, 0, time() + $this->ttl);
+		return $this->memcached->set($this->prefix.$nonceId, $nonceTime, time() + $this->ttl);
 	}
 	
 	/**
@@ -80,9 +78,9 @@ class MemcachedNonceHandler implements NonceHandlerInterface
 	 */
 	public function destroy($nonceId)
 	{
-		$this->memcached->delete($this->prefix.$nonceId);
+		$result = $this->memcached->delete($this->prefix.$nonceId);
 		
-		return true;
+		return $result || $this->memcached->getResultCode() == \Memcached::RES_NOTFOUND;
 	}
 	
 	/**
@@ -91,6 +89,7 @@ class MemcachedNonceHandler implements NonceHandlerInterface
 	 */
 	public function gc($maxlifetime)
 	{
+		// not required here because memcached will auto expire the records anyhow.
 		return true;
 	}
 }

@@ -1,8 +1,6 @@
 <?php
 namespace Oka\ApiBundle\Security\Nonce\Storage\Handler;
 
-use Oka\ApiBundle\Security\Nonce\Storage\Handler\NonceHandlerInterface;
-
 /**
  * 
  * @author Cedrick Oka Baidai <okacedrick@gmail.com>
@@ -91,6 +89,7 @@ class MemcacheNonceHandler implements NonceHandlerInterface
 	 */
 	public function gc($maxlifetime)
 	{
+		// not required here because memcache will auto expire the records anyhow.
 		return true;
 	}
 }

@@ -1,6 +1,11 @@
 Changelog
 =========
 
+#### 1.6.1 (2017-09-17)
+
+* Added `oka_api.firewalls.wsse.nonce.storage_id` configuration values.
+* Added `Oka\ApiBundle\Util\MemcachedWrapper` class.
+
 #### 1.6.0 (2017-09-16)
 
 * Added Nonce Storage Strategy for save WS-Security usernameToken propertie `nonce`.
@@ -16,7 +21,7 @@ Changelog
 
 * [BC break] The signature of the `WsseUserToken` constructor has changed.
 * [BC break] The signature of the `WsseListener` constructor has changed.
-* Added `Security\Authentication\Token\WsseUserToken` properties `$credentials` and associated getter.
+* Added `Oka\ApiBundle\Security\Authentication\Token\WsseUserToken` properties `$credentials` and associated getter.
 * Used `WsseUserToken::setAttribute()` method in `WsseListener` security listener for save the usernameToken properties `digest`, `nonce` and `created`.
 * Translated responses sended by `WsseListener` security listener.
 * Improve `WsseUserProvider::supportsClass()` method.
