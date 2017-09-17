@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 1.6.2
+
+* Fixed Circular reference detected for service "oka_api.wsse.nonce.storage.native", path: "oka_api.wsse.nonce.storage.native -> oka_api.wsse.nonce.storage.native".
+
 #### 1.6.1 (2017-09-17)
 
 * Added `oka_api.firewalls.wsse.nonce.storage_id` configuration values.
