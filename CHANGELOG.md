@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 1.6.4 (2017-09-19)
+
+* Fixed text files should end with a newline character.
+
 #### 1.6.3 (2017-09-19)
 
 * Renamed file from `Changelog.mg` to `CHANGELOG.mg`.
