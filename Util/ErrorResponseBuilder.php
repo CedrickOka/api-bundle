@@ -90,9 +90,17 @@ class ErrorResponseBuilder implements ErrorResponseBuilderInterface
 	/**
 	 * @return \Oka\ApiBundle\Util\ErrorResponseBuilder
 	 */
-	public static function Builder()
+	public static function getInstance()
 	{
 		return new ErrorResponseBuilder();
+	}
+	
+	/**
+	 * @return \Oka\ApiBundle\Util\ErrorResponseBuilder
+	 */
+	public static function Builder()
+	{
+		return self::getInstance();
 	}
 	
 	/**

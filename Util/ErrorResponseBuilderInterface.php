@@ -13,9 +13,15 @@ interface ErrorResponseBuilderInterface
 	const DEFAULT_FORMATS = ['html', 'json', 'xml'];
 	
 	/**
+	 * @deprecated Since version 1.6.3 use instead ErrorResponseBuilderInterface::getInstance() method.
 	 * @return \Oka\ApiBundle\Util\ErrorResponseBuilderInterface
 	 */
 	public static function Builder();
+	
+	/**
+	 * @return \Oka\ApiBundle\Util\ErrorResponseBuilderInterface
+	 */
+	public static function getInstance();
 	
 	/**
 	 * Set Error

@@ -1,60 +1,71 @@
 **Getting Started With OkaApiBundle**
 =====================================
 
-This bundle provides a flexible management of the api.
+This bundle provides a set of components for the design of a REST API.
 
-## Prerequisites
+Prerequisites
+=============
 
 The OkaApiBundle has the following requirements:
  - PHP 5.5
  - Symfony 2.8+
 
-## Installation
+Installation
+============
 
 Installation is a quick (I promise!) 6 step process:
 
 1. Download OkaApiBundle
 2. Enable the Bundle
 3. Create your WsseUser class
-4. Configure the OkaApiBundle
-5. Import OkaApiBundle routing
+4. Configure the Bundle
+5. Import Bundle routing
 6. Update your database schema
 
-### Step 1: Download OkaApiBundle
+Step 1: Download the Bundle
+---------------------------
 
-Add coka/api-bundle to your composer.json file:
+Open a command console, enter your project directory and execute the
+following command to download the latest stable version of this bundle:
 
+```bash
+$ composer require coka/api-bundle
 ```
-php composer.phar require "coka/api-bundle"
-```
 
-### Step 2: Enable the Bundle
+This command requires you to have Composer installed globally, as explained
+in the [installation chapter](https://getcomposer.org/doc/00-intro.md)
+of the Composer documentation.
 
-Register the bundle in `app/AppKernel.php`:
+Step 2: Enable the Bundle
+-------------------------
+
+Then, enable the bundle by adding it to the list of registered bundles
+in the `app/AppKernel.php` file of your project:
 
 ```php
 <?php
-// ...
+// app/AppKernel.php
 
+// ...
 class AppKernel extends Kernel
 {
 	public function registerBundles()
 	{
 		$bundles = array(
 			// ...
+			
 			new Oka\ApiBundle\OkaApiBundle(),
 		);
 		
 		// ...
-		
-		return $bundles;
 	}
 	
 	// ...
 }
 ```
 
-### Step 3: Create your WsseUser class
+Step 3: Create your WsseUser class
+----------------------------------
 
 The goal of this bundle is to  persist some `WsseUser` class to a database (MySql). 
 Your first job, then, is to create the `WsseUser` class for you application. 
@@ -166,7 +177,8 @@ Acme\ApiBundle\Entity\WsseUser:
                 strategy: AUTO
 ```
 
-### Step 4: Configure the OkaApiBundle
+Step 4: Configure the Bundle
+----------------------------
 
 Add the following configuration to your `config.yml`.
 
@@ -231,7 +243,8 @@ security:
       - { path: '^/v1/rest', host: 'api.exemple.com', roles: ROLE_API_USER }
 ```
 
-### Step 5: Import OkaApiBundle routing
+Step 5: Import Bundle routing
+-----------------------------
 
 Now that you have activated and configured the bundle, all that is left to do is
 import the OkaApiBundle routing files.
@@ -244,7 +257,8 @@ oka_api:
     resource: '@OkaApiBundle/Resources/config/routing.yml'
 ```
 
-### Step 6: Update your database schema
+Step 6: Update your database schema
+-----------------------------------
 
 Now that the bundle is configured, the last thing you need to do is update your
 database schema because you have added a new entity, the `WsseUser` class which you

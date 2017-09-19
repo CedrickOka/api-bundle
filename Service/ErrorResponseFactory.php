@@ -143,7 +143,7 @@ class ErrorResponseFactory
 	protected function getBuilderInstance()
 	{
 		if ($this->builderClass === null) {
-			return ErrorResponseBuilder::Builder();
+			return ErrorResponseBuilder::getInstance();
 		}
 		
 		$reflClass = new \ReflectionClass($this->builderClass);
@@ -151,7 +151,7 @@ class ErrorResponseFactory
 			throw new \UnexpectedValueException(sprintf('The builder class must implementing interface "%s", "%s" given.',ErrorResponseBuilderInterface::class, $this->builderClass));
 		}
 		
-		$reflMethod = new \ReflectionMethod($this->builderClass, 'Builder');
+		$reflMethod = new \ReflectionMethod($this->builderClass, 'getInstance');
 		return $reflMethod->invoke();
 	}
 }

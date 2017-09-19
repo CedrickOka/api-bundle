@@ -13,7 +13,7 @@ class ErrorResponseBuilderTest extends KernelTestCase
 {
 	public function testBuildHtmlResponse()
 	{
-		$builder = ErrorResponseBuilder::Builder();
+		$builder = ErrorResponseBuilder::getInstance();
 		/** @var \Symfony\Component\HttpFoundation\Response $response */
 		$response = $builder->setFormat('html')
 							->setError('Bad request.', 400)
@@ -29,7 +29,7 @@ class ErrorResponseBuilderTest extends KernelTestCase
 	
 	public function testBuildJsonResponse()
 	{
-		$builder = ErrorResponseBuilder::Builder();
+		$builder = ErrorResponseBuilder::getInstance();
 		/** @var \Symfony\Component\HttpFoundation\Response $response */
 		$response = $builder->setError('Bad request.', 400)
 							->addChildError('Bad request.', 400, 'username', ['invalidValue' => 'papa'])

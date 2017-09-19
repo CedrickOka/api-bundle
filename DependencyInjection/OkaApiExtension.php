@@ -29,7 +29,7 @@ class OkaApiExtension extends Extension
 	{
 		$configuration = new Configuration();
 		$config = $this->processConfiguration($configuration, $configs);
-
+		
 		$loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 		$loader->load('services.yml');
 		
@@ -54,11 +54,6 @@ class OkaApiExtension extends Extension
 		if (true === $config['firewalls']['wsse']['enabled']) {
 			$this->createWsseAuthenticationConfig($config, $container);
 		}
-		
-		// JSON Web Token firewalls configuration
-// 		if ($config['firewalls']['jwt']['enabled']) {
-// 			$this->createJWTAuthenticationConfig($config, $container);
-// 		}
 	}
 	
 	private function createCorsSupportConfig(array $config, ContainerBuilder $container)
@@ -133,33 +128,5 @@ class OkaApiExtension extends Extension
 			$wsseUserAllowedIpsVoterDefinition->setPublic(false);
 			$container->setDefinition('oka_api.wsse.security.authorization.allowed_ips_voter', $wsseUserAllowedIpsVoterDefinition);
 		}
-	}
-	
-	private function createJWTAuthenticationConfig(array $config, ContainerBuilder $container)
-	{
-		$jwtConfig = $config['firewalls']['jwt'];
-		$container->setParameter('oka_api.jwt.authentication.token_ttl', $jwtConfig['token']['ttl']);
-		$container->setParameter('oka_api.jwt.log_channel', $jwtConfig['log_channel']);
-		
-		$requestMatcherDefinition = $container->getDefinition('oka_api.jwt.firewall.request_matcher');
-		$requestMatcherDefinition->replaceArgument(1, $jwtConfig['token']['extractors']);
-		
-		$this->createJWTTokenEncoder($jwtConfig['token']['encoder'], $container);
-		$this->createJWTTokenExtractors($jwtConfig['token']['extractors'], $container);
-	}
-	
-	private function createJWTTokenEncoder(array $config, ContainerBuilder $container) {}
-	
-	private function createJWTTokenExtractors(array $config, ContainerBuilder $container)
-	{
-		if ($config['authorization_header']['enabled']) {
-// 			$headerExtractorDefinition = $container->getDefinition('oka_api.jwt.authentication.token_extractor.authorization_header');
-// 			$headerExtractorDefinition->replaceArgument(0, $config['authorization_header']['prefix']);
-// 			$headerExtractorDefinition->replaceArgument(1, $config['authorization_header']['name']);
-		}
-		
-		if ($config['query_parameter']['enabled']) {}
-		
-		if ($config['cookie']['enabled']) {}
 	}
 }

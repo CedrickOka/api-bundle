@@ -66,7 +66,6 @@ class Configuration implements ConfigurationInterface
 									->append($this->getLogChannelNodeDefinition('wsse'))
 								->end()
 							->end()
-// 							->append($this->getJWTFirewallNodeDefintion('jwt'))
 						->end()
 						->info('This value configure API firewalls.')
 					->end()

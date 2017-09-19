@@ -1,6 +1,16 @@
 Changelog
 =========
 
+#### 1.6.3 (2017-09-19)
+
+* Renamed file from `Changelog.mg` to `CHANGELOG.mg`.
+* Updated `CHANGELOG`.
+* Updated `READMED`.
+* Updated `LICENCE`.
+* Updated documentation.
+* Fixed text files should end with a newline character.
+* Deprecated `ErrorResponseBuilderInterface::Builder()` method use instead `ErrorResponseBuilderInterface::getInstance()`.
+
 #### 1.6.2 (2017-09-17)
 
 * Fixed Circular reference detected for service "oka_api.wsse.nonce.storage.native", path: "oka_api.wsse.nonce.storage.native -> oka_api.wsse.nonce.storage.native".

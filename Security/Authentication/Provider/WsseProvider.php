@@ -110,22 +110,6 @@ class WsseProvider implements AuthenticationProviderInterface
 		
 		$expected = base64_encode(sha1($nonce->getId().$created.$secret, true));
 		
-// 		$nonceDecoded = base64_decode($nonce);
-// 		$nonceFilePath = $this->cacheDir.'/'.$nonceDecoded;
-		
-// 		// Validate that the nonce is *not* used in the last 5 minutes
-// 		// if it has, this could be a replay attack
-// 		if (file_exists($nonceFilePath) && (((int) file_get_contents($nonceFilePath)) + $this->lifetime) > $currentTime) {
-// 			throw new NonceExpiredException('Digest nonce has expired.');
-// 		}
-		
-// 		if (!is_dir($this->cacheDir)) {
-// 			mkdir($this->cacheDir, 0777, true);
-// 		}
-// 		file_put_contents($nonceFilePath, $currentTime, LOCK_EX);
-		
-// 		$expected = base64_encode(sha1($nonceDecoded.$created.$secret, true));
-		
 		// Valid the secret
 		return hash_equals($expected, $digest);
 	}

@@ -60,8 +60,6 @@ class JwtGuardAuthenticator extends AbstractGuardAuthenticator
 	
 	public function getUser($credentials, UserProviderInterface $userProvider)
 	{
-		/** @var \Lcobucci\JWT\Token $jwtToken */
-		$jwtToken = $credentials['token'];
 		$user = $userProvider->loadUserByUsername($credentials['username']);
 		
 		if (!$user instanceof $this->userClass) {
