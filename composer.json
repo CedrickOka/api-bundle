@@ -14,7 +14,7 @@
 	],
 	"authors" : [{
 			"name" : "Cedrick Oka Baidai",
-			"email" : "cedrickoka@fermentuse.com"
+			"email" : "okacedrick@gmail.com"
 		}
 	],
 	"minimum-stability" : "dev",
@@ -59,4 +59,3 @@
 		"docs" : "https://github.com/CedrickOka/oka-api/blob/master/Resources/doc/index.md"
 	}
 }
-

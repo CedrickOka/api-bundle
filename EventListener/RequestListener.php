@@ -83,7 +83,6 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 	public function onKernelResponse(FilterResponseEvent $event)
 	{
 		$request = $event->getRequest();
-		$requestHeaders = $request->headers;
 		$responseHeaders = $event->getResponse()->headers;
 		
 		// Utils Server
@@ -94,10 +93,6 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 				$event = $this->stopWatch->stop(self::STOP_WATCH_API_EVENT_NAME);
 				$responseHeaders->set('X-Request-Duration', $event->getDuration() / 1000);
 			}
-		}
-		
-		if ($requestHeaders->has('x-wsse')) {
-			$responseHeaders->set('X-Secure-With', 'WSSE');
 		}
 	}
 	

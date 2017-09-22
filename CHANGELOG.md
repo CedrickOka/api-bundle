@@ -1,6 +1,11 @@
 Changelog
 =========
 
+#### 1.6.5 (2017-09-22)
+
+* Removed custom response header `X-Secure-With`.
+* Updated composer.json.
+
 #### 1.6.4 (2017-09-19)
 
 * Fixed text files should end with a newline character.
