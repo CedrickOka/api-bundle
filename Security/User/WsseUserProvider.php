@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 /**
  * 
- * @author cedrick
+ * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  * 
  */
 class WsseUserProvider implements UserProviderInterface

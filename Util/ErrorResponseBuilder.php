@@ -96,15 +96,6 @@ class ErrorResponseBuilder implements ErrorResponseBuilderInterface
 	}
 	
 	/**
-	 * @deprecated Since version 1.6.3 use instead ErrorResponseBuilderInterface::getInstance() method.
-	 * @return \Oka\ApiBundle\Util\ErrorResponseBuilder
-	 */
-	public static function Builder()
-	{
-		return self::getInstance();
-	}
-	
-	/**
 	 * Set Error
 	 * 
 	 * @param string $message
