@@ -58,13 +58,31 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 	/**
 	 * @param FilterControllerEvent $event
 	 */
-	public function onAccessControlAnnotation(FilterControllerEvent $event)
+	public function onController(FilterControllerEvent $event)
 	{
 		if (!$event->isMasterRequest() || !is_array($controller = $event->getController())) {
 			return;
 		}
 		
-		if (!$annotation = $this->reader->getMethodAnnotation(new \ReflectionMethod($controller[0], $controller[1]), AccessControl::class)) {
+		$listeners = ['onAccessControlAnnotation', 'onRequestContentAnnotation'];
+		$reflMethod = new \ReflectionMethod($controller[0], $controller[1]);
+		
+		foreach ($listeners as $listener) {
+			$this->$listener($event, $reflMethod);
+			
+			if (true === $event->isPropagationStopped()) {
+				return;
+			}
+		}
+	}
+	
+	/**
+	 * @param FilterControllerEvent $event
+	 * @param \ReflectionMethod $reflMethod
+	 */
+	private function onAccessControlAnnotation(FilterControllerEvent $event, \ReflectionMethod $reflMethod)
+	{
+		if (!$annotation = $this->reader->getMethodAnnotation($reflMethod, AccessControl::class)) {
 			return;
 		}
 		
@@ -108,20 +126,18 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 	
 	/**
 	 * @param FilterControllerEvent $event
+	 * @param \ReflectionMethod $reflMethod
 	 */
-	public function onRequestContentAnnotation(FilterControllerEvent $event)
+	private function onRequestContentAnnotation(FilterControllerEvent $event, \ReflectionMethod $reflMethod)
 	{
-		if (!$event->isMasterRequest() || !is_array($controller = $event->getController())) {
-			return;
-		}
-		
-		if (!$annotation = $this->reader->getMethodAnnotation(new \ReflectionMethod($controller[0], $controller[1]), RequestContent::class)) {
+		if (!$annotation = $this->reader->getMethodAnnotation($reflMethod, RequestContent::class)) {
 			return;
 		}
 		
 		$errors = null;
 		$validationHasFailed = false;
 		$request = $event->getRequest();
+		$controller = $event->getController();
 		
 		// Retrieve query paramters in URI or request content
 		$requestContent = $request->isMethod('GET') ? $request->query->all() : RequestUtil::getContentLikeArray($request);
@@ -168,10 +184,7 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 	public static function getSubscribedEvents()
 	{
 		return [
-				KernelEvents::CONTROLLER => [
-						['onAccessControlAnnotation', 3], 
-						['onRequestContentAnnotation', 2]
-				]
+				KernelEvents::CONTROLLER => 'onController'
 		];
 	}
 }
