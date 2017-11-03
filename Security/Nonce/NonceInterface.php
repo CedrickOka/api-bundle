@@ -14,6 +14,11 @@ interface NonceInterface
 	public function getId();
 	
 	/**
+	 * @return int The timestamp at which the nonce was created
+	 */
+	public function getIssuedAt();
+	
+	/**
 	 * Indicates whether the nonce is already registered in the nonce storage
 	 * and validate that the nonce is *not* used in the last minutes equals at the lifetime
 	 * 

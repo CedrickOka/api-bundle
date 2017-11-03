@@ -24,9 +24,9 @@ class FileNonceHandler implements NonceHandlerInterface
 	 * {@inheritdoc}
 	 * @see \Oka\ApiBundle\Security\Nonce\Storage\Handler\NonceHandlerInterface::open()
 	 */
-	public function open($savePath, $nonceId)
+	public function open($savePath)
 	{
-		if (null === $this->savePath) {
+		if ($savePath) {
 			$this->savePath = $savePath;
 		}
 		

@@ -37,9 +37,9 @@ class NonceHandlerProxy implements NonceHandlerInterface
 	 * {@inheritdoc}
 	 * @see \Oka\ApiBundle\Security\Nonce\Storage\Handler\NonceHandlerInterface::open()
 	 */
-	public function open($savePath, $nonceId)
+	public function open($savePath)
 	{
-		$return = (bool) $this->handler->open($savePath, $nonceId);
+		$return = (bool) $this->handler->open($savePath);
 		
 		if (true === $return) {
 			$this->active = true;

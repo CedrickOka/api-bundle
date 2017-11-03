@@ -1,6 +1,14 @@
 Changelog
 =========
 
+#### 1.8.0 (2017-11-03)
+
+* Deprecated `oka_api.firewalls.wsse.nonce.storage_id` configuration values.
+* Removed `Oka\ApiBundle\Security\Nonce\Storage\NonceStorageInterface` interface.
+* Removed `Oka\ApiBundle\Security\Nonce\Storage\NativeNonceStorage` class.
+* [BC break] Added `NonceInterface::getIssuedAt()`.
+* [BC break] Modified `NonceHandlerInterface::open()` signature.
+
 #### 1.7.0 (2017-10-13)
 
 * Improve Request listener handling.
@@ -8,14 +16,14 @@ Changelog
 #### 1.6.6 (2017-09-22)
 
 * Updated composer.json.
-* [BC Breaking] Removed `ErrorResponseBuilderInterface::Builder()` deprecated method since bundle version `1.6.3`.
-* [BC Breaking] Removed `ErrorResponseBuilder::Builder()` deprecated method since bundle version `1.6.3`.
+* [BC break] Removed `ErrorResponseBuilderInterface::Builder()` deprecated method since bundle version `1.6.3`.
+* [BC break] Removed `ErrorResponseBuilder::Builder()` deprecated method since bundle version `1.6.3`.
 
 #### 1.6.6 (2017-09-22)
 
 * Updated composer.json.
-* [BC Breaking] Removed `ErrorResponseBuilderInterface::Builder()` deprecated method since bundle version `1.6.3`.
-* [BC Breaking] Removed `ErrorResponseBuilder::Builder()` deprecated method since bundle version `1.6.3`.
+* [BC break] Removed `ErrorResponseBuilderInterface::Builder()` deprecated method since bundle version `1.6.3`.
+* [BC break] Removed `ErrorResponseBuilder::Builder()` deprecated method since bundle version `1.6.3`.
 
 #### 1.6.5 (2017-09-22)
 

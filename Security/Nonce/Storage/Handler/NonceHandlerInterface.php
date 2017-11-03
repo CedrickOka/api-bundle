@@ -14,12 +14,9 @@ interface NonceHandlerInterface
 	 * @param string $savePath <p>
 	 * The path where to store/retrieve the nonce.
 	 * </p>
-	 * @param string $nonceId <p>
-	 * The nonce id.
-	 * </p>
 	 * @return bool The return value (usually true on success, false on failure).
 	 */
-	public function open($savePath, $nonceId);
+	public function open($savePath);
 	
 	/**
 	 * Close the nonce

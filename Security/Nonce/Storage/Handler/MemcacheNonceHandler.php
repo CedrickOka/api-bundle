@@ -40,7 +40,7 @@ class MemcacheNonceHandler implements NonceHandlerInterface
 	 * {@inheritdoc}
 	 * @see \Oka\ApiBundle\Security\Nonce\Storage\Handler\NonceHandlerInterface::open()
 	 */
-	public function open($savePath, $nonceId)
+	public function open($savePath)
 	{
 		return true;
 	}

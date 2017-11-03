@@ -2,7 +2,8 @@
 namespace Oka\ApiBundle\Security\Authentication\Provider;
 
 use Oka\ApiBundle\Security\Authentication\Token\WsseUserToken;
-use Oka\ApiBundle\Security\Nonce\Storage\NonceStorageInterface;
+use Oka\ApiBundle\Security\Nonce\Nonce;
+use Oka\ApiBundle\Security\Nonce\Storage\Handler\NonceHandlerInterface;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -12,7 +13,6 @@ use Symfony\Component\Security\Core\Exception\LockedException;
 use Symfony\Component\Security\Core\Exception\NonceExpiredException;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Oka\ApiBundle\Security\Nonce\Nonce;
 
 /**
  * 
@@ -27,9 +27,9 @@ class WsseProvider implements AuthenticationProviderInterface
 	private $clientProvider;
 	
 	/**
-	 * @var NonceStorageInterface $nonceStorage
+	 * @var NonceHandlerInterface $nonceHandler
 	 */
-	private $nonceStorage;
+	private $nonceHandler;
 	
 	/**
 	 * @var integer $lifetime
@@ -38,13 +38,13 @@ class WsseProvider implements AuthenticationProviderInterface
 	
 	/**
 	 * @param UserProviderInterface $clientProvider
-	 * @param NonceStorageInterface $nonceStorage
+	 * @param NonceHandlerInterface $nonceHandler
 	 * @param int $lifetime
 	 */
-	public function __construct(UserProviderInterface $clientProvider, NonceStorageInterface $nonceStorage, $lifetime)
+	public function __construct(UserProviderInterface $clientProvider, NonceHandlerInterface $nonceHandler, $lifetime)
 	{
 		$this->clientProvider = $clientProvider;
-		$this->nonceStorage = $nonceStorage;
+		$this->nonceHandler = $nonceHandler;
 		$this->lifetime = $lifetime;
 	}
 	
@@ -98,7 +98,7 @@ class WsseProvider implements AuthenticationProviderInterface
 			throw new AuthenticationException('Created timestamp is not valid.');
 		}
 		
-		$nonce = new Nonce(base64_decode($nonce), $this->nonceStorage);
+		$nonce = new Nonce(base64_decode($nonce), $this->nonceHandler);
 		
 		// Validate that the nonce is *not* used in the last 5 minutes
 		// if it has, this could be a replay attack

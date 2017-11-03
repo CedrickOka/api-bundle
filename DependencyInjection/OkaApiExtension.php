@@ -79,7 +79,6 @@ class OkaApiExtension extends Extension
 		$container->setParameter('oka_api.wsse_user_class', $userClass);
 		
 		// Configure Nonce
-		$nonceStorageId = $wsseConfig['nonce']['storage_id'];
 		$nonceHandlerId = $wsseConfig['nonce']['handler_id'];
 		$nonceSavePath = $wsseConfig['nonce']['save_path'] ?: $container->getParameter('kernel.cache_dir') . '/oka_security/nonces';
 		
@@ -89,15 +88,6 @@ class OkaApiExtension extends Extension
 			$nonceHandlerDefintion->addArgument($nonceSavePath);
 			$nonceHandlerDefintion->setPublic(false);
 			$container->setDefinition($nonceHandlerId, $nonceHandlerDefintion);
-		}
-		
-		if (null === $nonceStorageId) {
-			$nonceStorageId = 'oka_api.wsse.nonce.storage.native';
-			$nonceStorageDefinition = new Definition(NativeNonceStorage::class);
-			$nonceStorageDefinition->addArgument(new Reference($nonceHandlerId));
-			$nonceStorageDefinition->addArgument($nonceSavePath);
-			$nonceStorageDefinition->setPublic(false);
-			$container->setDefinition($nonceStorageId, $nonceStorageDefinition);
 		}
 		
 		// Configure wsse User provider
@@ -115,7 +105,7 @@ class OkaApiExtension extends Extension
 		
 		// Configure wsse authentication provider
 		$wsseAuthenticationProviderDefinition = $container->getDefinition('oka_api.wsse.security.authentication.provider');
-		$wsseAuthenticationProviderDefinition->replaceArgument(1, new Reference($nonceStorageId));
+		$wsseAuthenticationProviderDefinition->replaceArgument(1, new Reference($nonceHandlerId));
 		
 		// Configure wsse security firewall
 		$wsseListenerDefinition = $container->getDefinition('oka_api.wsse.security.authentication.listener');
