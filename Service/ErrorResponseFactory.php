@@ -130,7 +130,7 @@ class ErrorResponseFactory
 		}
 		
 		return $this->getBuilderInstance()
-					->setError($exception->getMessage(), $exception->getCode() ?: 500, $property, $extras)
+					->setError($exception->getMessage(), (int) $exception->getCode(), $property, $extras)
 					->setHttpSatusCode($httpStatusCode)
 					->setHttpHeaders($httpHeaders)
 					->setFormat($format)

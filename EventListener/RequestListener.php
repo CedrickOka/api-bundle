@@ -21,6 +21,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
 use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * 
@@ -113,8 +114,8 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 			
 			if ($exception instanceof UnauthorizedHttpException) {
 				$response = $this->errorFactory->createFromException($exception, null, [], $exception->getStatusCode(), [], $format);
-			} elseif ($exception instanceof InsufficientAuthenticationException) {
-				$response = $this->errorFactory->createFromException($exception, null, [], 403, [], $format);
+			} elseif($exception instanceof AuthenticationException) {
+				$response = $this->errorFactory->create($exception->getMessage(), 403, null, [], 403, [], $format);
 			} elseif($exception instanceof BadRequestHttpException) {
 				$response = $this->errorFactory->createFromException($exception, null, [], $exception->getStatusCode(), [], $format);
 			} elseif ($exception instanceof NotFoundHttpException) {
@@ -123,8 +124,6 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 				$response = $this->errorFactory->createFromException($exception, null, [], $exception->getStatusCode(), [], $format);
 			} elseif ($exception instanceof NotAcceptableHttpException) {
 				$response = $this->errorFactory->createFromException($exception, null, [], $exception->getStatusCode(), [], $format);
-			} elseif($exception instanceof AuthenticationException) {
-				$response = $this->errorFactory->create($exception->getMessage(), 403, null, [], 403, [], $format);
 			} else {
 				if ($exception instanceof HttpException) {
 					$response = $this->errorFactory->createFromException($exception, null, [], $exception->getStatusCode(), [], $format);
