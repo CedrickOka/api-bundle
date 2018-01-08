@@ -1,6 +1,15 @@
 Changelog
 =========
 
+#### 1.9.0 (2018-01-08)
+
+* Improves errors management for `Symfony\Component\Security\Core\User\AdvancedUserInterface` interface for wsse firewalls.
+* Adds support for symfony framework 3.x.x.
+
+#### 1.8.1 (2017-11-15)
+
+* Improved request execption handling.
+
 #### 1.8.0 (2017-11-03)
 
 * Deprecated `oka_api.firewalls.wsse.nonce.storage_id` configuration values.

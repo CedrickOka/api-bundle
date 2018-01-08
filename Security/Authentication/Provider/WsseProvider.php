@@ -13,6 +13,8 @@ use Symfony\Component\Security\Core\Exception\LockedException;
 use Symfony\Component\Security\Core\Exception\NonceExpiredException;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Security\Core\Exception\AccountExpiredException;
+use Symfony\Component\Security\Core\Exception\CredentialsExpiredException;
 
 /**
  * 
@@ -62,12 +64,20 @@ class WsseProvider implements AuthenticationProviderInterface
 		}
 		
 		if ($client instanceof AdvancedUserInterface) {
-			if ($client->isEnabled() === false) {
+			if (false === $client->isEnabled()) {
 				throw new DisabledException('Account is disabled.');
 			}
 			
-			if ($client->isAccountNonLocked() === false) {
+			if (false === $client->isAccountNonLocked()) {
 				throw new LockedException('Account is locked.');
+			}
+			
+			if (false === $client->isAccountNonExpired()) {
+				throw new AccountExpiredException('Account has expired.');
+			}
+			
+			if (false === $client->isCredentialsNonExpired()) {
+				throw new CredentialsExpiredException('Credentials have expired.');
 			}
 		}
 		
