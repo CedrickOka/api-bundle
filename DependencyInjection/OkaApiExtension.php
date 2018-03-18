@@ -37,13 +37,14 @@ class OkaApiExtension extends Extension
 		$container->setParameter('oka_api.http_host', $config['host']);
 		$container->setParameter('oka_api.log_channel', $config['log_channel']);
 		$container->setParameter('oka_api.client_class', $config['client_class']);
-		$container->setParameter('oka_api.response.error_builder_class', $config['response']['error_builder_class']);
 		
 		// Doctrine configuration
 		$container->setAlias('oka_api.doctrine_registry', new Alias('doctrine', false));
 		$definition = $container->getDefinition('oka_api.object_manager');
 		$definition->replaceArgument(0, $config['model_manager_name']);
 		$definition->setFactory([new Reference('oka_api.doctrine_registry'), 'getManager']);
+		
+		$this->createResponseConfig($config['response'], $container);
 		
 		// CORS support configuration
 		if (!empty($config['cors'])) {
@@ -117,6 +118,24 @@ class OkaApiExtension extends Extension
 			$wsseUserAllowedIpsVoterDefinition->addTag('security.voter');
 			$wsseUserAllowedIpsVoterDefinition->setPublic(false);
 			$container->setDefinition('oka_api.wsse.security.authorization.allowed_ips_voter', $wsseUserAllowedIpsVoterDefinition);
+		}
+	}
+	
+	private function createResponseConfig(array $config, ContainerBuilder $container)
+	{
+		$container->setParameter('oka_api.response.error_builder_class', $config['error_builder_class']);
+		
+		if (true === $config['compression']['enabled']) {
+			if (null === $config['compression']['encoder']) {
+				$config['compression']['encoder'] = 'oka_api.response.default_content_encoder';
+				$container->setDefinition($config['compression']['encoder'], new Definition('Oka\ApiBundle\Encoder\ResponseContentEncoder'));
+			}
+			
+			$definition = new Definition('Oka\ApiBundle\EventListener\ResponseCompressListener');
+			$definition->addArgument(new Reference('oka_api.request_matcher.host'));
+			$definition->addArgument(new Reference($config['compression']['encoder']));
+			$definition->addTag('kernel.event_subscriber');
+			$container->setDefinition('oka_api.response_compress.event_listener', $definition);
 		}
 	}
 }

@@ -37,12 +37,10 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 		$request = $event->getRequest();
 		$exception = $event->getException();
 		
-		if ($exception instanceof MethodNotAllowedHttpException && $request->isMethod('OPTIONS') && $request->headers->has('Origin')) {
-			$response = new Response();
-			
+		if ($exception instanceof MethodNotAllowedHttpException && true === $request->isMethod('OPTIONS') && true === $request->headers->has('Origin')) {			
 			foreach ($this->parameters as $cors) {
 				if (true === $this->match($request, $cors[CorsOptions::HOST], $cors[CorsOptions::PATTERN])) {
-					$this->apply($request, $response, $cors);
+					$response = $this->apply($request, new Response(), $cors);
 					$event->setResponse($response);
 					break;
 				}
@@ -63,7 +61,8 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 	 * @param string $pattern
 	 * @return boolean
 	 */
-	private function match(Request $request, $host, $pattern) {
+	private function match(Request $request, $host, $pattern)
+	{
 		if (isset($host) && $request->getHost() !== $host) {
 			return false;
 		}
@@ -79,8 +78,10 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 	 * @param Request $request
 	 * @param Response $response
 	 * @param array $cors
+	 * @return Response
 	 */
-	private function apply(Request $request, Response $response, array $cors = []) {
+	private function apply(Request $request, Response $response, array $cors = [])
+	{
 		// Define CORS allow_origin
 		$response->headers->set('Access-Control-Allow-Origin', !empty($cors[CorsOptions::ALLOW_ORIGIN]) ? implode('|', $cors[CorsOptions::ALLOW_ORIGIN]) : '*');
 		

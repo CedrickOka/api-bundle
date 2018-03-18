@@ -18,10 +18,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
 use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\Component\Translation\TranslatorInterface;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * 
@@ -73,7 +71,7 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 	{
 		$request = $event->getRequest();
 		
-		if ($event->isMasterRequest() && $this->hostMatcher->matches($request) && $request->query->get('debug', false)) {
+		if (true === $event->isMasterRequest() && true === $this->hostMatcher->matches($request) && true === $request->query->has('debug')) {
 			$this->stopWatch->start(self::STOP_WATCH_API_EVENT_NAME);
 		}
 	}
@@ -89,8 +87,8 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 		// Utils Server
 		$responseHeaders->set('X-Server-Time', date('c'));
 		
-		if ($event->isMasterRequest() && $this->hostMatcher->matches($request) && $request->query->get('debug', false)) {
-			if ($this->stopWatch->isStarted(self::STOP_WATCH_API_EVENT_NAME)) {
+		if (true === $event->isMasterRequest() && true === $this->hostMatcher->matches($request) && true === $request->query->has('debug')) {
+			if (true === $this->stopWatch->isStarted(self::STOP_WATCH_API_EVENT_NAME)) {
 				$event = $this->stopWatch->stop(self::STOP_WATCH_API_EVENT_NAME);
 				$responseHeaders->set('X-Request-Duration', $event->getDuration() / 1000);
 			}
@@ -102,13 +100,13 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 	 */
 	public function onKernelException(GetResponseForExceptionEvent $event)
 	{
-		if (!$event->isMasterRequest() || $this->environment === 'dev') {
+		if (false === $event->isMasterRequest() || $this->environment === 'dev') {
 			return;
 		}
 		
 		$request = $event->getRequest();
 		
-		if ($this->hostMatcher->matches($request)) {
+		if (true === $this->hostMatcher->matches($request)) {
 			$exception = $event->getException();
 			$format = $request->attributes->has('format') ? $request->attributes->get('format') : RequestUtil::getFirstAcceptableFormat($request) ?: 'json';
 			

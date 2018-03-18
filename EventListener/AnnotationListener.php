@@ -60,7 +60,7 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 	 */
 	public function onController(FilterControllerEvent $event)
 	{
-		if (!$event->isMasterRequest() || !is_array($controller = $event->getController())) {
+		if (false === $event->isMasterRequest() || false === is_array($controller = $event->getController())) {
 			return;
 		}
 		
@@ -82,7 +82,8 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 	 */
 	private function onAccessControlAnnotation(FilterControllerEvent $event, \ReflectionMethod $reflMethod)
 	{
-		if (!$annotation = $this->reader->getMethodAnnotation($reflMethod, AccessControl::class)) {
+		/** @var \Oka\ApiBundle\Annotation\AccessControl $annotation */
+		if (!$annotation = $this->reader->getMethodAnnotation($reflMethod, 'Oka\ApiBundle\Annotation\AccessControl')) {
 			return;
 		}
 		
@@ -90,13 +91,13 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 		$acceptablesContentTypes = $request->getAcceptableContentTypes();
 		
 		// Configure acceptable content type of response
-		if (empty($acceptablesContentTypes) || in_array('*/*', $acceptablesContentTypes, true)) {
+		if (true === empty($acceptablesContentTypes) || true === in_array('*/*', $acceptablesContentTypes, true)) {
 			$request->attributes->set('format', $annotation->getFormats()[0]);
 		} else {
 			foreach ($acceptablesContentTypes as $contentType) {
 				$format = $request->getFormat($contentType);
 				
-				if (in_array($format, $annotation->getFormats(), true)) {
+				if (true === in_array($format, $annotation->getFormats(), true)) {
 					$request->attributes->set('format', $format);
 					break;
 				}
@@ -112,11 +113,13 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 			$response = $this->errorFactory->create($this->translator->trans('response.not_acceptable_api_version', ['%version%' => $version], 'OkaApiBundle'), 406, null, [], 406, [], $format);
 		} elseif (strtolower($protocol) !== $annotation->getProtocol()) {
 			$response = $this->errorFactory->create($this->translator->trans('response.not_acceptable_protocol', ['%version%' => $protocol], 'OkaApiBundle'), 406, null, [], 406, [], $format);
-		} elseif (!$request->attributes->has('format')) {
+		} elseif (false === $request->attributes->has('format')) {
 			$response = $this->errorFactory->create($this->translator->trans('response.not_acceptable_format', ['%formats%' => implode(', ', $request->getAcceptableContentTypes())], 'OkaApiBundle'), 406, null, [], 406, [], $format);
 		}
 		
-		if ($response !== null) {
+		if (null === $response) {
+			$version = $request->attributes->set('versionNumber', $annotation->getVersionNumber());
+		} else {
 			$event->stopPropagation();
 			$event->setController(function(Request $request) use ($response) {
 				return $response;
@@ -130,7 +133,7 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 	 */
 	private function onRequestContentAnnotation(FilterControllerEvent $event, \ReflectionMethod $reflMethod)
 	{
-		if (!$annotation = $this->reader->getMethodAnnotation($reflMethod, RequestContent::class)) {
+		if (!$annotation = $this->reader->getMethodAnnotation($reflMethod, 'Oka\ApiBundle\Annotation\RequestContent')) {
 			return;
 		}
 		
@@ -143,16 +146,16 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 		$requestContent = $request->isMethod('GET') ? $request->query->all() : RequestUtil::getContentLikeArray($request);
 		
 		if (true === $annotation->isEnableValidation()) {
-			if (!empty($requestContent)) {
+			if (false === empty($requestContent)) {
 				$constraints = $annotation->getConstraints();
 				$reflectionMethod = new \ReflectionMethod($controller[0], $constraints);
 				
 				if (false === $reflectionMethod->isStatic()) {
-					throw new \InvalidArgumentException(sprintf('Invalid option(s) passed to @%s: Constraints method "%s" is not static.', RequestContent::class, $constraints));
+					throw new \InvalidArgumentException(sprintf('Invalid option(s) passed to @%s: Constraints method "%s" is not static.', get_class($annotation), $constraints));
 				}
 				
 				if ($reflectionMethod->getNumberOfParameters() > 0) {
-					throw new \InvalidArgumentException(sprintf('Invalid option(s) passed to @%s: Constraints method "%s" must not have of arguments.', RequestContent::class, $constraints));
+					throw new \InvalidArgumentException(sprintf('Invalid option(s) passed to @%s: Constraints method "%s" must not have of arguments.', get_class($annotation), $constraints));
 				}
 				
 				$reflectionMethod->setAccessible(true);
@@ -163,12 +166,14 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 			}
 		}
 		
-		if ($validationHasFailed === true) {
+		if (false === $validationHasFailed) {
+			$request->attributes->set('requestContent', $requestContent);
+		} else {
 			$event->setController(function(Request $request) use ($annotation, $errors) {
 				$message = $this->translator->trans($annotation->getValidationErrorMessage(), $annotation->getTranslationParameters(), $annotation->getTranslationDomain());
 				$format = $request->attributes->has('format') ? $request->attributes->get('format') : RequestUtil::getFirstAcceptableFormat($request) ?: 'json';
 				
-				if ($errors === null) {
+				if (null === $errors) {
 					$response = $this->errorFactory->create($message, 400, null, [], 400, [], $format);
 				} else {
 					$response = $this->errorFactory->createFromConstraintViolationList($errors, $message, 400, null, [], 400, [], $format);
@@ -176,8 +181,6 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 				
 				return $response;
 			});
-		} else {
-			$request->attributes->set('requestContent', $requestContent);
 		}
 	}
 	

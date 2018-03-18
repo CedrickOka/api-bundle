@@ -1,6 +1,11 @@
 Changelog
 =========
 
+#### 1.10.0 (2018-03-18)
+
+* Added Response content compression Component.
+* Added `oka_api.response.compression` array configuration values.
+
 #### 1.9.0 (2018-01-08)
 
 * Improves errors management for `Symfony\Component\Security\Core\User\AdvancedUserInterface` interface for wsse firewalls.
