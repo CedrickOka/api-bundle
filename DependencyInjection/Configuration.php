@@ -74,7 +74,7 @@ class Configuration implements ConfigurationInterface
 							->scalarNode('error_builder_class')->defaultNull()->end()
 							->arrayNode('compression')
 								->addDefaultsIfNotSet()
-								->canBeDisabled()
+								->canBeEnabled()
 								->children()
 									->scalarNode('encoder')
 										->defaultNull()

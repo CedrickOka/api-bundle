@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 1.10.1 (2018-03-21)
+
+* Marked `oka_api.response.compression.enabled` configuration value has `false` by default.
+
 #### 1.10.0 (2018-03-18)
 
 * Added Response content compression Component.

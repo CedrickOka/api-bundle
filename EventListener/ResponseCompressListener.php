@@ -53,7 +53,6 @@ class ResponseCompressListener implements EventSubscriberInterface
 						if (true === $this->encoder->supports($encoding)) {
 							$response->setContent($this->encoder->encode($encoding, $content));
 							$response->headers->set('Content-Encoding', $encoding);
-							$response->headers->set('Content-Length', mb_strlen($response->getContent()));
 							break;
 						}
 					}
