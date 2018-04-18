@@ -38,8 +38,7 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 		if (false === $request->isMethod('OPTIONS') && true === $request->headers->has('Origin')) {
 			foreach ($this->parameters as $cors) {
 				if (true === $this->match($request, $cors[CorsOptions::HOST], $cors[CorsOptions::PATTERN])) {
-					$response = $this->apply($request, new Response(), $cors);
-					$event->setResponse($response);
+					$this->apply($request, $event->getResponse(), $cors);
 					break;
 				}
 			}
@@ -60,6 +59,8 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 			foreach ($this->parameters as $cors) {
 				if (true === $this->match($request, $cors[CorsOptions::HOST], $cors[CorsOptions::PATTERN])) {
 					$response = $this->apply($request, new Response(), $cors);
+					// Overwrite exception status code
+					$response->headers->set('X-Status-Code', 200);
 					$event->setResponse($response);
 					break;
 				}
@@ -132,9 +133,6 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 		if ($cors[CorsOptions::MAX_AGE] > 0) {
 			$response->headers->set('Access-Control-Max-Age', $cors[CorsOptions::MAX_AGE]);
 		}
-		
-		// Overwrite exception status code
-		$response->headers->set('X-Status-Code', 200);
 		
 		return $response;
 	}
