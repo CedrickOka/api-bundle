@@ -1,11 +1,12 @@
 <?php
 namespace Oka\ApiBundle\Service;
 
-use Symfony\Component\Form\FormErrorIterator;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Oka\ApiBundle\Util\ErrorResponseBuilder;
 use Oka\ApiBundle\Util\ErrorResponseBuilderInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Form\FormErrorIterator;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**
  * 
@@ -103,7 +104,8 @@ class ErrorResponseFactory
 		
 		/** @var \Symfony\Component\Validator\ConstraintViolationInterface $error */
 		foreach ($errors as $error) {
-			$builder->addChildError($error->getMessage(), (int) $error->getCode(), $error->getPropertyPath(), ['invalidValue' => $error->getInvalidValue()]);
+			$code = UniqueEntity::NOT_UNIQUE_ERROR === $error->getCode() ? 409 : (int) $error->getCode();
+			$builder->addChildError($error->getMessage(), $code, $error->getPropertyPath(), ['invalidValue' => $error->getInvalidValue()]);
 		}
 		
 		return $builder->build();

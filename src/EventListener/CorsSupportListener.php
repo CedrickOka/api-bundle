@@ -6,6 +6,7 @@ use Oka\ApiBundle\Util\LoggerHelper;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -28,6 +29,24 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 	}
 	
 	/**
+	 * @param FilterResponseEvent $event
+	 */
+	public function onKernelResponse(FilterResponseEvent $event)
+	{
+		$request = $event->getRequest();
+		
+		if (false === $request->isMethod('OPTIONS') && true === $request->headers->has('Origin')) {
+			foreach ($this->parameters as $cors) {
+				if (true === $this->match($request, $cors[CorsOptions::HOST], $cors[CorsOptions::PATTERN])) {
+					$response = $this->apply($request, new Response(), $cors);
+					$event->setResponse($response);
+					break;
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Allow CORS Request Support
 	 * 
 	 * @param GetResponseForExceptionEvent $event
@@ -44,14 +63,15 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 					$event->setResponse($response);
 					break;
 				}
-			}			
+			}
 		}
 	}
 	
 	public static function getSubscribedEvents()
 	{
 		return [
-				KernelEvents::EXCEPTION => ['onKernelException', 255],
+				KernelEvents::RESPONSE => 'onKernelResponse',
+				KernelEvents::EXCEPTION => ['onKernelException', 255]
 		];
 	}
 	
