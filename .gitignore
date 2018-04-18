@@ -8,12 +8,10 @@ composer.phar
 
 ### Eclipse ###
 
-.metadata
 bin/
 tmp/
 *.tmp
 *.bak
-*.swp
 *~.nib
 local.properties
 .settings/
