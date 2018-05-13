@@ -1,6 +1,16 @@
 Changelog
 =========
 
+#### 1.11.0 (2018-05-13)
+
+* Improves html serializer encoder class.
+* Added `Oka\ApiBundle\Serializer\Behavior\FieldsExclusionStrategyInterface` class.
+* Added `Oka\ApiBundle\Serializer\Behavior\Contextable` class.
+
+#### 1.10.3 (2018-04-18)
+
+* Fixed CORS support bug.
+
 #### 1.10.2 (2018-04-18)
 
 * Changed project folders structure.
