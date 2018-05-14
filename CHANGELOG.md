@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 1.11.1 (2018-05-14)
+
+* Fixed `RequestUtil::getContentLikeArray()` method not return an empty array when `json_decode` function failed.
+
 #### 1.11.0 (2018-05-13)
 
 * Improves html serializer encoder class.

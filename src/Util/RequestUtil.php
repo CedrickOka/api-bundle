@@ -53,7 +53,8 @@ final class RequestUtil
 	{
 		switch ($request->getContentType()) {
 			case 'json':
-				return json_decode($request->getContent(), true);
+				$data = json_decode($request->getContent(), true);
+				return $data ?: [];
 			case 'form':
 				return $request->request->all();
 			default;
