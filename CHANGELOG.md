@@ -1,6 +1,11 @@
 Changelog
 =========
 
+#### 1.11.2 (2018-06-06)
+
+* Fixed `WsseUtil::generateNonce()` method bad implementation.
+* Fixed `WsseUtil::generateToken()` method bad implementation.
+
 #### 1.11.1 (2018-05-14)
 
 * Fixed `RequestUtil::getContentLikeArray()` method not return an empty array when `json_decode` function failed.

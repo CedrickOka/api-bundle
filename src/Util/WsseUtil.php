@@ -27,7 +27,7 @@ final class WsseUtil
 	 */
 	public static function generateNonce()
 	{
-		return rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
+		return base64_encode(substr(md5(uniqid()), 0, 16));
 	}
 	
 	/**
@@ -41,15 +41,16 @@ final class WsseUtil
 	 */
 	public static function generateToken($username, $password, $nonce = null, \DateTime $created = null)
 	{
-		if ($nonce === null) {
+		if (null === $nonce) {
 			$nonce = self::generateNonce();
 		}
+		
 		$created = $created ? $created->format('c') : date('c');
 		
 		return sprintf(
 				'UsernameToken Username="%s", PasswordDigest="%s", Nonce="%s", Created="%s"', 
 				$username, 
-				self::digestPassword($password, $nonce.$created), 
+				self::digestPassword($password, base64_decode($nonce).$created), 
 				$nonce, 
 				$created
 		);

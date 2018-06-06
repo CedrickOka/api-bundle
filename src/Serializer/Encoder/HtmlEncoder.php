@@ -14,10 +14,10 @@ class HtmlEncoder implements EncoderInterface
 	const FORMAT = 'html';
 	const HTML_LIST_ROOT = 'ul';
 	const HTML_LIST_ITEM = 'li';
-	const HTML_TAG_LIST_ROOT = 		'<' . self::HTML_LIST_ROOT . '>';
-	const HTML_END_TAG_LIST_ROOT = 	'</' . self::HTML_LIST_ROOT . '>';
-	const HTML_TAG_LIST_ITEM = 		'<' . self::HTML_LIST_ITEM . '>';
-	const HTML_END_TAG_LIST_ITEM = 	'</' . self::HTML_LIST_ITEM . '>';
+	const HTML_TAG_LIST_ROOT = '<ul>';
+	const HTML_END_TAG_LIST_ROOT = '</ul>';
+	const HTML_TAG_LIST_ITEM = '<li>';
+	const HTML_END_TAG_LIST_ITEM = '</li>';
 	
 	/**
 	 * {@inheritdoc}
