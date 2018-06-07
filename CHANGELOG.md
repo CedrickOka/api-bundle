@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 1.11.3 (2018-06-07)
+
+* Improves request `Accept` header handle.
+
 #### 1.11.2 (2018-06-06)
 
 * Fixed `WsseUtil::generateNonce()` method bad implementation.

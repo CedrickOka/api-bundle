@@ -55,8 +55,10 @@ final class RequestUtil
 			case 'json':
 				$data = json_decode($request->getContent(), true);
 				return $data ?: [];
+				
 			case 'form':
 				return $request->request->all();
+				
 			default;
 				return [];
 		}
@@ -68,10 +70,15 @@ final class RequestUtil
 	 * @param Request $request
 	 * @return string|NULL
 	 */
-	public static function getFirstAcceptableFormat(Request $request)
+	public static function getFirstAcceptableFormat(Request $request, $defaultFormat = null)
 	{
+		$format = null;
 		$acceptableContentTypes = $request->getAcceptableContentTypes();
 		
-		return $request->getFormat(empty($acceptableContentTypes) ? 'text/html' : $acceptableContentTypes[0]);
+		if (false === empty($acceptableContentTypes)) {
+			$format = $request->getFormat($acceptableContentTypes[0]);
+		}
+		
+		return $format ?: $defaultFormat;		
 	}
 }

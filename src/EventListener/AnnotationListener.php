@@ -90,10 +90,7 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 		$request = $event->getRequest();
 		$acceptablesContentTypes = $request->getAcceptableContentTypes();
 		
-		// Configure acceptable content type of response
-		if (true === empty($acceptablesContentTypes) || true === in_array('*/*', $acceptablesContentTypes, true)) {
-			$request->attributes->set('format', $annotation->getFormats()[0]);
-		} else {
+		if (false === empty($acceptablesContentTypes)) {
 			foreach ($acceptablesContentTypes as $contentType) {
 				$format = $request->getFormat($contentType);
 				
@@ -102,26 +99,36 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 					break;
 				}
 			}
+			
+			if (false === $request->attributes->has('format') && true === in_array('*/*', $acceptablesContentTypes, true)) {
+				$request->attributes->set('format', $annotation->getFormats()[0]);
+			}
+		} else {
+			$request->attributes->set('format', $annotation->getFormats()[0]);
 		}
 		
 		$response = null;
 		$version = $request->attributes->get('version');
 		$protocol = $request->attributes->get('protocol');
-		$format = RequestUtil::getFirstAcceptableFormat($request) ?: 'json';
+		$format = RequestUtil::getFirstAcceptableFormat($request, $annotation->getFormats()[0]);
 		
-		if (!version_compare($version, $annotation->getVersion(), $annotation->getVersionOperator())) {
-			$response = $this->errorFactory->create($this->translator->trans('response.not_acceptable_api_version', ['%version%' => $version], 'OkaApiBundle'), 406, null, [], 406, [], $format);
-		} elseif (strtolower($protocol) !== $annotation->getProtocol()) {
-			$response = $this->errorFactory->create($this->translator->trans('response.not_acceptable_protocol', ['%version%' => $protocol], 'OkaApiBundle'), 406, null, [], 406, [], $format);
-		} elseif (false === $request->attributes->has('format')) {
-			$response = $this->errorFactory->create($this->translator->trans('response.not_acceptable_format', ['%formats%' => implode(', ', $request->getAcceptableContentTypes())], 'OkaApiBundle'), 406, null, [], 406, [], $format);
+		switch (false) {
+			case version_compare($version, $annotation->getVersion(), $annotation->getVersionOperator()):
+				$response = $this->errorFactory->create($this->translator->trans('response.not_acceptable_api_version', ['%version%' => $version], 'OkaApiBundle'), 406, null, [], 406, [], $format);
+				break;
+			case strtolower($protocol) === $annotation->getProtocol():
+				$response = $this->errorFactory->create($this->translator->trans('response.not_acceptable_protocol', ['%version%' => $protocol], 'OkaApiBundle'), 406, null, [], 406, [], $format);
+				break;
+			case $request->attributes->has('format'):
+				$response = $this->errorFactory->create($this->translator->trans('response.not_acceptable_format', ['%formats%' => implode(', ', $acceptablesContentTypes)], 'OkaApiBundle'), 406, null, [], 406, [], $format);
+				break;
 		}
 		
 		if (null === $response) {
 			$version = $request->attributes->set('versionNumber', $annotation->getVersionNumber());
 		} else {
 			$event->stopPropagation();
-			$event->setController(function(Request $request) use ($response) {
+			$event->setController(function() use ($response) {
 				return $response;
 			});
 		}
@@ -171,7 +178,7 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 		} else {
 			$event->setController(function(Request $request) use ($annotation, $errors) {
 				$message = $this->translator->trans($annotation->getValidationErrorMessage(), $annotation->getTranslationParameters(), $annotation->getTranslationDomain());
-				$format = $request->attributes->has('format') ? $request->attributes->get('format') : RequestUtil::getFirstAcceptableFormat($request) ?: 'json';
+				$format = $request->attributes->has('format') ? $request->attributes->get('format') : RequestUtil::getFirstAcceptableFormat($request, 'json');
 				
 				if (null === $errors) {
 					$response = $this->errorFactory->create($message, 400, null, [], 400, [], $format);
