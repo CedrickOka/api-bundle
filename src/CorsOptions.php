@@ -9,6 +9,7 @@ namespace Oka\ApiBundle;
 final class CorsOptions
 {
 	const HOST = 'host';
+	const ORIGINS = 'origins';
 	const PATTERN = 'pattern';
 	const ALLOW_ORIGIN = 'allow_origin';
 	const ALLOW_METHODS = 'allow_methods';

@@ -37,7 +37,7 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 		
 		if (false === $request->isMethod('OPTIONS') && true === $request->headers->has('Origin')) {
 			foreach ($this->parameters as $cors) {
-				if (true === $this->match($request, $cors[CorsOptions::HOST], $cors[CorsOptions::PATTERN])) {
+				if (true === $this->match($request, $cors[CorsOptions::ALLOW_ORIGIN], $cors[CorsOptions::PATTERN])) {
 					$this->apply($request, $event->getResponse(), $cors);
 					break;
 				}
@@ -57,7 +57,7 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 		
 		if ($exception instanceof MethodNotAllowedHttpException && true === $request->isMethod('OPTIONS') && true === $request->headers->has('Origin')) {			
 			foreach ($this->parameters as $cors) {
-				if (true === $this->match($request, $cors[CorsOptions::HOST], $cors[CorsOptions::PATTERN])) {
+				if (true === $this->match($request, $cors[CorsOptions::ALLOW_ORIGIN], $cors[CorsOptions::PATTERN])) {
 					$response = $this->apply($request, new Response(), $cors);
 					// Overwrite exception status code
 					$response->headers->set('X-Status-Code', 200);
@@ -78,13 +78,13 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 	
 	/**
 	 * @param Request $request
-	 * @param string $host
+	 * @param array $origins
 	 * @param string $pattern
 	 * @return boolean
 	 */
-	private function match(Request $request, $host, $pattern)
+	private function match(Request $request, $origins, $pattern)
 	{
-		if (isset($host) && $request->getHost() !== $host) {
+		if (false === empty($origins) && false === in_array($request->headers->get('Origin'), $origins)) {
 			return false;
 		}
 		
@@ -104,7 +104,7 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 	private function apply(Request $request, Response $response, array $cors = [])
 	{
 		// Define CORS allow_origin
-		$response->headers->set('Access-Control-Allow-Origin', !empty($cors[CorsOptions::ALLOW_ORIGIN]) ? implode('|', $cors[CorsOptions::ALLOW_ORIGIN]) : '*');
+		$response->headers->set('Access-Control-Allow-Origin', false === empty($cors[CorsOptions::ALLOW_ORIGIN]) ? $request->headers->get('Origin') : '*');
 		
 		// Define CORS allow_methods
 		if (!empty($cors[CorsOptions::ALLOW_METHODS])) {
