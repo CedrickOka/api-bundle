@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 1.11.4 (2018-06-14)
+
+* Improves error response handling.
+
 #### 1.11.3 (2018-06-07)
 
 * Improves request `Accept` header handle.

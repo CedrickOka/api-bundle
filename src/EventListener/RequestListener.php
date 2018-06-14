@@ -108,7 +108,7 @@ class RequestListener extends LoggerHelper implements EventSubscriberInterface
 		
 		if (true === $this->hostMatcher->matches($request)) {
 			$exception = $event->getException();
-			$format = $request->attributes->has('format') ? $request->attributes->get('format') : RequestUtil::getFirstAcceptableFormat($request) ?: 'json';
+			$format = $request->attributes->has('format') ? $request->attributes->get('format') : RequestUtil::getFirstAcceptableFormat($request, 'json');
 			
 			if ($exception instanceof UnauthorizedHttpException) {
 				$response = $this->errorFactory->createFromException($exception, null, [], $exception->getStatusCode(), [], $format);

@@ -175,7 +175,8 @@ class ErrorResponseBuilder implements ErrorResponseBuilderInterface
 			$data['errors'] = $this->childErrors;
 		}
 		
-		if ($this->format === 'html' || $this->format === 'xml' ) {
+		if ($this->format === 'html' || $this->format === 'xml') {
+			$this->httpHeaders['Content-Type'] = $this->format === 'html' ? 'text/html' : 'application/xml';
 			$serializer = new Serializer([new ObjectNormalizer()], [new HtmlEncoder(), new XmlEncoder()]);
 			$response = new Response($serializer->encode($data, $this->format), $this->httpStatusCode, $this->httpHeaders);
 		} else {
