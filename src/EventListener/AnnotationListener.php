@@ -2,15 +2,13 @@
 namespace Oka\ApiBundle\EventListener;
 
 use Doctrine\Common\Annotations\Reader;
-use Oka\ApiBundle\Annotation\AccessControl;
-use Oka\ApiBundle\Annotation\RequestContent;
 use Oka\ApiBundle\Service\ErrorResponseFactory;
 use Oka\ApiBundle\Util\LoggerHelper;
 use Oka\ApiBundle\Util\RequestUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -140,6 +138,7 @@ class AnnotationListener extends LoggerHelper implements EventSubscriberInterfac
 	 */
 	private function onRequestContentAnnotation(FilterControllerEvent $event, \ReflectionMethod $reflMethod)
 	{
+		/** @var \Oka\ApiBundle\Annotation\RequestContent $annotation */
 		if (!$annotation = $this->reader->getMethodAnnotation($reflMethod, 'Oka\ApiBundle\Annotation\RequestContent')) {
 			return;
 		}

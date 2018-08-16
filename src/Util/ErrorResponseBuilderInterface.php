@@ -1,8 +1,6 @@
 <?php
 namespace Oka\ApiBundle\Util;
 
-use Symfony\Component\HttpFoundation\Response;
-
 /**
  * 
  * @author cedrick

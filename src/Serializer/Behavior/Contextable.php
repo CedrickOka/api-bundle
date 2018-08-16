@@ -1,7 +1,6 @@
 <?php
 namespace Oka\ApiBundle\Serializer\Behavior;
 
-use JMS\Serializer\Context;
 use JMS\Serializer\SerializationContext;
 
 /**

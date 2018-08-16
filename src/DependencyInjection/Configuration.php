@@ -2,11 +2,10 @@
 namespace Oka\ApiBundle\DependencyInjection;
 
 use Oka\ApiBundle\CorsOptions;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
-use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\Config\Definition\Builder\ScalarNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
-use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
  * This is the class that validates and merges configuration from your app/config files.
@@ -68,6 +67,12 @@ class Configuration implements ConfigurationInterface
 						->end()
 						->info('This value configure API firewalls.')
 					->end()
+					->arrayNode('security_behaviors')
+						->addDefaultsIfNotSet()
+						->children()
+							->booleanNode('password_updater')->defaultFalse()->end()
+						->end()
+					->end()
 					->arrayNode('response')
 						->addDefaultsIfNotSet()
 						->children()
@@ -108,12 +113,20 @@ class Configuration implements ConfigurationInterface
 			->info('This value permit to enable CORS protocol support.')
 			->prototype('array')
 				->children()
-					->scalarNode(CorsOptions::HOST)->defaultNull()->end()
-					->scalarNode(CorsOptions::PATTERN)->defaultNull()->end()
+					->scalarNode(CorsOptions::HOST)
+						->defaultNull()
+						->info('This configuration value is deprecated use instead `oka_api.cors.[name].origins`')
+					->end()
 					->arrayNode(CorsOptions::ALLOW_ORIGIN)
 						->performNoDeepMerging()
 						->prototype('scalar')->end()
+						->info('This configuration value is deprecated use instead `oka_api.cors.[name].origins`')
 					->end()
+					->arrayNode(CorsOptions::ORIGINS)
+						->performNoDeepMerging()
+						->prototype('scalar')->end()
+					->end()
+					->scalarNode(CorsOptions::PATTERN)->defaultNull()->end()
 					->arrayNode(CorsOptions::ALLOW_METHODS)
 						->performNoDeepMerging()
 						->prototype('scalar')->end()

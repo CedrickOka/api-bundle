@@ -1,13 +1,8 @@
 <?php
 namespace Oka\ApiBundle\DependencyInjection;
 
-use Oka\ApiBundle\Security\Authorization\Voter\WsseUserAllowedIpsVoter;
-use Oka\ApiBundle\Security\Nonce\Storage\Handler\FileNonceHandler;
-use Oka\ApiBundle\Security\Nonce\Storage\NativeNonceStorage;
-use Oka\ApiBundle\Security\User\WsseUserProvider;
-use Oka\ApiBundle\Util\WsseUserManipulator;
-use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -55,6 +50,8 @@ class OkaApiExtension extends Extension
 		if (true === $config['firewalls']['wsse']['enabled']) {
 			$this->createWsseAuthenticationConfig($config, $container);
 		}
+		
+		$this->createSecurityBehaviorsConfig($config, $container);
 	}
 	
 	private function createCorsSupportConfig(array $config, ContainerBuilder $container)
@@ -85,20 +82,20 @@ class OkaApiExtension extends Extension
 		
 		if (null === $nonceHandlerId) {
 			$nonceHandlerId = 'oka_api.wsse.nonce.handler.file';
-			$nonceHandlerDefintion = new Definition(FileNonceHandler::class);
+			$nonceHandlerDefintion = new Definition('Oka\ApiBundle\Security\Nonce\Storage\Handler\FileNonceHandler');
 			$nonceHandlerDefintion->addArgument($nonceSavePath);
 			$nonceHandlerDefintion->setPublic(false);
 			$container->setDefinition($nonceHandlerId, $nonceHandlerDefintion);
 		}
 		
 		// Configure wsse User provider
-		$wsseUserProviderDefinition = new Definition(WsseUserProvider::class);
+		$wsseUserProviderDefinition = new Definition('Oka\ApiBundle\Security\User\WsseUserProvider');
 		$wsseUserProviderDefinition->addArgument(new Reference('oka_api.object_manager'));
 		$wsseUserProviderDefinition->addArgument($userClass);
 		$container->setDefinition('oka_api.wsse_user_provider', $wsseUserProviderDefinition);
 		
 		// Configure wsse User manipulator
-		$wsseUserManipulatorDefinition = new Definition(WsseUserManipulator::class);
+		$wsseUserManipulatorDefinition = new Definition('Oka\ApiBundle\Util\WsseUserManipulator');
 		$wsseUserManipulatorDefinition->addArgument(new Reference('oka_api.object_manager'));
 		$wsseUserManipulatorDefinition->addArgument(new Reference('event_dispatcher'));
 		$wsseUserManipulatorDefinition->addArgument($userClass);
@@ -114,10 +111,21 @@ class OkaApiExtension extends Extension
 		
 		// Configure wsse authorization voter
 		if (true === $wsseConfig['enabled_allowed_ips_voter']) {
-			$wsseUserAllowedIpsVoterDefinition = new Definition(WsseUserAllowedIpsVoter::class);
+			$wsseUserAllowedIpsVoterDefinition = new Definition('Oka\ApiBundle\Security\Authorization\Voter\WsseUserAllowedIpsVoter');
 			$wsseUserAllowedIpsVoterDefinition->addTag('security.voter');
 			$wsseUserAllowedIpsVoterDefinition->setPublic(false);
 			$container->setDefinition('oka_api.wsse.security.authorization.allowed_ips_voter', $wsseUserAllowedIpsVoterDefinition);
+		}
+	}
+	
+	private function createSecurityBehaviorsConfig(array $config, ContainerBuilder $container)
+	{
+		if (true === $config['security_behaviors']['password_updater']) {
+			$definition = new Definition('Oka\ApiBundle\Doctrine\EventListener\UpdatePasswordSubscriber');
+			$definition->addArgument(new Reference('oka_api.util.password_updater'));
+			$definition->addTag('doctrine.event_subscriber');
+			$definition->setPublic(false);
+			$container->setDefinition('oka_api.util.update_password.doctrine_subscriber', $definition);
 		}
 	}
 	

@@ -56,7 +56,7 @@ class Nonce implements NonceInterface
 	
 	/**
 	 * {@inheritDoc}
-	 * @see \Oka\ApiBundle\Security\Nonce\Storage\NonceInterface::getId()
+	 * @see \Oka\ApiBundle\Security\Nonce\NonceInterface::getId()
 	 */
 	public function getId()
 	{
@@ -84,7 +84,7 @@ class Nonce implements NonceInterface
 	
 	/**
 	 * {@inheritDoc}
-	 * @see \Oka\ApiBundle\Security\Nonce\Storage\NonceInterface::isAlreadyUsed()
+	 * @see \Oka\ApiBundle\Security\Nonce\NonceInterface::isAlreadyUsed()
 	 */
 	public function isAlreadyUsed($time, $lifetime)
 	{
@@ -97,7 +97,7 @@ class Nonce implements NonceInterface
 	
 	/**
 	 * {@inheritDoc}
-	 * @see \Oka\ApiBundle\Security\Nonce\Storage\NonceInterface::save()
+	 * @see \Oka\ApiBundle\Security\Nonce\NonceInterface::save()
 	 */
 	public function save($timestamp = null)
 	{

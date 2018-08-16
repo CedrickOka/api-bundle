@@ -1,8 +1,6 @@
 <?php
 namespace Oka\ApiBundle\Security\Nonce\Storage\Handler;
 
-use Oka\ApiBundle\Security\Nonce\Storage\Handler\NonceHandlerInterface;
-
 /**
  * 
  * @author Cedrick Oka Baidai <okacedrick@gmail.com>

@@ -8,7 +8,6 @@
 		"rest",
 		"api",
 		"security",
-		"JSON Web Token",
 		"WSSE",
 		"CORS"
 	],
@@ -17,6 +16,7 @@
 			"email" : "okacedrick@gmail.com"
 		}
 	],
+	"prefer-stable" : true,
 	"minimum-stability" : "dev",
 	"require" : {
 		"php" : "^5.5 || >=7.0",
@@ -26,7 +26,7 @@
 		"jms/serializer-bundle" : "^2.3",
 		"knplabs/doctrine-behaviors" : "^1.5",
 		"ramsey/uuid" : "^3.6",
-		"symfony/symfony" : "^2.8 || ^3.0"
+		"symfony/symfony" : "^2.8 || ^3.4"
 	},
 	"require-dev" : {
 		"phpunit/phpunit" : "~4.8|~5.0",
@@ -37,21 +37,20 @@
 			"Oka\\ApiBundle\\" : "src"
 		},
 		"exclude-from-classmap" : [
-			"/src/Tests/"
+			"/tests/"
 		]
 	},
 	"autoload-dev" : {
 		"psr-4" : {
-			"Oka\\ApiBundle\\Tests\\" : "src/Tests/"
+			"Oka\\ApiBundle\\Tests\\" : "tests/"
 		}
 	},
 	"extra" : {
 		"branch-alias" : {
-			"dev-master" : "1.x.x-dev"
+			"dev-master" : "2.x.x-dev"
 		}
 	},
 	"support" : {
-		"docs" : "https://github.com/CedrickOka/oka-api/blob/master/Resources/doc/index.md"
+		"docs" : "https://github.com/CedrickOka/oka-api/blob/master/src/Resources/doc/index.md"
 	}
 }
-

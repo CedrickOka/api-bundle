@@ -1,8 +1,6 @@
 <?php
 namespace Oka\ApiBundle\Encoder;
 
-use Oka\ApiBundle\Encoder\ResponseContentEncoderInterface;
-
 /**
  *
  * @author Cedrick Oka Baidai <okacedrick@gmail.com>

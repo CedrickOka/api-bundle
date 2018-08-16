@@ -75,8 +75,6 @@ abstract class RoleCommand extends ContainerAwareCommand
 	}
 
 	/**
-	 * @see Command
-	 *
 	 * @param WsseUserManipulator $manipulator
 	 * @param OutputInterface $output
 	 * @param string		  $username

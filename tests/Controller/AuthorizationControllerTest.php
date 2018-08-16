@@ -3,7 +3,6 @@ namespace Oka\ApiBundle\Tests\Controller;
 
 use Oka\ApiBundle\Util\WsseUtil;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 
 /**

@@ -117,7 +117,7 @@ class ErrorResponseBuilder implements ErrorResponseBuilderInterface
 	 * @param int $code
 	 * @param string $property
 	 * @param array $extras
-	 * @return \Oka\ApiBundle\Util\ErrorResponse
+	 * @return \Oka\ApiBundle\Util\ErrorResponseBuilder
 	 */
 	public function addChildError($message, $code, $property = null, array $extras = [])
 	{

@@ -1,12 +1,16 @@
 Changelog
 =========
 
+#### 2.0.0 (2018-08-16)
+
+* [BC break] Removed deprecated class.
+* [BC break] Removed from `Oka\ApiBundle\Model\UserInterface`.
+* Added `Oka\ApiBundle\Model\UserPasswordInterface`.
+* Added Security behaviors password updater.
+
 #### 1.12.0 (2018-06-14)
 
 * Improves Request CORS support.
-
-#### 1.12.0 (2018-06-14)
-
 * Improves error response handling.
 
 #### 1.11.3 (2018-06-07)
