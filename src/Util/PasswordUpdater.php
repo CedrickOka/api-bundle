@@ -4,6 +4,7 @@ namespace Oka\ApiBundle\Util;
 use Oka\ApiBundle\Model\UserPasswordUpdaterInterface;
 use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * 
@@ -37,6 +38,9 @@ class PasswordUpdater implements PasswordUpdaterInterface
 		}
 		
 		$user->setPassword($encoder->encodePassword($plainPassword, $user->getSalt()));
-		$user->eraseCredentials();
+		
+		if ($user instanceof UserInterface) {
+			$user->eraseCredentials();
+		}
 	}
 }

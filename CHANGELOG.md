@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 2.1.1 (2018-08-16)
+
+* Fix bug.
+
 #### 2.1.0 (2018-08-16)
 
 * Deprecated "Oka\ApiBundle\Model\UserPasswordInterface" interface.
