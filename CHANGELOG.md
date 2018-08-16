@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 2.2.0 (2018-08-16)
+
+* Improves `PasswordUpdater::hashPassword()` method.
+
 #### 2.1.1 (2018-08-16)
 
 * Fix bug.

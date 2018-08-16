@@ -30,14 +30,10 @@ class PasswordUpdater implements PasswordUpdaterInterface
 		}
 		
 		$encoder = $this->encoderFactory->getEncoder($user);
+		$salt = !$encoder instanceof BCryptPasswordEncoder ? WsseUtil::generateNonce() : null;
 		
-		if ($encoder instanceof BCryptPasswordEncoder) {
-			$user->setSalt(null);
-		} else {
-			$user->setSalt(WsseUtil::generateNonce());
-		}
-		
-		$user->setPassword($encoder->encodePassword($plainPassword, $user->getSalt()));
+		$user->setSalt($salt);
+		$user->setPassword($encoder->encodePassword($plainPassword, $salt));
 		
 		if ($user instanceof UserInterface) {
 			$user->eraseCredentials();
