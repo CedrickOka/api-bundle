@@ -1,7 +1,7 @@
 <?php
 namespace Oka\ApiBundle\Util;
 
-use Oka\ApiBundle\Model\UserPasswordInterface;
+use Oka\ApiBundle\Model\UserPasswordUpdaterInterface;
 use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
@@ -21,7 +21,7 @@ class PasswordUpdater implements PasswordUpdaterInterface
 		$this->encoderFactory = $encoderFactory;
 	}
 	
-	public function hashPassword(UserPasswordInterface $user) {
+	public function hashPassword(UserPasswordUpdaterInterface $user) {
 		$plainPassword = $user->getPlainPassword();
 		
 		if (0 === strlen($plainPassword)) {

@@ -125,7 +125,7 @@ class OkaApiExtension extends Extension
 			$definition->addArgument(new Reference('oka_api.util.password_updater'));
 			$definition->addTag('doctrine.event_subscriber');
 			$definition->setPublic(false);
-			$container->setDefinition('oka_api.util.update_password.doctrine_subscriber', $definition);
+			$container->setDefinition('oka_api.update_password.doctrine_subscriber', $definition);
 		}
 	}
 	

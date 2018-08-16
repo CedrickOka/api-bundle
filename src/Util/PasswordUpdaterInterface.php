@@ -1,7 +1,7 @@
 <?php
 namespace Oka\ApiBundle\Util;
 
-use Oka\ApiBundle\Model\UserPasswordInterface;
+use Oka\ApiBundle\Model\UserPasswordUpdaterInterface;
 
 /**
  * 
@@ -16,9 +16,9 @@ interface PasswordUpdaterInterface
      * The implement should be a no-op in case there is no new password (it should not erase the
      * existing hash with a wrong one).
      *
-     * @param UserPasswordInterface $user
+     * @param UserPasswordUpdaterInterface $user
      *
      * @return void
      */
-	public function hashPassword(UserPasswordInterface $user);
+	public function hashPassword(UserPasswordUpdaterInterface $user);
 }

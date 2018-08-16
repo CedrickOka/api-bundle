@@ -4,7 +4,7 @@ namespace Oka\ApiBundle\Doctrine\EventListener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
-use Oka\ApiBundle\Model\UserPasswordInterface;
+use Oka\ApiBundle\Model\UserPasswordUpdaterInterface;
 use Oka\ApiBundle\Util\PasswordUpdaterInterface;
 
 /**
@@ -34,7 +34,7 @@ class UpdatePasswordSubscriber implements EventSubscriber
 	public function updatePassword(LifecycleEventArgs $args) {
 		$object = $args->getObject();
 		
-		if ($object instanceof UserPasswordInterface) {
+		if ($object instanceof UserPasswordUpdaterInterface) {
 			$this->passwordUpdater->hashPassword($object);
 		}
 	}

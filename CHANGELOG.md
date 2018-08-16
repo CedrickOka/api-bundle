@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 2.1.0 (2018-08-16)
+
+* Deprecated "Oka\ApiBundle\Model\UserPasswordInterface" interface.
+
 #### 2.0.0 (2018-08-16)
 
 * [BC break] Removed deprecated class.
