@@ -34,7 +34,7 @@
 	},
 	"autoload" : {
 		"psr-4" : {
-			"Oka\\ApiBundle\\" : "src"
+			"Oka\\ApiBundle\\" : "src/"
 		},
 		"exclude-from-classmap" : [
 			"/tests/"

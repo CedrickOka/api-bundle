@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 2.2.1 (2018-08-17)
+
+* Fixed an error in `README.md` file.
+
 #### 2.2.0 (2018-08-16)
 
 * Improves `PasswordUpdater::hashPassword()` method.

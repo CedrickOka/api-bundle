@@ -7,7 +7,7 @@ Prerequisites
 =============
 
 The OkaApiBundle has the following requirements:
- - PHP 5.5
+ - PHP 5.5+
  - Symfony 2.8+
 
 Installation
