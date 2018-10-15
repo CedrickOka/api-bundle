@@ -20,17 +20,18 @@
 	"minimum-stability" : "dev",
 	"require" : {
 		"php" : "^5.5 || >=7.0",
-		"doctrine/doctrine-bundle" : "^1.6",
-		"doctrine/orm" : "^2.5",
-		"incenteev/composer-parameter-handler" : "^2.0",
-		"jms/serializer-bundle" : "^2.3",
-		"knplabs/doctrine-behaviors" : "^1.5",
-		"ramsey/uuid" : "^3.6",
 		"symfony/symfony" : "^3.4 || ^4.0"
 	},
 	"require-dev" : {
+		"doctrine/doctrine-bundle" : "^1.6",
+		"doctrine/orm" : "^2.5",
 		"phpunit/phpunit" : "~4.8|~5.0",
 		"symfony/phpunit-bridge" : "^3.0"
+	},
+	"suggests" : {
+		"doctrine/doctrine-bundle" : "^1.6",
+		"doctrine/orm" : "^2.5",
+		"jms/serializer-bundle" : "^2.3"
 	},
 	"autoload" : {
 		"psr-4" : {
@@ -47,13 +48,14 @@
 	},
 	"extra" : {
 		"branch-alias" : {
-			"dev-master" : "2.x.x-dev"
+			"dev-master" : "3.x.x-dev"
 		},
-		"symfony": {
-			"allow-contrib": "true"
+		"symfony" : {
+			"allow-contrib" : "true"
 		}
 	},
 	"support" : {
 		"docs" : "https://github.com/CedrickOka/oka-api/blob/master/src/Resources/doc/index.md"
 	}
 }
+
