@@ -190,9 +190,8 @@ oka_api:
     log_channel: api
     cors:
         default:
-            host: null
             pattern: '^.*/cors/test$'
-            allow_origin:
+            origins:
                 - 'http://acme.com'
             allow_methods: {  }
             allow_headers: {  }

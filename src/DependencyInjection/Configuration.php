@@ -71,6 +71,7 @@ class Configuration implements ConfigurationInterface
 						->addDefaultsIfNotSet()
 						->children()
 							->booleanNode('password_updater')->defaultFalse()->end()
+							->scalarNode('handler_id')->defaultNull()->end()
 						->end()
 					->end()
 					->arrayNode('response')
@@ -113,20 +114,11 @@ class Configuration implements ConfigurationInterface
 			->info('This value permit to enable CORS protocol support.')
 			->prototype('array')
 				->children()
-					->scalarNode(CorsOptions::HOST)
-						->defaultNull()
-						->info('This configuration value is deprecated use instead `oka_api.cors.[name].origins`')
-					->end()
-					->arrayNode(CorsOptions::ALLOW_ORIGIN)
-						->performNoDeepMerging()
-						->prototype('scalar')->end()
-						->info('This configuration value is deprecated use instead `oka_api.cors.[name].origins`')
-					->end()
+					->scalarNode(CorsOptions::PATTERN)->defaultNull()->end()
 					->arrayNode(CorsOptions::ORIGINS)
 						->performNoDeepMerging()
 						->prototype('scalar')->end()
 					->end()
-					->scalarNode(CorsOptions::PATTERN)->defaultNull()->end()
 					->arrayNode(CorsOptions::ALLOW_METHODS)
 						->performNoDeepMerging()
 						->prototype('scalar')->end()
@@ -148,63 +140,8 @@ class Configuration implements ConfigurationInterface
 		return $node;
 	}
 	
-	public function getJWTFirewallNodeDefintion()
+	public function getJWTExtractorNodeDefinition($name, $defaultValue = null, array $appendNodes = [])
 	{
-		$authorizationHeaderPrefixNode = new ScalarNodeDefinition('prefix');
-		$authorizationHeaderPrefixNode->defaultValue('Bearer')->end();
-		
-		$node = new ArrayNodeDefinition('jwt');
-		$node
-			->addDefaultsIfNotSet()
-			->canBeDisabled()
-			->children()
-				->append($this->getLogChannelNodeDefinition())
-				->arrayNode('token')
-					->addDefaultsIfNotSet()
-					->cannotBeEmpty()
-					->children()
-						->integerNode('ttl')->defaultValue(3600)->end()
-						->arrayNode('encoder')
-							->addDefaultsIfNotSet()
-							->children()
-								->scalarNode('service')->defaultValue('oka_api.jwt.authentication.default_encoder')->end()
-								->scalarNode('crypto_engine')->defaultValue('openssl')->end()
-								->scalarNode('signature_algorithm')->defaultValue('Sha256')->end()
-							->end()
-						->end()
-						->arrayNode('extractors')
-							->addDefaultsIfNotSet()
-							->children()
-								->append($this->getJWTExtractorNodeDefinition('authorization_header', 'Authorization', [$authorizationHeaderPrefixNode]))
-								->append($this->getJWTExtractorNodeDefinition('query_parameter', 'bearer'))
-								->append($this->getJWTExtractorNodeDefinition('cookie', 'BEARER'))
-							->end()
-						->end()
-						->scalarNode('user_identity_field')->defaultValue('username')->end()
-						->arrayNode('user_field_map')
-							->addDefaultsIfNotSet()
-							->children()
-								->arrayNode('private_claims')
-									->addDefaultsIfNotSet()
-									->children()
-										->scalarNode('jti')->isRequired()->treatNullLike('username')->end()
-									->end()
-								->end()
-								->arrayNode('public_claims')
-									->useAttributeAsKey('name')
-									->prototype('scalar')->end()
-								->end()
-							->end()
-						->end()
-					->end()
-				->end()
-			->end()
-		->end();
-		
-		return $node;
-	}
-	
-	public function getJWTExtractorNodeDefinition($name, $defaultValue = null, array $appendNodes = []) {
 		$node = new ArrayNodeDefinition($name);
 		
 		$childrenNode = $node

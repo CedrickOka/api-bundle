@@ -59,8 +59,7 @@ class OkaApiExtension extends Extension
 		// Enable CORS Listener
 		$definition = $container->getDefinition('oka_api.cors_support.event_listener');
 		$definition->replaceArgument(0, $config['cors'])
-				   ->addTag('kernel.event_subscriber')
-				   ->setPublic(true);
+				   ->addTag('kernel.event_subscriber');
 	}
 	
 	private function createWsseAuthenticationConfig(array $config, ContainerBuilder $container)
@@ -84,7 +83,6 @@ class OkaApiExtension extends Extension
 			$nonceHandlerId = 'oka_api.wsse.nonce.handler.file';
 			$nonceHandlerDefintion = new Definition('Oka\ApiBundle\Security\Nonce\Storage\Handler\FileNonceHandler');
 			$nonceHandlerDefintion->addArgument($nonceSavePath);
-			$nonceHandlerDefintion->setPublic(false);
 			$container->setDefinition($nonceHandlerId, $nonceHandlerDefintion);
 		}
 		
@@ -113,18 +111,16 @@ class OkaApiExtension extends Extension
 		if (true === $wsseConfig['enabled_allowed_ips_voter']) {
 			$wsseUserAllowedIpsVoterDefinition = new Definition('Oka\ApiBundle\Security\Authorization\Voter\WsseUserAllowedIpsVoter');
 			$wsseUserAllowedIpsVoterDefinition->addTag('security.voter');
-			$wsseUserAllowedIpsVoterDefinition->setPublic(false);
 			$container->setDefinition('oka_api.wsse.security.authorization.allowed_ips_voter', $wsseUserAllowedIpsVoterDefinition);
 		}
 	}
 	
 	private function createSecurityBehaviorsConfig(array $config, ContainerBuilder $container)
 	{
-		if (true === $config['security_behaviors']['password_updater']) {
+		if (true === $config['security_behaviors']['password_updater']) {			
 			$definition = new Definition('Oka\ApiBundle\Doctrine\EventListener\UpdatePasswordSubscriber');
 			$definition->addArgument(new Reference('oka_api.util.password_updater'));
 			$definition->addTag('doctrine.event_subscriber');
-			$definition->setPublic(false);
 			$container->setDefinition('oka_api.update_password.doctrine_subscriber', $definition);
 		}
 	}

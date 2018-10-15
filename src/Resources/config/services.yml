@@ -1,11 +1,21 @@
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+# Command
+    Oka\ApiBundle\Command\:
+        resource: '../../Command/*'
+        tags: [ 'console.command' ]
+
     oka_api.object_manager:
         class: Doctrine\Common\Persistence\ObjectManager
         arguments: [ '' ]
-        public: false
 
 # Services
     oka_api.error_response.factory:
+        public: true
         class: Oka\ApiBundle\Service\ErrorResponseFactory
         arguments: [ '%oka_api.response.error_builder_class%' ]
 
@@ -13,32 +23,20 @@ services:
     oka_api.request_matcher.host:
         class: Oka\ApiBundle\Http\HostRequestMatcher
         arguments: [ '%oka_api.http_host%' ]
-        public: false
 
     oka_api.wsse.firewall.request_matcher:
         class: Oka\ApiBundle\Http\WsseRequestMatcher
         parent: oka_api.request_matcher.host
 
-#    oka_api.jwt.firewall.request_matcher:
-#        class: Oka\ApiBundle\Http\JwtRequestMatcher
-#        parent: oka_api.request_matcher.host
-#        arguments: [ '%oka_api.http_host%', '' ]
-
 # Authentication Provider
     oka_api.wsse.security.authentication.provider:
         class: Oka\ApiBundle\Security\Authentication\Provider\WsseProvider
         arguments: [ '', '', '' ]
-        public: false
 
     oka_api.wsse.security.authentication.listener:
         class: Oka\ApiBundle\Security\Firewall\WsseListener
         parent: oka_api.util.logger.helper
         arguments: [ '@security.token_storage', '@security.authentication.manager', '@oka_api.error_response.factory', '@translator' ]
-        public: false
-
-#    oka_api.jwt.authentication.guard.token_authenticator:
-#      class: Oka\ApiBundle\Security\Guard\JwtGuardAuthenticator
-#      arguments: [ '@oka_api.util.json_web_token.helper', '@oka_api.error_response.factory', '%oka_api.user_class%' ]
 
 # Listeners
     oka_api.request.event_listener:
@@ -59,22 +57,17 @@ services:
         class:  Oka\ApiBundle\EventListener\CorsSupportListener
         parent: oka_api.util.logger.helper
         arguments:  [[]]
-        public: false
 
 # Utils
     oka_api.util.logger.helper:
-        class:  Oka\ApiBundle\Util\LoggerHelper
         abstract: true
+        class:  Oka\ApiBundle\Util\LoggerHelper
         calls:
           - [ setLogger, ['@logger'] ]
         tags:
           - { name: monolog.logger, channel: '%oka_api.log_channel%' }
 
     oka_api.util.password_updater:
+        public: true
         class: Oka\ApiBundle\Util\PasswordUpdater
         arguments: [ '@security.encoder_factory' ]
-
-#    oka_api.util.json_web_token.helper:
-#        class:  Oka\ApiBundle\Util\JSONWebTokenHelper
-#        parent: oka_api.util.logger.helper
-#        arguments: [ '%oka_api.http_host%', '%secret%' ]

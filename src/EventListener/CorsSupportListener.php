@@ -37,7 +37,7 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 		
 		if (false === $request->isMethod('OPTIONS') && true === $request->headers->has('Origin')) {
 			foreach ($this->parameters as $cors) {
-				if (true === $this->match($request, $cors[CorsOptions::ALLOW_ORIGIN], $cors[CorsOptions::PATTERN])) {
+				if (true === $this->match($request, $cors[CorsOptions::ORIGINS], $cors[CorsOptions::PATTERN])) {
 					$this->apply($request, $event->getResponse(), $cors);
 					break;
 				}
@@ -57,7 +57,7 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 		
 		if ($exception instanceof MethodNotAllowedHttpException && true === $request->isMethod('OPTIONS') && true === $request->headers->has('Origin')) {			
 			foreach ($this->parameters as $cors) {
-				if (true === $this->match($request, $cors[CorsOptions::ALLOW_ORIGIN], $cors[CorsOptions::PATTERN])) {
+				if (true === $this->match($request, $cors[CorsOptions::ORIGINS], $cors[CorsOptions::PATTERN])) {
 					$response = $this->apply($request, new Response(), $cors);
 					// Overwrite exception status code
 					$response->headers->set('X-Status-Code', 200);
@@ -104,17 +104,17 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 	private function apply(Request $request, Response $response, array $cors = [])
 	{
 		// Define CORS allow_origin
-		$response->headers->set('Access-Control-Allow-Origin', false === empty($cors[CorsOptions::ALLOW_ORIGIN]) ? $request->headers->get('Origin') : '*');
+		$response->headers->set('Access-Control-Allow-Origin', false === empty($cors[CorsOptions::ORIGINS]) ? $request->headers->get('Origin') : '*');
 		
 		// Define CORS allow_methods
-		if (!empty($cors[CorsOptions::ALLOW_METHODS])) {
+		if (false === empty($cors[CorsOptions::ALLOW_METHODS])) {
 			$response->headers->set('Access-Control-Allow-Methods', implode(',', $cors[CorsOptions::ALLOW_METHODS]));
 		} elseif ($request->headers->has('Access-Control-Request-Method')) {
 			$response->headers->set('Access-Control-Allow-Methods', $request->headers->get('Access-Control-Request-Method'));
 		}
 		
 		// Define CORS allow_headers
-		if (!empty($cors[CorsOptions::ALLOW_HEADERS])) {
+		if (false === empty($cors[CorsOptions::ALLOW_HEADERS])) {
 			$response->headers->set('Access-Control-Allow-Headers', implode(',', $cors[CorsOptions::ALLOW_HEADERS]));
 		} elseif ($request->headers->has('Access-Control-Request-Headers')) {
 			$response->headers->set('Access-Control-Allow-Headers', $request->headers->get('Access-Control-Request-Headers'));
