@@ -8,7 +8,7 @@ Prerequisites
 
 The OkaApiBundle has the following requirements:
  - PHP 5.5+
- - Symfony 2.8+
+ - Symfony 3.4+
 
 Installation
 ============
@@ -220,10 +220,10 @@ security:
     firewalls:
         wsse:
             request_matcher:  oka_api.wsse.firewall.request_matcher
-            provider:         wsse_user_provider
-            stateless:        true
-            wsse:             { lifetime: 300 }
-            anonymous:        true
+            provider: wsse_user_provider
+            stateless: true
+            wsse: { lifetime: 300 }
+            anonymous: true
 
 # To activate the wsse voter which control user access by ip 
 # you must define at least one entry in your `access_control`
