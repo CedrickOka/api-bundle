@@ -43,7 +43,7 @@ class Configuration implements ConfigurationInterface
 						->children()
 							->arrayNode('wsse')
 								->addDefaultsIfNotSet()
-								->canBeDisabled()
+								->canBeEnabled()
 								->children()
 									->scalarNode('user_class')->defaultNull()->end()
 									->arrayNode('nonce')
