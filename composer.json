@@ -20,7 +20,7 @@
 	"minimum-stability" : "dev",
 	"require" : {
 		"php" : "^5.5 || >=7.0",
-		"symfony/symfony" : "^3.4 || ^4.0"
+		"symfony/symfony" : "^3.4 || ^4"
 	},
 	"require-dev" : {
 		"doctrine/doctrine-bundle" : "^1.6",
