@@ -48,10 +48,12 @@
 	"extra" : {
 		"branch-alias" : {
 			"dev-master" : "2.x.x-dev"
+		},
+		"symfony": {
+			"allow-contrib": "true"
 		}
 	},
 	"support" : {
 		"docs" : "https://github.com/CedrickOka/oka-api/blob/master/src/Resources/doc/index.md"
 	}
 }
-
