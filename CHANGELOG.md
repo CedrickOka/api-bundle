@@ -1,7 +1,7 @@
 Changelog
 =========
 
-#### 3.1.0 (2018-10-16)
+#### 3.0.13 (2018-10-16)
 
 * Deprecated `oka_api.model_manager_name` configuration values.
 * Added `oka_api.firewalls.wsse.model_manager_name` configuration values.
