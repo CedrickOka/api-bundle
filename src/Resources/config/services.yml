@@ -44,7 +44,7 @@ services:
     oka_api.annotation.event_listener:
         class:  Oka\ApiBundle\EventListener\AnnotationListener
         parent: oka_api.util.logger.helper
-        arguments:  [ '@annotations.cached_reader', '@validator', '@translator', '@oka_api.error_response.factory' ]
+        arguments:  [ '@annotation_reader', '@validator', '@translator', '@oka_api.error_response.factory' ]
         tags:
           - { name: kernel.event_subscriber }
 

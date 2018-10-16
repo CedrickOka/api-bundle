@@ -2,19 +2,19 @@
 namespace Oka\ApiBundle\Security\Authentication\Provider;
 
 use Oka\ApiBundle\Security\Authentication\Token\WsseUserToken;
+use Oka\ApiBundle\Security\Core\Exception\NonceExpiredException;
 use Oka\ApiBundle\Security\Nonce\Nonce;
 use Oka\ApiBundle\Security\Nonce\Storage\Handler\NonceHandlerInterface;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Exception\AccountExpiredException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
+use Symfony\Component\Security\Core\Exception\CredentialsExpiredException;
 use Symfony\Component\Security\Core\Exception\DisabledException;
 use Symfony\Component\Security\Core\Exception\LockedException;
-use Symfony\Component\Security\Core\Exception\NonceExpiredException;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Symfony\Component\Security\Core\Exception\AccountExpiredException;
-use Symfony\Component\Security\Core\Exception\CredentialsExpiredException;
 
 /**
  * 
