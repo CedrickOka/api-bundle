@@ -53,7 +53,7 @@
 	},
 	"extra" : {
 		"branch-alias" : {
-			"dev-master" : "3.x.x-dev"
+			"dev-master" : "3.1.x-dev"
 		},
 		"symfony" : {
 			"allow-contrib" : "true"
@@ -63,4 +63,3 @@
 		"docs" : "https://github.com/CedrickOka/oka-api/blob/master/src/Resources/doc/index.md"
 	}
 }
-
