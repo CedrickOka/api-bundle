@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 3.0.11 (2018-10-16)
+
+* Improves composer definition.
+
 #### 3.0.10 (2018-10-16)
 
 * Fixed bug.
