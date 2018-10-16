@@ -1,6 +1,12 @@
 Changelog
 =========
 
+#### 3.1.0 (2018-10-16)
+
+* Deprecated `oka_api.model_manager_name` configuration values.
+* Added `oka_api.firewalls.wsse.model_manager_name` configuration values.
+* Fixed bug.
+
 #### 3.0.12 (2018-10-16)
 
 * Improves composer definition.

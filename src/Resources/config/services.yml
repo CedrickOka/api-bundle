@@ -4,10 +4,6 @@ services:
         resource: '../../Command/*'
         tags: [ 'console.command' ]
 
-    oka_api.object_manager:
-        class: Doctrine\Common\Persistence\ObjectManager
-        arguments: [ '' ]
-
 # Services
     oka_api.error_response.factory:
         public: true

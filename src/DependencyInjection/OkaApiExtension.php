@@ -31,27 +31,19 @@ class OkaApiExtension extends Extension
 		// Parameters Configuration
 		$container->setParameter('oka_api.http_host', $config['host']);
 		$container->setParameter('oka_api.log_channel', $config['log_channel']);
-		$container->setParameter('oka_api.client_class', $config['client_class']);
-		
-		// Doctrine configuration
-		$container->setAlias('oka_api.doctrine_registry', new Alias('doctrine', false));
-		$definition = $container->getDefinition('oka_api.object_manager');
-		$definition->replaceArgument(0, $config['model_manager_name']);
-		$definition->setFactory([new Reference('oka_api.doctrine_registry'), 'getManager']);
-		
-		$this->createResponseConfig($config['response'], $container);
 		
 		// CORS support configuration
-		if (!empty($config['cors'])) {
+		if (false === empty($config['cors'])) {
 			$this->createCorsSupportConfig($config, $container);
 		}
 		
 		// WSSE firewalls configuration
-		if (true === $config['firewalls']['wsse']['enabled']) {
+		if (true === $config['firewalls']['wsse']['enabled']) {			
 			$this->createWsseAuthenticationConfig($config, $container);
 		}
 		
 		$this->createSecurityBehaviorsConfig($config, $container);
+		$this->createResponseConfig($config['response'], $container);
 	}
 	
 	private function createCorsSupportConfig(array $config, ContainerBuilder $container)
@@ -64,15 +56,22 @@ class OkaApiExtension extends Extension
 	
 	private function createWsseAuthenticationConfig(array $config, ContainerBuilder $container)
 	{
+		if (false === $container->has('doctrine')) {
+			throw new InvalidConfigurationException('The service "doctrine" must be defined if child node "wsse" at path "oka_api.firewalls" is enabled.');
+		}
+		
 		$wsseConfig = $config['firewalls']['wsse'];
+		$modelManagerName = null !== $wsseConfig['model_manager_name'] ? $wsseConfig['model_manager_name'] : $config['model_manager_name'];
 		
 		if (!$userClass = $wsseConfig['user_class']) {
-			if (!$userClass = $config['client_class']) {
-				throw new InvalidConfigurationException('The child node "user_class" at path "oka_api.firewalls.wsse" must be configured if wsse firewall is enabled.');
-			} else {
-				@trigger_error('The configuration value `oka_api.client_class` is deprecated since version 1.4.0. Use `oka_api.firewalls.wsse.user_class` instead', E_USER_DEPRECATED);				
-			}
+			throw new InvalidConfigurationException('The child node "user_class" at path "oka_api.firewalls.wsse" must be configured if wsse firewall is enabled.');
 		}
+		
+		// Doctrine configuration
+		$container->setAlias('oka_api.doctrine_registry', new Alias('doctrine', false));
+		$definition = new Definition('Doctrine\Common\Persistence\ObjectManager', [$modelManagerName]);
+		$definition->setFactory([new Reference('oka_api.doctrine_registry'), 'getManager']);
+		$container->setDefinition('oka_api.object_manager', $definition);
 		$container->setParameter('oka_api.wsse_user_class', $userClass);
 		
 		// Configure Nonce
