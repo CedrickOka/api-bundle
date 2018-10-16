@@ -14,16 +14,6 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 class WsseFactory implements SecurityFactoryInterface
 {
-	public function getKey()
-	{
-		return 'wsse';
-	}
-	
-	public function getPosition()
-	{
-		return 'pre_auth';
-	}
-	
 	public function create(ContainerBuilder $container, $id, $config, $clientProvider, $defaultEntryPoint)
 	{
 		$providerId = 'security.authentication.provider.wsse.'.$id;
@@ -43,5 +33,15 @@ class WsseFactory implements SecurityFactoryInterface
 			->children()
 				->scalarNode('lifetime')->defaultValue(300)->end()
 			->end();
+	}
+	
+	public function getPosition()
+	{
+		return 'pre_auth';
+	}
+	
+	public function getKey()
+	{
+		return 'wsse';
 	}
 }
