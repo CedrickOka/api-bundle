@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 3.0.9 (2018-10-16)
+
+* Fixed bug.
+
 #### 3.0.8 (2018-10-16)
 
 * Improves composer configuration.
