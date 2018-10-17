@@ -16,6 +16,19 @@
 			"email" : "okacedrick@gmail.com"
 		}
 	],
+	"autoload" : {
+		"psr-4" : {
+			"Oka\\ApiBundle\\" : "src/"
+		},
+		"exclude-from-classmap" : [
+			"/tests/"
+		]
+	},
+	"autoload-dev" : {
+		"psr-4" : {
+			"Oka\\ApiBundle\\Tests\\" : "tests/"
+		}
+	},
 	"require" : {
 		"php" : ">=5.6",
 		"doctrine/annotations" : "^1.2",
@@ -41,19 +54,6 @@
 		"doctrine/doctrine-bundle" : "^1.6",
 		"doctrine/orm" : "^2.5",
 		"jms/serializer-bundle" : "^2.3"
-	},
-	"autoload" : {
-		"psr-4" : {
-			"Oka\\ApiBundle\\" : "src/"
-		},
-		"exclude-from-classmap" : [
-			"/tests/"
-		]
-	},
-	"autoload-dev" : {
-		"psr-4" : {
-			"Oka\\ApiBundle\\Tests\\" : "tests/"
-		}
 	},
 	"extra" : {
 		"branch-alias" : {
