@@ -56,9 +56,10 @@ class OkaApiExtension extends Extension
 	
 	private function createWsseAuthenticationConfig(array $config, ContainerBuilder $container)
 	{
-		if (false === $container->hasDefinition('doctrine')) {
-			throw new InvalidConfigurationException('The service "doctrine" must be defined if child node "wsse" at path "oka_api.firewalls" is enabled.');
-		}
+		// TODO: Throw exception if symfony cache in not construct
+// 		if (false === $container->hasDefinition('doctrine')) {
+// 			throw new InvalidConfigurationException('The service "doctrine" must be defined if child node "wsse" at path "oka_api.firewalls" is enabled.');
+// 		}
 		
 		$wsseConfig = $config['firewalls']['wsse'];
 		$modelManagerName = null !== $wsseConfig['model_manager_name'] ? $wsseConfig['model_manager_name'] : $config['model_manager_name'];
