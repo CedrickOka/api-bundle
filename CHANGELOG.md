@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 3.0.14 (2018-10-17)
+
+* Fixed bug.
+
 #### 3.0.13 (2018-10-16)
 
 * Deprecated `oka_api.model_manager_name` configuration values.

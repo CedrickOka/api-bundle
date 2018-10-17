@@ -50,14 +50,14 @@
 		"phpunit/phpunit" : "~4.8|~5.0",
 		"symfony/phpunit-bridge" : "^3.0"
 	},
-	"suggests" : {
+	"suggest" : {
 		"doctrine/doctrine-bundle" : "^1.6",
 		"doctrine/orm" : "^2.5",
 		"jms/serializer-bundle" : "^2.3"
 	},
 	"extra" : {
 		"branch-alias" : {
-			"dev-master" : "3.1.x-dev"
+			"dev-master" : "3.0.x-dev"
 		},
 		"symfony" : {
 			"allow-contrib" : "true"
