@@ -78,8 +78,6 @@ class ErrorResponseBuilder implements ErrorResponseBuilderInterface
 			}
 			
 			$item['propertyPath'] = (string) $propertyPath;
-			$property = rtrim(ltrim($item['propertyPath'], '['), ']');
-			$item['property'] = false === ($pos = strpos($property, '[')) ? $property : substr($property, 0, $pos+1);
 		}
 		
 		if (!empty($extras)) {

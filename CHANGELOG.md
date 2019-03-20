@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 4.0.0 (2019-03-20)
+
+* [BC break] Removed deprecated property `property` from error response.
+
 #### 3.1.1 (2019-03-20)
 
 * Fixed bug.
