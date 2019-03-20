@@ -7,20 +7,20 @@ Prerequisites
 =============
 
 The OkaApiBundle has the following requirements:
- - PHP 5.5+
+
+ - PHP 5.6+
  - Symfony 3.4+
 
 Installation
 ============
 
-Installation is a quick (I promise!) 6 step process:
+Installation is a quick (I promise!) 5 step process:
 
 1. Download OkaApiBundle
 2. Enable the Bundle
 3. Create your WsseUser class
 4. Configure the Bundle
-5. Import Bundle routing
-6. Update your database schema
+5. Update your database schema
 
 Step 1: Download the Bundle
 ---------------------------
@@ -43,24 +43,22 @@ Then, enable the bundle by adding it to the list of registered bundles
 in the `app/AppKernel.php` file of your project:
 
 ```php
-<?php
 // app/AppKernel.php
 
 // ...
 class AppKernel extends Kernel
 {
-	public function registerBundles()
-	{
-		$bundles = array(
-			// ...
-			
-			new Oka\ApiBundle\OkaApiBundle(),
-		);
-		
-		// ...
-	}
-	
-	// ...
+    public function registerBundles()
+    {
+        $bundles = [
+            // ...
+            new Oka\ApiBundle\OkaApiBundle(),
+        ];
+
+        // ...
+    }
+
+    // ...
 }
 ```
 
@@ -166,7 +164,7 @@ class WsseUser extends BaseWsseUser
 ```
 
 ```yaml
-#####src/Acme/ApiBundle/Resources/config/doctrine/WsseUser.orm.yml
+# src/Acme/ApiBundle/Resources/config/doctrine/WsseUser.orm.yml
 Acme\ApiBundle\Entity\WsseUser:
     type:  entity
     table: oka_api_wsse_user
@@ -242,21 +240,7 @@ security:
       - { path: '^/v1/rest', host: 'api.exemple.com', roles: ROLE_API_USER }
 ```
 
-Step 5: Import Bundle routing
------------------------------
-
-Now that you have activated and configured the bundle, all that is left to do is
-import the OkaApiBundle routing files.
-
-Add the following configuration to your `routing.yml`
-
-``` yaml
-# app/config/routing.yml
-oka_api:
-    resource: '@OkaApiBundle/Resources/config/routing.yml'
-```
-
-Step 6: Update your database schema
+Step 5: Update your database schema
 -----------------------------------
 
 Now that the bundle is configured, the last thing you need to do is update your

@@ -56,11 +56,11 @@ class ErrorResponseBuilder implements ErrorResponseBuilderInterface
 	 * 
 	 * @param string $message
 	 * @param int $code
-	 * @param string $property
+	 * @param string $propertyPath
 	 * @param array $extras
 	 * @return array
 	 */
-	protected function createError($message, $code, $property = null, array $extras = [])
+	protected function createError($message, $code, $propertyPath = null, array $extras = [])
 	{
 		if (!is_string($message)) {
 			throw new \UnexpectedValueException(sprintf('The Error message must be a string or object implementing __toString(), "%s" given.', gettype($message)));
@@ -72,12 +72,14 @@ class ErrorResponseBuilder implements ErrorResponseBuilderInterface
 		
 		$item = ['message' => (string) $message, 'code' => (int) $code];
 		
-		if ($property !== null) {
-			if (!is_string($property)) {
-				throw new \UnexpectedValueException(sprintf('The Error property must be a string or object implementing __toString(), "%s" given.', gettype($property)));
+		if (null !== $propertyPath) {
+			if (!is_string($propertyPath)) {
+				throw new \UnexpectedValueException(sprintf('The Error $propertyPath must be a string or object implementing __toString(), "%s" given.', gettype($propertyPath)));
 			}
 			
-			$item['property'] = (string) $property;
+			$item['propertyPath'] = (string) $propertyPath;
+			$property = rtrim(ltrim($item['propertyPath'], '['), ']');
+			$item['property'] = false === ($pos = strpos($property, '[')) ? $property : substr($property, 0, $pos+1);
 		}
 		
 		if (!empty($extras)) {
@@ -100,13 +102,13 @@ class ErrorResponseBuilder implements ErrorResponseBuilderInterface
 	 * 
 	 * @param string $message
 	 * @param int $code
-	 * @param string $property
+	 * @param string $propertyPath
 	 * @param array $extras
 	 * @return \Oka\ApiBundle\Util\ErrorResponseBuilder
 	 */
-	public function setError($message, $code, $property = null, array $extras = [])
+	public function setError($message, $code, $propertyPath = null, array $extras = [])
 	{
-		$this->error = $this->createError($message, $code, $property, $extras);
+		$this->error = $this->createError($message, $code, $propertyPath, $extras);
 		return $this;
 	}
 	
@@ -115,13 +117,13 @@ class ErrorResponseBuilder implements ErrorResponseBuilderInterface
 	 * 
 	 * @param string $message
 	 * @param int $code
-	 * @param string $property
+	 * @param string $propertyPath
 	 * @param array $extras
 	 * @return \Oka\ApiBundle\Util\ErrorResponseBuilder
 	 */
-	public function addChildError($message, $code, $property = null, array $extras = [])
+	public function addChildError($message, $code, $propertyPath = null, array $extras = [])
 	{
-		$this->childErrors[] = $this->createError($message, $code, $property, $extras);		
+		$this->childErrors[] = $this->createError($message, $code, $propertyPath, $extras);		
 		return $this;
 	}
 	
