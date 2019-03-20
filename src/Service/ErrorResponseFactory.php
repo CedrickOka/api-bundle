@@ -3,6 +3,7 @@ namespace Oka\ApiBundle\Service;
 
 use Oka\ApiBundle\Util\ErrorResponseBuilder;
 use Oka\ApiBundle\Util\ErrorResponseBuilderInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Form\FormErrorIterator;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
@@ -34,17 +35,17 @@ class ErrorResponseFactory
 	 * 
 	 * @param string $message
 	 * @param int $code
-	 * @param string $property
+	 * @param string $propertyPath
 	 * @param array $extras
 	 * @param int $httpStatusCode
 	 * @param array $httpHeaders
 	 * @param string $format
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function create($message, $code = 500, $property = null, array $extras = [], $httpStatusCode = 500, $httpHeaders = [], $format = 'json')
+	public function create($message, $code = 500, $propertyPath = null, array $extras = [], $httpStatusCode = 500, $httpHeaders = [], $format = 'json')
 	{
 		return $this->getBuilderInstance()
-					->setError($message, $code, $property, $extras)
+					->setError($message, $code, $propertyPath, $extras)
 					->setHttpSatusCode($httpStatusCode)
 					->setHttpHeaders($httpHeaders)
 					->setFormat($format)
@@ -57,24 +58,24 @@ class ErrorResponseFactory
 	 * @param FormErrorIterator $errors
 	 * @param string $message
 	 * @param int $code
-	 * @param string $property
+	 * @param string $propertyPath
 	 * @param array $extras
 	 * @param int $httpStatusCode
 	 * @param array $httpHeaders
 	 * @param string $format
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function createFromFormErrorIterator(FormErrorIterator $errors, $message = null, $code = 400, $property = null, array $extras = [], $httpStatusCode = 400, $httpHeaders = [], $format = 'json')
+	public function createFromFormErrorIterator(FormErrorIterator $errors, $message = null, $code = 400, $propertyPath = null, array $extras = [], $httpStatusCode = 400, $httpHeaders = [], $format = 'json')
 	{
 		$builder = $this->getBuilderInstance()
-						->setError($message ?: 'Request not valid!', $code, $property, $extras)
+						->setError($message ?: 'Request not valid!', $code, $propertyPath, $extras)
 						->setHttpSatusCode($httpStatusCode)
 						->setHttpHeaders($httpHeaders)
 						->setFormat($format);
 		
 		/** @var \Symfony\Component\Form\FormError $error */
 		foreach ($errors as $error) {
-			$builder->addChildError($error->getMessage(), 0, $error->getOrigin()->getPropertyPath()->__toString(), $error->getCause() ? ['cause' => $error->getCause()] : []);
+			$builder->addChildError($error->getMessage(), 400, $error->getOrigin()->getPropertyPath()->__toString(), $error->getCause() ? ['cause' => $error->getCause()] : []);
 		}
 		
 		return $builder->build();
@@ -86,24 +87,33 @@ class ErrorResponseFactory
 	 * @param ConstraintViolationListInterface $errors
 	 * @param string $message
 	 * @param int $code
-	 * @param string $property
+	 * @param string $propertyPath
 	 * @param array $extras
 	 * @param int $httpStatusCode
 	 * @param array $httpHeaders
 	 * @param string $format
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function createFromConstraintViolationList(ConstraintViolationListInterface $errors, $message = null, $code = 400, $property = null, array $extras = [], $httpStatusCode = 400, $httpHeaders = [], $format = 'json')
+	public function createFromConstraintViolationList(ConstraintViolationListInterface $errors, $message = null, $code = 400, $propertyPath = null, array $extras = [], $httpStatusCode = 400, $httpHeaders = [], $format = 'json')
 	{
 		$builder = $this->getBuilderInstance()
-						->setError($message ?: 'Request not valid!', $code, $property, $extras)
+						->setError($message ?: 'Request not valid!', $code, $propertyPath, $extras)
 						->setHttpSatusCode($httpStatusCode)
 						->setHttpHeaders($httpHeaders)
 						->setFormat($format);
 		
 		/** @var \Symfony\Component\Validator\ConstraintViolationInterface $error */
 		foreach ($errors as $error) {
-			$builder->addChildError($error->getMessage(), (int) $error->getCode(), $error->getPropertyPath(), ['invalidValue' => $error->getInvalidValue()]);
+			switch (true) {
+				case UniqueEntity::NOT_UNIQUE_ERROR === $error->getCode():
+					$code = 409;
+					break;
+				default:
+					$code = 400;
+					break;
+					
+			}
+			$builder->addChildError($error->getMessage(), $code, $error->getPropertyPath(), ['invalidValue' => $error->getInvalidValue()]);
 		}
 		
 		return $builder->build();
@@ -113,14 +123,14 @@ class ErrorResponseFactory
 	 * Create new instance from Exception class
 	 * 
 	 * @param \Exception $exception
-	 * @param string $property
+	 * @param string $propertyPath
 	 * @param array $extras
 	 * @param int $httpStatusCode
 	 * @param array $httpHeaders
 	 * @param string $format
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function createFromException(\Exception $exception, $property = null, array $extras = [], $httpStatusCode = null, $httpHeaders = [], $format = 'json')
+	public function createFromException(\Exception $exception, $propertyPath = null, array $extras = [], $httpStatusCode = null, $httpHeaders = [], $format = 'json')
 	{
 		if ($exception instanceof HttpExceptionInterface) {
 			$httpStatusCode = $httpStatusCode ?: $exception->getStatusCode();
@@ -130,7 +140,7 @@ class ErrorResponseFactory
 		}
 		
 		return $this->getBuilderInstance()
-					->setError($exception->getMessage(), (int) $exception->getCode(), $property, $extras)
+					->setError($exception->getMessage(), (int) $exception->getCode(), $propertyPath, $extras)
 					->setHttpSatusCode($httpStatusCode)
 					->setHttpHeaders($httpHeaders)
 					->setFormat($format)

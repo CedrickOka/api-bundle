@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 3.1.1 (2019-03-20)
+
+* Fixed bug.
+
 #### 3.1.0 (2019-03-20)
 
 * Deprecated `property` in error response and added instead `propertyPath`.
