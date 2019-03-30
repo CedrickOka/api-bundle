@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 4.1.1 (2019-03-30)
+
+* Fixed autowire bug.
+
 #### 4.1.0 (2019-03-30)
 
 * Deprecated `X-WSSE` header, use instead `Authorization` header.

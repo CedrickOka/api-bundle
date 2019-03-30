@@ -10,6 +10,10 @@ services:
         class: Oka\ApiBundle\Service\ErrorResponseFactory
         arguments: ['%oka_api.response.error_builder_class%']
 
+    Oka\ApiBundle\Service\ErrorResponseFactory:
+        public: true
+        alias: oka_api.error_response.factory
+
 # Firewalls Request Matcher
     oka_api.request_matcher.host:
         class: Oka\ApiBundle\Http\HostRequestMatcher
