@@ -16,6 +16,14 @@ class WsseRequestMatcher extends HostRequestMatcher
 			return false;
 		}
 		
-		return $request->headers->has('X-WSSE');
+		if (true === $request->headers->has('X-WSSE')) {
+			return true;
+		}
+		
+		if (true === $request->headers->has('Authorization')) {
+			return (bool) preg_match('#^UsernameToken (.+)$#i', $request->headers->get('Authorization'));
+		}
+		
+		return false;
 	}
 }

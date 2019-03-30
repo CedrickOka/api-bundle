@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 4.1.0 (2019-03-30)
+
+* Deprecated `X-WSSE` header, use instead `Authorization` header.
+
 #### 4.0.0 (2019-03-20)
 
 * [BC break] Removed deprecated property `property` from error response.

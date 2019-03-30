@@ -254,3 +254,12 @@ $ php app/console doctrine:schema:update --force
 ```
 
 You now can access at the index page `http://app.com/app_dev.php/`!
+
+How use this?
+=============
+
+Now that the bundle is installed
+
+```
+curl -i http://app.com/app_dev.php -X GET -H 'Authorization: UsernameToken Username="admin", PasswordDigest="53dGT2c83M446zUJfpr9lanpeY0=", Nonce="MTM3OGM2YzJlZDYyNDE5Ng==", Created="2019-03-30T09:52:33Z"'
+```

@@ -2,18 +2,18 @@ services:
 # Command
     Oka\ApiBundle\Command\:
         resource: '../../Command/*'
-        tags: [ 'console.command' ]
+        tags: ['console.command']
 
 # Services
     oka_api.error_response.factory:
         public: true
         class: Oka\ApiBundle\Service\ErrorResponseFactory
-        arguments: [ '%oka_api.response.error_builder_class%' ]
+        arguments: ['%oka_api.response.error_builder_class%']
 
 # Firewalls Request Matcher
     oka_api.request_matcher.host:
         class: Oka\ApiBundle\Http\HostRequestMatcher
-        arguments: [ '%oka_api.http_host%' ]
+        arguments: ['%oka_api.http_host%']
 
     oka_api.wsse.firewall.request_matcher:
         class: Oka\ApiBundle\Http\WsseRequestMatcher
@@ -21,26 +21,26 @@ services:
 
 # Authentication Provider
     oka_api.wsse.security.authentication.provider:
-        class: Oka\ApiBundle\Security\Authentication\Provider\WsseProvider
-        arguments: [ '', '', '' ]
+        class: Oka\ApiBundle\Security\Authentication\Provider\WsseAuthenticationProvider
+        arguments: ['', '', '']
 
     oka_api.wsse.security.authentication.listener:
         class: Oka\ApiBundle\Security\Firewall\WsseListener
         parent: oka_api.util.logger.helper
-        arguments: [ '@security.token_storage', '@security.authentication.manager', '@oka_api.error_response.factory', '@translator' ]
+        arguments: ['@security.token_storage', '@security.authentication.manager', '@oka_api.error_response.factory', '@translator']
 
 # Listeners
     oka_api.request.event_listener:
         class:  Oka\ApiBundle\EventListener\RequestListener
         parent: oka_api.util.logger.helper
-        arguments:  [ '@oka_api.request_matcher.host', '@translator', '@oka_api.error_response.factory', '%kernel.environment%' ]
+        arguments:  ['@oka_api.request_matcher.host', '@translator', '@oka_api.error_response.factory', '%kernel.environment%']
         tags:
           - { name: kernel.event_subscriber }
 
     oka_api.annotation.event_listener:
         class:  Oka\ApiBundle\EventListener\AnnotationListener
         parent: oka_api.util.logger.helper
-        arguments:  [ '@annotation_reader', '@validator', '@translator', '@oka_api.error_response.factory' ]
+        arguments:  ['@annotation_reader', '@validator', '@translator', '@oka_api.error_response.factory']
         tags:
           - { name: kernel.event_subscriber }
 
@@ -61,4 +61,4 @@ services:
     oka_api.util.password_updater:
         public: true
         class: Oka\ApiBundle\Util\PasswordUpdater
-        arguments: [ '@security.encoder_factory' ]
+        arguments: ['@security.encoder_factory']

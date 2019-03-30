@@ -5,6 +5,7 @@ use Oka\ApiBundle\Security\Authentication\Token\WsseUserToken;
 use Oka\ApiBundle\Service\ErrorResponseFactory;
 use Oka\ApiBundle\Util\LoggerHelper;
 use Oka\ApiBundle\Util\RequestUtil;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
@@ -59,15 +60,12 @@ class WsseListener extends LoggerHelper implements ListenerInterface
 	 */
 	public function handle(GetResponseEvent $event)
 	{
-		$request = $event->getRequest();
-		$headers = $request->headers;
-		
 		$matches = [];
-		$credentials = $headers->get('x-wsse', '');
+		$credentials = $this->getCredentials($event->getRequest());
 		$failedMessage = Response::$statusTexts[Response::HTTP_UNAUTHORIZED];
 		
 		// Verifie que le header X-WSSE est bien définie
-		if ($credentials !== '' && preg_match('#UsernameToken Username="([^"]+)", PasswordDigest="([^"]+)", Nonce="([^"]+)", Created="([^"]+)"#', $credentials, $matches)) {
+		if ($credentials && preg_match('#UsernameToken Username="([^"]+)", PasswordDigest="([^"]+)", Nonce="([^"]+)", Created="([^"]+)"#', $credentials, $matches)) {
 			$preAuthToken = new WsseUserToken($matches[1], $credentials, []);
 			$preAuthToken->setAttribute('digest', $matches[2]);
 			$preAuthToken->setAttribute('nonce', $matches[3]);
@@ -97,7 +95,19 @@ class WsseListener extends LoggerHelper implements ListenerInterface
 				[], 
 				Response::HTTP_UNAUTHORIZED, 
 				['WWW-Authenticate' => 'WSSE realm="Secure Area", profile="UsernameToken"'], 
-				RequestUtil::getFirstAcceptableFormat($request) ?: 'json'
+				RequestUtil::getFirstAcceptableFormat($event->getRequest()) ?: 'json'
 		));
+	}
+	
+	protected function getCredentials(Request $request) {
+		if (true === $request->headers->has('X-WSSE')) {
+			return $request->headers->get('X-WSSE');
+		}
+		
+		if (true === $request->headers->has('Authorization') && preg_match('#^UsernameToken (.+)$#i', $request->headers->get('Authorization'))) {
+			return $request->headers->get('Authorization');
+		}
+		
+		return '';
 	}
 }

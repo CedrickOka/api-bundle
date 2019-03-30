@@ -25,7 +25,8 @@ class HostRequestMatcher implements RequestMatcherInterface
 	 * {@inheritdoc}
 	 * @see \Symfony\Component\HttpFoundation\RequestMatcherInterface::matches()
 	 */
-	public function matches(Request $request) {
+	public function matches(Request $request)
+	{
 		return $this->host === null || $request->getHost() === $this->host;
 	}
 }

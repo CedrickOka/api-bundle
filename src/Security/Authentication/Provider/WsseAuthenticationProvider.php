@@ -21,7 +21,7 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
  * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  * 
  */
-class WsseProvider implements AuthenticationProviderInterface 
+class WsseAuthenticationProvider implements AuthenticationProviderInterface
 {
 	/**
 	 * @var UserProviderInterface $clientProvider
@@ -48,6 +48,11 @@ class WsseProvider implements AuthenticationProviderInterface
 		$this->clientProvider = $clientProvider;
 		$this->nonceHandler = $nonceHandler;
 		$this->lifetime = $lifetime;
+	}
+	
+	public function supports(TokenInterface $token)
+	{
+		return $token instanceof WsseUserToken;
 	}
 	
 	/**
@@ -122,10 +127,5 @@ class WsseProvider implements AuthenticationProviderInterface
 		
 		// Valid the secret
 		return hash_equals($expected, $digest);
-	}
-	
-	public function supports(TokenInterface $token)
-	{
-		return $token instanceof WsseUserToken;
 	}
 }
