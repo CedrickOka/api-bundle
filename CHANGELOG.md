@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 3.1.3 (2019-04-06)
+
+* Fixed bug
+
 #### 3.1.2 (2019-04-01)
 
 * Fixed autowire bug

@@ -11,7 +11,7 @@ use JMS\Serializer\Metadata\PropertyMetadata;
  * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  *
  */
-class FieldsExclusionStrategyInterface implements ExclusionStrategyInterface
+class FieldsExclusionStrategy implements ExclusionStrategyInterface
 {
 	private $fields = [];
 

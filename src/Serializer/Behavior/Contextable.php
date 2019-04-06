@@ -20,7 +20,7 @@ trait Contextable
 		$context->setGroups($groups);
 
 		if (false === empty($fields)) {
-			$context->addExclusionStrategy(new FieldsExclusionStrategyInterface($fields));
+			$context->addExclusionStrategy(new FieldsExclusionStrategy($fields));
 		}
 
 		return $context;
