@@ -59,8 +59,14 @@ class CorsSupportListener extends LoggerHelper implements EventSubscriberInterfa
 			foreach ($this->parameters as $cors) {
 				if (true === $this->match($request, $cors[CorsOptions::ORIGINS], $cors[CorsOptions::PATTERN])) {
 					$response = $this->apply($request, new Response(), $cors);
-					// Overwrite exception status code
-					$response->headers->set('X-Status-Code', 200);
+					
+					if (-1 === version_compare(\Symfony\Component\HttpKernel\Kernel::VERSION, '3.3')) {
+						// Overwrite exception status code
+						$response->headers->set('X-Status-Code', 200);
+					} else {
+						$event->allowCustomResponseCode();
+					}
+					
 					$event->setResponse($response);
 					break;
 				}

@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 4.1.1 (2019-04-15)
+
+* Fixed COSR support bug.
+
 #### 4.1.0 (2019-03-30)
 
 * Deprecated `X-WSSE` header, use instead `Authorization` header.
