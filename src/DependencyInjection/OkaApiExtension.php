@@ -92,6 +92,7 @@ class OkaApiExtension extends Extension
 		$wsseUserManipulatorDefinition->addArgument(new Reference('oka_api.object_manager'));
 		$wsseUserManipulatorDefinition->addArgument(new Reference('event_dispatcher'));
 		$wsseUserManipulatorDefinition->addArgument($userClass);
+		$wsseUserManipulatorDefinition->setPublic(true);
 		$container->setDefinition('oka_api.util.wsse_user_manipulator', $wsseUserManipulatorDefinition);
 		
 		// Configure wsse authentication provider
