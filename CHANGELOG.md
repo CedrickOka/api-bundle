@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 4.1.2 (2019-06-14)
+
+* Removed deprecated configuration values.
+
 #### 4.1.1 (2019-04-15)
 
 * Fixed COSR support bug.
