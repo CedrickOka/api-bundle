@@ -102,8 +102,7 @@ class Configuration implements ConfigurationInterface
 	{
 		$node = new ArrayNodeDefinition('cors');
 		$node
-			->canBeUnset()
-			->requiresAtLeastOneElement()
+			->treatNullLike([])
 			->useAttributeAsKey('name')
 			->info('This value permit to enable CORS protocol support.')
 			->prototype('array')

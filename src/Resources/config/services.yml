@@ -48,11 +48,6 @@ services:
         tags:
           - { name: kernel.event_subscriber }
 
-    oka_api.cors_support.event_listener:
-        class:  Oka\ApiBundle\EventListener\CorsSupportListener
-        parent: oka_api.util.logger.helper
-        arguments:  [[]]
-
 # Utils
     oka_api.util.logger.helper:
         abstract: true

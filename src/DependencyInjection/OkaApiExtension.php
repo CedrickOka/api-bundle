@@ -49,9 +49,9 @@ class OkaApiExtension extends Extension
 	private function createCorsSupportConfig(array $config, ContainerBuilder $container)
 	{
 		// Enable CORS Listener
-		$definition = $container->getDefinition('oka_api.cors_support.event_listener');
-		$definition->replaceArgument(0, $config['cors'])
-				   ->addTag('kernel.event_subscriber');
+		$definition = new Definition('Oka\ApiBundle\EventListener\CorsSupportListener', [$config['cors']]);
+		$definition->addTag('kernel.event_subscriber');
+		$container->setDefinition('oka_api.cors_support.event_listener', $definition);
 	}
 	
 	private function createWsseAuthenticationConfig(array $config, ContainerBuilder $container)

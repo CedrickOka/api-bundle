@@ -2,21 +2,20 @@
 namespace Oka\ApiBundle\EventListener;
 
 use Oka\ApiBundle\CorsOptions;
-use Oka\ApiBundle\Util\LoggerHelper;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
-use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * 
  * @author Cedrick Oka Baidai <okacedrick@gmail.com>
  * 
  */
-class CorsSupportListener extends LoggerHelper implements EventSubscriberInterface
+class CorsSupportListener implements EventSubscriberInterface
 {
 	/**
 	 * @var array $parameters

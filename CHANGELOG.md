@@ -1,6 +1,10 @@
 Changelog
 =========
 
+#### 4.2.0 (2019-06-14)
+
+* Allows to give null value to configuration value `oka_api.cors`.
+
 #### 4.1.3 (2019-06-14)
 
 * Removes deprecated configuration values.
