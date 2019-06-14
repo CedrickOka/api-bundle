@@ -1,9 +1,9 @@
 Changelog
 =========
 
-#### 4.1.2 (2019-06-14)
+#### 4.1.3 (2019-06-14)
 
-* Removed deprecated configuration values.
+* Removes deprecated configuration values.
 
 #### 4.1.1 (2019-04-15)
 
