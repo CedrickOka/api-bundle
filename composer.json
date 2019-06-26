@@ -2,7 +2,7 @@
 	"name" : "coka/api-bundle",
 	"type" : "symfony-bundle",
 	"description" : "Symfony Oka API Bundle",
-	"homepage" : "https://github.com/CedrickOka/oka-api",
+	"homepage" : "https://github.com/CedrickOka/api-bundle",
 	"license" : "MIT",
 	"keywords" : [
 		"rest",
@@ -64,6 +64,6 @@
 		}
 	},
 	"support" : {
-		"docs" : "https://github.com/CedrickOka/oka-api/blob/master/src/Resources/doc/index.md"
+		"docs" : "https://github.com/CedrickOka/api-bundle/blob/master/src/Resources/doc/index.md"
 	}
 }
